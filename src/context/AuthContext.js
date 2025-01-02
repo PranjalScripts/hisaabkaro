@@ -40,8 +40,6 @@ export const AuthProvider = ({ children }) => {
       setIsLoggedIn(true);
       setUsername(user.name);
 
-      // Show success toast
-      toast.success("Successfully logged in!");
 
       return true;
     } catch (error) {

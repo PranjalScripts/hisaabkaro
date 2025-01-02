@@ -17,11 +17,13 @@ import AddTransactions from "./pages/collaborativeBook/youAdded/AddTransactions"
 import YourBooks from "./pages/selfRecord/yourBooks";
 import SelfRecordByBookID from "./pages/selfRecord/selfrecordbyBookID";
 import TransactionHistory from "./pages/selfRecord/history";
-// import PageNotFound from "./pages/pageNotFound/PageNotFound";
+import PageNotFound from "./pages/pageNotFound/PageNotFound";
 import DashBoard from "./pages/Dashboard/dashboard";
 import DevToolsProtection from './components/DevToolsProtection';
 import { createGlobalStyle } from 'styled-components';
 import GoogleCallback from "./components/auth/GoogleCallback";
+import PrivateRoute from "./components/PrivateRoute";
+import RedirectIfLoggedIn from "./components/RedirectIfLoggedIn";
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -38,24 +40,41 @@ const GlobalStyle = createGlobalStyle`
 function App() {
   return (
     <>  
-    {/* <DevToolsProtection /> */}
       <Router>
         <GlobalStyle />
         <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
         <Routes>
-     
-          <Route path="/" element={<Landing />} />
+          {/* Public Routes - will redirect to /home if logged in */}
+          <Route path="/" element={
+            <RedirectIfLoggedIn>
+              <Landing />
+            </RedirectIfLoggedIn>
+          } />
+          <Route path="/login" element={
+            <RedirectIfLoggedIn>
+              <Landing />
+            </RedirectIfLoggedIn>
+          } />
+          <Route path="/signup" element={
+            <RedirectIfLoggedIn>
+              <Landing />
+            </RedirectIfLoggedIn>
+          } />
+          
+          {/* Auth callback route */}
           <Route path="/auth/callback" element={<GoogleCallback />} />
-          <Route path="/login" element={<Landing />} />
 
-          {/* Dashboard and other pages using Layout */}
-          <Route path="/" element={<Layout />}>
+          {/* Protected Routes */}
+          <Route path="/" element={
+            <PrivateRoute>
+              <Layout />
+            </PrivateRoute>
+          }>
             <Route path="home" element={<Home />} />
             <Route path="dashboard" element={<DashBoard />} />
             <Route path="your-books" element={<YourBooks />} />
             <Route path="/your-books/:bookId" element={<SelfRecordByBookID />} />
             <Route path="transaction-history/:transactionId" element={<TransactionHistory />}/>
-
             <Route path="users" element={<Users />} />
             <Route path="book" element={<Book />} />
             <Route path="profile" element={<Profile />} />
@@ -68,12 +87,12 @@ function App() {
               element={<CollaborativeBookRecords />}
             />
           </Route>
-          <Route path="/signup" element={<Landing />} />
-          {/* <Route path="*" element={<PageNotFound />} /> */}
+
+          {/* 404 Route */}
+          <Route path="*" element={<PageNotFound />} />
         </Routes>
       </Router>
-      </>
-
+    </>
   );
 }
 

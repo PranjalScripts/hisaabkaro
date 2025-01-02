@@ -1,13 +1,15 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { toast } from 'react-toastify';
 import { jwtDecode } from 'jwt-decode';
+import PhoneUpdateModal from './PhoneUpdate/PhoneUpdateModal';
 
 const GoogleCallback = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const { login } = useAuth();
+    const [showPhoneModal, setShowPhoneModal] = useState(false);
 
     useEffect(() => {
         const handleCallback = async () => {
@@ -47,9 +49,15 @@ const GoogleCallback = () => {
                     localStorage.setItem('profile', user.profilePicture);
                 }
 
-                // Login the user and navigate
+                // Login the user
                 await login(user);
-                navigate('/home');
+
+                // Check if phone number exists in decoded token
+                if (!decodedToken.phone) {
+                    setShowPhoneModal(true);
+                } else {
+                    navigate('/home');
+                }
             } catch (error) {
                 console.error('Error in Google callback:', error);
                 toast.error('Failed to complete authentication');
@@ -60,13 +68,24 @@ const GoogleCallback = () => {
         handleCallback();
     }, [location, navigate, login]);
 
+    const handlePhoneModalClose = () => {
+        // After phone update is complete, navigate to home
+        navigate('/home');
+    };
+
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-100">
-            <div className="text-center p-8 bg-white rounded-lg shadow-md">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
-                <p className="mt-4 text-gray-600">Completing your sign-in...</p>
+        <>
+            <div className="flex items-center justify-center min-h-screen bg-gray-100">
+                <div className="text-center p-8 bg-white rounded-lg shadow-md">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
+                    <p className="mt-4 text-gray-600">Completing your sign-in...</p>
+                </div>
             </div>
-        </div>
+
+            {showPhoneModal && (
+                <PhoneUpdateModal onClose={handlePhoneModalClose} />
+            )}
+        </>
     );
 };
 
