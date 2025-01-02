@@ -1,67 +1,91 @@
 import React from 'react';
-import { BarChart3, Shield, Zap, Clock, Receipt, PieChart } from "lucide-react";
+import { Users2, Bell, Shield, Clock, SplitSquareVertical, HeadphonesIcon } from 'lucide-react';
+import { FeatureCard } from './FeatureCard';
+import { motion } from 'framer-motion';
 
-const FeaturesSection = () => {
-  const features = [
-    {
-      icon: <BarChart3 className="text-blue-600" size={24} />,
-      title: "Real-time Analytics",
-      description:
-        "Get instant insights into your spending patterns with powerful analytics tools.",
-    },
-    {
-      icon: <Receipt className="text-blue-600" size={24} />,
-      title: "Smart Receipt Scanning",
-      description:
-        "Automatically extract data from receipts using our advanced OCR technology.",
-    },
-    {
-      icon: <PieChart className="text-blue-600" size={24} />,
-      title: "Budget Tracking",
-      description:
-        "Set and monitor budgets with automatic alerts and spending forecasts.",
-    },
-    {
-      icon: <Shield className="text-blue-600" size={24} />,
-      title: "Secure & Compliant",
-      description:
-        "Bank-grade security with automatic backup and encryption.",
-    },
-    {
-      icon: <Zap className="text-blue-600" size={24} />,
-      title: "Automated Processing",
-      description:
-        "Save time with automated expense categorization and reporting.",
-    },
-    {
-      icon: <Clock className="text-blue-600" size={24} />,
-      title: "24/7 Support",
-      description:
-        "Round-the-clock support to help you manage your expenses better.",
-    },
-  ];
+const features = [
+  {
+    name: 'Easy Split',
+    description: 'Split expenses fairly among friends with just a few taps.',
+    icon: SplitSquareVertical,
+    image: 'https://images.unsplash.com/photo-1554224154-26032ffc0d07?auto=format&fit=crop&q=80&w=400'
+  },
+  {
+    name: 'Real-time Tracking',
+    description: 'Monitor transactions and balances in real-time.',
+    icon: Clock,
+    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=400'
+  },
+  {
+    name: 'Secure Transactions',
+    description: 'Your financial data is protected with bank-grade security.',
+    icon: Shield,
+    image: 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&q=80&w=400'
+  },
+  {
+    name: 'Group Management',
+    description: 'Create groups for different occasions and manage expenses together.',
+    icon: Users2,
+    image: 'https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&q=80&w=400'
+  },
+  {
+    name: '24/7 Support',
+    description: 'Get help anytime with our round-the-clock customer support team.',
+    icon: HeadphonesIcon,
+    image: 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&q=80&w=400'
+  },
+  {
+    name: 'Real-time Notifications',
+    description: 'Stay updated with instant notifications for all transactions and settlements.',
+    icon: Bell,
+    image: 'https://images.unsplash.com/photo-1577563908411-5077b6dc7624?auto=format&fit=crop&q=80&w=400'
+  }
+];
 
-  return (
-    <section className="py-10 bg-gray-100" id="features">
-      <div className="container mx-auto text-center px-4">
-        <h2 className="text-3xl font-bold mb-10">
-          Everything you need to manage expenses
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {features.map((feature, index) => (
-            <div
-              key={index}
-              className="bg-white shadow-lg rounded-lg p-6 text-left"
-            >
-              <div className="mb-4">{feature.icon}</div>
-              <h5 className="text-lg font-semibold mb-2">{feature.title}</h5>
-              <p className="text-gray-600">{feature.description}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.2,
+    },
+  },
 };
 
-export default FeaturesSection;
+export default function FeaturesSection() {
+  return (
+    <div className="py-24 bg-gradient-to-b from-indigo-50 to-white" id="features">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="text-center"
+        >
+          <h2 className="text-base text-indigo-600 font-semibold tracking-wide uppercase">
+            Features
+          </h2>
+          <p className="mt-2 text-4xl font-extrabold text-gray-900 sm:text-5xl sm:tracking-tight lg:text-6xl">
+            Everything you need to manage expenses
+          </p>
+          <p className="max-w-3xl mt-5 mx-auto text-xl text-gray-500">
+            Simplify your expense tracking and management with our comprehensive suite of features.
+          </p>
+        </motion.div>
+
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          className="mt-16 grid gap-8 md:grid-cols-2 lg:grid-cols-3"
+        >
+          {features.map((feature) => (
+            <FeatureCard key={feature.name} feature={feature} />
+          ))}
+        </motion.div>
+      </div>
+    </div>
+  );
+}

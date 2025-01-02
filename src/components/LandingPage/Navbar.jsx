@@ -1,11 +1,22 @@
 import React, { useState } from "react";
+import { Menu, X } from 'lucide-react';
 
 const Navbar = ({ setShowLoginModal }) => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
-  const toggleMenu = () => {
-    setIsMenuOpen((prev) => !prev); // Toggle menu open/close state
+  const scrollToSection = (sectionId) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+    setIsOpen(false);
   };
+
+  const navItems = [
+    { name: 'Features', href: '#features' },
+    { name: 'Testimonials', href: '#testimonials' },
+    { name: 'Pricing', href: '#pricing' },
+  ];
 
   return (
     <nav className="bg-white shadow fixed w-full z-10">
@@ -22,36 +33,23 @@ const Navbar = ({ setShowLoginModal }) => {
         {/* Hamburger Menu Button for Small Screens */}
         <button
           className="lg:hidden text-gray-700 focus:outline-none"
-          onClick={toggleMenu}
+          onClick={() => setIsOpen(!isOpen)}
           aria-label="Toggle navigation"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M4 6h16M4 12h16M4 18h16" // Three-line icon (hamburger menu)
-            />
-          </svg>
+          {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </button>
 
         {/* Desktop Menu */}
         <div className="hidden lg:flex items-center space-x-6">
-          <a href="#features" className="text-gray-700 hover:text-blue-500">
-            Features
-          </a>
-          <a href="#pricing" className="text-gray-700 hover:text-blue-500">
-            Pricing
-          </a>
-          <a href="#testimonials" className="text-gray-700 hover:text-blue-500">
-            Testimonials
-          </a>
+          {navItems.map((item) => (
+            <button
+              key={item.name}
+              onClick={() => scrollToSection(item.href.slice(1))}
+              className="text-gray-700 hover:text-blue-500"
+            >
+              {item.name}
+            </button>
+          ))}
           <button
             onClick={() => setShowLoginModal(true)}
             className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
@@ -61,36 +59,24 @@ const Navbar = ({ setShowLoginModal }) => {
         </div>
 
         {/* Mobile Menu */}
-        {isMenuOpen && (
+        {isOpen && (
           <div className="lg:hidden absolute top-full left-0 w-full bg-white shadow-md transition-all">
             <div className="flex flex-col items-start p-4 space-y-4">
-              <a
-                href="#features"
-                className="text-gray-700 hover:text-blue-500 block w-full text-left"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Features
-              </a>
-              <a
-                href="#pricing"
-                className="text-gray-700 hover:text-blue-500 block w-full text-left"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Pricing
-              </a>
-              <a
-                href="#testimonials"
-                className="text-gray-700 hover:text-blue-500 block w-full text-left"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Testimonials
-              </a>
+              {navItems.map((item) => (
+                <button
+                  key={item.name}
+                  onClick={() => scrollToSection(item.href.slice(1))}
+                  className="text-gray-700 hover:text-blue-500 block w-full text-left"
+                >
+                  {item.name}
+                </button>
+              ))}
               <button
                 onClick={() => {
                   setShowLoginModal(true);
-                  setIsMenuOpen(false);
+                  setIsOpen(false);
                 }}
-                className=" px-4 py-2 right-0 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-left"
+                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-left"
               >
                 Login
               </button>

@@ -1,4 +1,3 @@
- 
 import React from "react";
 import {
   Chart as ChartJS,
@@ -12,7 +11,14 @@ import {
 import { Line } from "react-chartjs-2";
 
 // Register the required elements for the Line chart
-ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Legend);
+ChartJS.register(
+  LineElement,
+  PointElement,
+  LinearScale,
+  CategoryScale,
+  Tooltip,
+  Legend
+);
 
 const TransactionDetails = () => {
   const data = {
@@ -36,7 +42,9 @@ const TransactionDetails = () => {
   return (
     <div className="bg-white p-4 rounded-xl shadow-lg">
       <h3 className="text-lg font-semibold mb-4">Transaction Details</h3>
-      <div style={{ height: "300px", overflow: "hidden" }}> {/* Set fixed height */}
+      <div style={{ height: "300px", overflow: "hidden" }}>
+        {" "}
+        {/* Set fixed height */}
         <Line data={data} options={options} />
       </div>
     </div>

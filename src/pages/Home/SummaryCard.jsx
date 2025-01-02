@@ -1,4 +1,3 @@
- 
 const SummaryCard = ({ title, value, color }) => {
   return (
     <div className={`p-4 rounded-lg shadow-md ${color}`}>
