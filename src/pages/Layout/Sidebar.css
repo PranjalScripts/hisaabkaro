@@ -1,0 +1,61 @@
+/* Sidebar container with fixed position */
+.sidebar-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 80px; /* Initially collapsed width */
+  transition: width 0.3s ease; /* Smooth transition for width change */
+  overflow: hidden; /* Hide content outside the collapsed sidebar */
+  z-index: 1000;
+}
+
+/* Sidebar expands when hovered */
+.sidebar-container:hover {
+  width: 250px; /* Expanded width */
+}
+
+/* Sidebar content */
+.sidebar {
+  background-color: #343a40; /* Dark background for the sidebar */
+  height: 100%;
+  padding: 20px;
+  overflow: hidden;
+}
+
+/* Sidebar link styles */
+.sidebar-link {
+  color: #b3b3b3;
+  display: flex;
+  align-items: center;
+  transition: color 0.3s ease;
+  white-space: nowrap;
+  padding: 10px 0;
+  font-size: 1rem;
+}
+
+/* Sidebar link hover effect */
+.sidebar-link:hover {
+  color: #fff;
+}
+
+/* Icon styling */
+.icon {
+  margin-right: 8px;
+  font-size: 1.5em; /* Icon size */
+}
+
+/* When sidebar is collapsed (width: 80px), hide text and only show icons */
+.sidebar-container .sidebar .sidebar-link span {
+  display: none; /* Hide text */
+}
+
+/* When sidebar is expanded (on hover), show text alongside icons */
+.sidebar-container:hover .sidebar-link span {
+  display: inline; /* Show text when expanded */
+}
+
+/* Styling for the footer section of the sidebar */
+.sidebar-footer {
+  margin-top: auto;
+}

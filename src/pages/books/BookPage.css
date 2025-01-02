@@ -1,0 +1,35 @@
+/* BookPage.css */
+.card-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.table-bordered th, .table-bordered td {
+  vertical-align: middle;
+}
+.icon-tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip-text {
+  visibility: hidden;
+  width: 80px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 4px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%; /* Position above the icon */
+  left: 50%;
+  margin-left: -40px; /* Center the tooltip */
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.icon-tooltip:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}

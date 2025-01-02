@@ -1,0 +1,82 @@
+/* Custom modal content */
+.custom-modal-content {
+    border-radius: 12px;          /* Rounded corners */
+    box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.4); /* Deeper shadow */
+    padding: 20px;                /* Padding inside modal */
+    border: none;                 /* Remove default border */
+    background-color: #f9f9f9;    /* Light background color */
+  }
+  
+  /* Modal header customization */
+  .custom-modal-content .modal-header {
+    border-bottom: 1px solid #ddd; /* Subtle divider */
+    padding-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .custom-modal-content .modal-title {
+    color: #333;                   /* Darker text color for the title */
+    font-weight: bold;
+  }
+  
+  /* Close button */
+  .custom-modal-content .btn-close {
+    background: transparent;
+    border: none;
+    font-size: 1.2rem;
+    color: #666;                  /* Soft gray color */
+    cursor: pointer;
+  }
+  
+  .custom-modal-content .btn-close:hover {
+    color: #333;                  /* Darker color on hover */
+  }
+  
+  /* Form input fields */
+  .custom-modal-content .form-control {
+    border-radius: 8px;            /* Rounded input fields */
+    border: 1px solid #ccc;
+    padding: 10px;
+  }
+  
+  .custom-modal-content .form-control:focus {
+    border-color: #007bff;         /* Blue border on focus */
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.4); /* Soft glow */
+  }
+  
+  /* Submit button */
+  .custom-modal-content .btn-primary {
+    background-color: #007bff;     /* Primary blue color */
+    border-radius: 8px;
+    padding: 10px 0;
+    font-weight: bold;
+  }
+  
+  .custom-modal-content .btn-primary:hover {
+    background-color: #0056b3;     /* Darker blue on hover */
+    transition: background-color 0.3s ease;
+  }
+  
+  /* Backdrop styling */
+  .modal-backdrop {
+    background-color: rgba(0, 0, 0, 0.5); /* Darker backdrop */
+  }
+  
+  /* Animation for modal */
+  .modal.show .custom-modal-content {
+    animation: fadeIn 0.3s ease;   /* Fade-in effect */
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  
