@@ -1,8 +1,8 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
+import { useProfile } from "../../context/ProfileContext";
 
 // Import components
 import ProfileHeader from "./components/ProfileHeader";
@@ -13,56 +13,16 @@ import UpdateProfileModal from "./components/UpdateProfileModal";
 import ProfileCard from "./components/ProfileCard";
 
 const GetUserProfile = () => {
-  const [userProfile, setUserProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [activeTab, setActiveTab] = useState("profile");
   const navigate = useNavigate();
+  const { profileData: userProfile, loading } = useProfile();
 
-  const fetchUserProfile = useCallback(async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get(
-        `${process.env.REACT_APP_URL}/api/v1/auth/get-profile`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      
-      // Construct full URL for profile picture if it exists
-      const userData = response.data.user;
-      if (userData.profilePicture) {
-        userData.profilePictureUrl = `${process.env.REACT_APP_URL}${userData.profilePicture}`;
-      }
-      
-      console.log("Profile data with image URL:", userData);
-      setUserProfile(userData);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching user profile", error);
-      toast.error("Error fetching profile");
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-      toast.warn("Please log in to access your profile");
-      navigate("/login");
-      return;
-    }
-
-    fetchUserProfile();
-  }, [navigate, fetchUserProfile]);
-
-  const handleProfileUpdate = () => {
-    fetchUserProfile(); // Refresh the profile data
-    setShowModal(false); // Close the modal
-  };
+  if (!localStorage.getItem("token")) {
+    toast.warn("Please log in to access your profile");
+    navigate("/login");
+    return null;
+  }
 
   if (loading) {
     return (
@@ -95,6 +55,12 @@ const GetUserProfile = () => {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0 },
     exit: { opacity: 0, y: -20 },
+  };
+
+  const handleProfileUpdate = () => {
+    // Refresh the profile data
+    // Close the modal
+    setShowModal(false); // Close the modal
   };
 
   return (
@@ -144,10 +110,7 @@ const GetUserProfile = () => {
                     <div className="md:flex">
                       <div className="md:w-1/3 bg-gradient-to-br from-blue-600 to-purple-600 p-8 flex flex-col items-center justify-center relative overflow-hidden">
                         <ProfileCard 
-                          userProfile={{
-                            ...userProfile,
-                            profilePicture: userProfile.profilePictureUrl || userProfile.profilePicture
-                          }} 
+                          userProfile={userProfile} 
                         />
                         <ProfileStats expenses="25,000" income="50,000" />
                       </div>

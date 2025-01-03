@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import ProfileUpdate from '../../../components/auth/ProfileUpdate/prorfileupdate';
+import ProfileUpdate from '../../../components/auth/ProfileUpdate/updateprofile';
 
 const UpdateProfileModal = ({ showModal, setShowModal, onUpdate }) => {
   const onClose = () => setShowModal(false);

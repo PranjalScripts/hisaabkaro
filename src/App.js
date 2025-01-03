@@ -24,6 +24,7 @@ import { createGlobalStyle } from 'styled-components';
 import GoogleCallback from "./components/auth/GoogleCallback";
 import PrivateRoute from "./components/PrivateRoute";
 import RedirectIfLoggedIn from "./components/RedirectIfLoggedIn";
+import { ProfileProvider } from './context/ProfileContext';
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -39,60 +40,62 @@ const GlobalStyle = createGlobalStyle`
 
 function App() {
   return (
-    <>  
-      <Router>
-        <GlobalStyle />
-        <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
-        <Routes>
-          {/* Public Routes - will redirect to /home if logged in */}
-          <Route path="/" element={
-            <RedirectIfLoggedIn>
-              <Landing />
-            </RedirectIfLoggedIn>
-          } />
-          <Route path="/login" element={
-            <RedirectIfLoggedIn>
-              <Landing />
-            </RedirectIfLoggedIn>
-          } />
-          <Route path="/signup" element={
-            <RedirectIfLoggedIn>
-              <Landing />
-            </RedirectIfLoggedIn>
-          } />
-          
-          {/* Auth callback route */}
-          <Route path="/auth/callback" element={<GoogleCallback />} />
+    <ProfileProvider>
+      <>  
+        <Router>
+          <GlobalStyle />
+          <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
+          <Routes>
+            {/* Public Routes - will redirect to /home if logged in */}
+            <Route path="/" element={
+              <RedirectIfLoggedIn>
+                <Landing />
+              </RedirectIfLoggedIn>
+            } />
+            <Route path="/login" element={
+              <RedirectIfLoggedIn>
+                <Landing />
+              </RedirectIfLoggedIn>
+            } />
+            <Route path="/signup" element={
+              <RedirectIfLoggedIn>
+                <Landing />
+              </RedirectIfLoggedIn>
+            } />
+            
+            {/* Auth callback route */}
+            <Route path="/auth/callback" element={<GoogleCallback />} />
 
-          {/* Protected Routes */}
-          <Route path="/" element={
-            <PrivateRoute>
-              <Layout />
-            </PrivateRoute>
-          }>
-            <Route path="home" element={<Home />} />
-            <Route path="dashboard" element={<DashBoard />} />
-            <Route path="your-books" element={<YourBooks />} />
-            <Route path="/your-books/:bookId" element={<SelfRecordByBookID />} />
-            <Route path="transaction-history/:transactionId" element={<TransactionHistory />}/>
-            <Route path="users" element={<Users />} />
-            <Route path="book" element={<Book />} />
-            <Route path="profile" element={<Profile />} />
-            <Route path="loans" element={<Loans />} />
-            <Route path="invoice" element={<Invoice />} />
-            <Route path="/history/:transactionId" element={<History />} />
-            <Route path="/addtransaction" element={<AddTransactions />} />
-            <Route
-              path="/transaction-details/:transactionId"
-              element={<CollaborativeBookRecords />}
-            />
-          </Route>
+            {/* Protected Routes */}
+            <Route path="/" element={
+              <PrivateRoute>
+                <Layout />
+              </PrivateRoute>
+            }>
+              <Route path="home" element={<Home />} />
+              <Route path="dashboard" element={<DashBoard />} />
+              <Route path="your-books" element={<YourBooks />} />
+              <Route path="/your-books/:bookId" element={<SelfRecordByBookID />} />
+              <Route path="transaction-history/:transactionId" element={<TransactionHistory />}/>
+              <Route path="users" element={<Users />} />
+              <Route path="book" element={<Book />} />
+              <Route path="profile" element={<Profile />} />
+              <Route path="loans" element={<Loans />} />
+              <Route path="invoice" element={<Invoice />} />
+              <Route path="/history/:transactionId" element={<History />} />
+              <Route path="/addtransaction" element={<AddTransactions />} />
+              <Route
+                path="/transaction-details/:transactionId"
+                element={<CollaborativeBookRecords />}
+              />
+            </Route>
 
-          {/* 404 Route */}
-          <Route path="*" element={<PageNotFound />} />
-        </Routes>
-      </Router>
-    </>
+            {/* 404 Route */}
+            <Route path="*" element={<PageNotFound />} />
+          </Routes>
+        </Router>
+      </>
+    </ProfileProvider>
   );
 }
 

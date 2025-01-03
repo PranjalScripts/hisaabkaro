@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import { toast } from "react-toastify";
 
 const AuthContext = createContext();
-
+ 
 export const useAuth = () => {
   return useContext(AuthContext);
 }; 
@@ -11,6 +11,7 @@ export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(true);
+  
 
   useEffect(() => {
     // Check if user is logged in on mount
@@ -48,14 +49,13 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
     try {
       // Clear all stored data
       localStorage.removeItem("token");
       localStorage.removeItem("username");
       localStorage.removeItem("userId");
       localStorage.removeItem("profile");
-      
       // Reset state
       setIsLoggedIn(false);
       setUsername("");

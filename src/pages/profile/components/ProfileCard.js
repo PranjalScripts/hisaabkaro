@@ -6,21 +6,30 @@ const ProfileCard = ({ userProfile }) => {
     <div className="text-center mb-8">
       <div className="relative inline-block">
         <motion.div
-          className="w-32 h-32 rounded-full overflow-hidden border-4 border-white/30 shadow-xl mb-4"
+          className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-white/80 shadow-xl mb-4"
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.5 }}
         >
-          <img
-            src={userProfile.profilePicture || "https://via.placeholder.com/150?text=No+Image"}
-            alt={userProfile.name}
-            className="w-full h-full object-cover"
-            onError={(e) => {
-              console.log("Failed to load image:", e.target.src);
-              e.target.onerror = null;
-              e.target.src = "https://via.placeholder.com/150?text=No+Image";
-            }}
-          />
+          {userProfile?.profilePicture ? (
+            <img
+              src={userProfile.profilePicture}
+              alt={userProfile.name}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                console.error("Error loading profile image:", userProfile.profilePicture);
+                e.target.onerror = null;
+                e.target.src = "https://via.placeholder.com/150?text=No+Image";
+              }}
+              referrerPolicy="no-referrer"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center bg-gradient-to-r from-blue-500 to-indigo-600">
+              <span className="text-4xl font-bold text-white">
+                {userProfile?.name?.charAt(0)?.toUpperCase() || "U"}
+              </span>
+            </div>
+          )}
         </motion.div>
         <motion.div
           className="absolute -bottom-2 -right-2 w-10 h-10 bg-green-500 rounded-full border-4 border-white flex items-center justify-center"

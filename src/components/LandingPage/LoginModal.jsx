@@ -4,45 +4,98 @@ import { useAuth } from "../../context/AuthContext";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { motion, AnimatePresence } from "framer-motion";
-import { Eye, EyeOff, Mail, Phone, Lock, X } from "lucide-react";
+import { Eye, EyeOff, Mail, Phone, Lock, X, ChevronDown, Search } from "lucide-react";
 
-const LoginModal = ({ showLoginModal, setShowLoginModal }) => {
-  const [identifier, setIdentifier] = useState("");
+const LoginModal = ({ showLoginModal, setShowLoginModal, setShowSignupModal }) => {
+  const [loginMethod, setLoginMethod] = useState('email'); // 'email' or 'phone'
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [showSignupModal, setShowSignupModal] = useState(false);
+  const [countries, setCountries] = useState([]);
+  const [selectedCountry, setSelectedCountry] = useState(null);
+  const [showCountryList, setShowCountryList] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const { login } = useAuth();
   const navigate = useNavigate();
   const modalRef = useRef(null);
+  const countryListRef = useRef(null);
+
+  useEffect(() => {
+    // Fetch and set countries data
+    fetch('/country.js')
+      .then(response => response.text())
+      .then(text => {
+        // Remove "const data =" and evaluate the array
+        const countriesData = eval(text.replace('const data =', ''));
+        setCountries(countriesData);
+        // Set India as default country
+        const india = countriesData.find(country => country.countryCode === 'IN');
+        setSelectedCountry(india);
+      })
+      .catch(error => console.error('Error loading countries:', error));
+  }, []);
+
+  const filteredCountries = countries.filter(country => 
+    country.countryName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    country.callingCode.includes(searchQuery)
+  );
 
   const emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
-  const phoneRegex = /^[0-9]{10}$/;
 
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (modalRef.current && !modalRef.current.contains(event.target)) {
         setShowLoginModal(false);
       }
+      if (countryListRef.current && !countryListRef.current.contains(event.target)) {
+        setShowCountryList(false);
+      }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [setShowLoginModal]);
 
+  useEffect(() => {
+    if (showLoginModal) {
+      // Disable scroll when modal opens
+      document.body.style.overflow = 'hidden';
+    } else {
+      // Re-enable scroll when modal closes
+      document.body.style.overflow = 'unset';
+    }
+
+    // Cleanup function to re-enable scroll when component unmounts
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [showLoginModal]);
+
   const handleLogin = async (e) => {
     e.preventDefault();
+    console.log("Login attempt started");
+    
+    const identifier = loginMethod === 'email' ? email : phone;
+    
     if (!identifier || !password) {
       toast.warn("Please fill in all fields");
       return;
     }
 
-    if (!emailRegex.test(identifier) && !phoneRegex.test(identifier)) {
-      toast.warn("Please enter a valid email or 10-digit phone number");
-      return;
+    let loginPayload;
+    if (loginMethod === 'email') {
+      loginPayload = { email: identifier, password };
+    } else {
+      // Combine country code and phone number
+      const formattedPhone = `${selectedCountry.callingCode}${identifier}`;
+      loginPayload = { 
+        phone: formattedPhone,
+        password,
+        country: selectedCountry.countryCode 
+      };
     }
 
-    const loginPayload = emailRegex.test(identifier)
-      ? { email: identifier, password }
-      : { phone: identifier, password };
+    console.log("Sending login request with payload:", loginPayload);
 
     try {
       const response = await axios.post(
@@ -50,11 +103,33 @@ const LoginModal = ({ showLoginModal, setShowLoginModal }) => {
         loginPayload
       );
 
-      if (response.data.success) {
+      console.log("Login response:", response.data);
+      
+      if (response.data.success || response.data.user) {
+        console.log("Login successful, storing user data");
         await login(response.data.user);
-        toast.success("Login successful!");
+        
+        // Store token in localStorage
+        localStorage.setItem('token', response.data.token);
+        
+        console.log("User logged in, closing modal");
         setShowLoginModal(false);
-        navigate("/home");
+        
+        console.log("Attempting navigation to /home");
+        // Try different navigation approaches
+        try {
+          navigate('/home');
+          console.log("Navigation completed");
+        } catch (navError) {
+          console.error("Navigation error:", navError);
+          // Fallback navigation
+          window.location.href = '/';
+        }
+        
+        toast.success("Login successful!");
+      } else {
+        console.error("Login response missing success or user data");
+        toast.error("Login failed - invalid response");
       }
     } catch (error) {
       console.error("Login error:", error);
@@ -79,8 +154,8 @@ const LoginModal = ({ showLoginModal, setShowLoginModal }) => {
 
   const handleShowSignup = (e) => {
     e.preventDefault();
-    setShowSignupModal(true);
     setShowLoginModal(false);
+    setShowSignupModal(true);
   };
 
   if (!showLoginModal) return null;
@@ -104,59 +179,152 @@ const LoginModal = ({ showLoginModal, setShowLoginModal }) => {
             <X size={24} />
           </button>
 
-          {/* Header */}
-          <div className="text-center mb-8">
+          <div className="text-center mb-6">
             <h2 className="text-2xl font-bold text-gray-900">Welcome Back!</h2>
-            <p className="text-gray-600 mt-2">
-              Please enter your details to sign in
-            </p>
+            <p className="text-gray-600">Please sign in to continue</p>
           </div>
 
-          {/* Form */}
-          <form onSubmit={handleLogin} className="space-y-6">
-            <div className="space-y-4">
-              {/* Email/Phone Input */}
+          {/* Login Method Toggle */}
+          <div className="flex rounded-lg bg-gray-100 p-1 mb-4">
+            <button
+              type="button"
+              onClick={() => setLoginMethod('email')}
+              className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${
+                loginMethod === 'email'
+                  ? 'bg-white text-gray-900 shadow'
+                  : 'text-gray-500 hover:text-gray-900'
+              }`}
+            >
+              Email
+            </button>
+            <button
+              type="button"
+              onClick={() => setLoginMethod('phone')}
+              className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${
+                loginMethod === 'phone'
+                  ? 'bg-white text-gray-900 shadow'
+                  : 'text-gray-500 hover:text-gray-900'
+              }`}
+            >
+              Phone
+            </button>
+          </div>
+
+          <form onSubmit={handleLogin} className="space-y-4">
+            {/* Email/Phone Input */}
+            {loginMethod === 'email' ? (
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  {emailRegex.test(identifier) ? (
-                    <Mail className="h-5 w-5 text-gray-400" />
-                  ) : (
-                    <Phone className="h-5 w-5 text-gray-400" />
-                  )}
+                  <Mail className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
-                  type="text"
-                  value={identifier}
-                  onChange={(e) => setIdentifier(e.target.value)}
-                  placeholder="Email or Phone"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Email address"
                   className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
                 />
               </div>
-
-              {/* Password Input */}
+            ) : (
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Password"
-                  className="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-5 w-5" />
-                  ) : (
-                    <Eye className="h-5 w-5" />
+                <div className="flex">
+                  {selectedCountry && (
+                    <div className="relative">
+                      <button
+                        type="button"
+                        className="h-full px-3 py-3 border border-r-0 border-gray-300 rounded-l-xl flex items-center space-x-2 hover:bg-gray-50 focus:outline-none"
+                        onClick={() => setShowCountryList(!showCountryList)}
+                      >
+                        <img 
+                          src={selectedCountry.flag} 
+                          alt={selectedCountry.countryName} 
+                          className="w-6 h-4 object-cover"
+                        />
+                        <span className="text-sm text-gray-600">{selectedCountry.callingCode}</span>
+                        <ChevronDown className="h-4 w-4 text-gray-400" />
+                      </button>
+                      {showCountryList && (
+                        <div
+                          ref={countryListRef}
+                          className="absolute z-10 mt-1 w-72 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto"
+                        >
+                          <div className="p-2 border-b border-gray-200">
+                            <div className="relative">
+                              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                              <input
+                                type="text"
+                                className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                placeholder="Search country or code..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                              />
+                            </div>
+                          </div>
+                          <div className="overflow-y-auto max-h-48">
+                            {filteredCountries.map((country) => (
+                              <button
+                                key={country.countryCode}
+                                type="button"
+                                className="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center space-x-3"
+                                onClick={() => {
+                                  setSelectedCountry(country);
+                                  setShowCountryList(false);
+                                  setSearchQuery("");
+                                }}
+                              >
+                                <img 
+                                  src={country.flag} 
+                                  alt={country.countryName} 
+                                  className="w-6 h-4 object-cover"
+                                />
+                                <span className="text-sm">{country.callingCode}</span>
+                                <span className="text-sm text-gray-600">{country.countryName}</span>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   )}
-                </button>
+                  <div className="relative flex-1">
+                    <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                      <Phone className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <input
+                      type="tel"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      placeholder="Phone number"
+                      className="block w-full py-3 border border-gray-300 rounded-r-xl pl-10 pr-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+                    />
+                  </div>
+                </div>
               </div>
+            )}
+
+            {/* Password Input */}
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Lock className="h-5 w-5 text-gray-400" />
+              </div>
+              <input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Password"
+                className="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+              >
+                {showPassword ? (
+                  <EyeOff className="h-5 w-5" />
+                ) : (
+                  <Eye className="h-5 w-5" />
+                )}
+              </button>
             </div>
 
             {/* Submit Button */}

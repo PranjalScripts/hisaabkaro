@@ -3,9 +3,11 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion";
+import { useProfile } from '../../../context/ProfileContext';
 
 const ProfileUpdate = ({ onClose, onUpdate }) => {
   const navigate = useNavigate();
+  const { profileData, fetchProfileData } = useProfile();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -18,55 +20,17 @@ const ProfileUpdate = ({ onClose, onUpdate }) => {
   const [previewUrl, setPreviewUrl] = useState(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      toast.warn("Please log in to access your profile");
-      navigate("/login");
-      return;
+    if (profileData) {
+      setFormData({
+        name: profileData.name || "",
+        email: profileData.email || "",
+        phone: profileData.phone || "",
+        password: "",
+      });
+      setPreviewUrl(profileData.profilePicture || null);
+      setIsLoading(false);
     }
-    
-    // Fetch user data when component mounts
-    const fetchUserData = async () => {
-      try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_URL}/api/v1/auth/get-profile`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        console.log("Profile response:", response.data);
-        const userData = response.data.user;
-        setFormData({
-          name: userData.name || "",
-          email: userData.email || "",
-          phone: userData.phone || "",
-          password: "",
-        });
-
-        // Extract the relative path from the full server path
-        let profilePicUrl = null;
-        if (userData.profilePicture) {
-          const pathParts = userData.profilePicture.split('uploads');
-          if (pathParts.length > 1) {
-            const relativePath = pathParts[1].replace(/\\/g, '/');
-            profilePicUrl = `${process.env.REACT_APP_URL}/uploads${relativePath}`;
-          }
-        }
-        
-        console.log("Profile picture URL:", profilePicUrl);
-        setPreviewUrl(profilePicUrl);
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Error fetching profile:", error);
-        toast.error(error.response?.data?.message || "Failed to fetch profile data");
-        setIsLoading(false);
-      }
-    };
-
-    fetchUserData();
-  }, [navigate]);
+  }, [profileData]);
 
   const handleChange = (e) => {
     setFormData({
@@ -82,7 +46,6 @@ const ProfileUpdate = ({ onClose, onUpdate }) => {
         toast.error("File size should be less than 5MB");
         return;
       }
-      console.log("Selected file:", file); // Debug log
       setProfilePicture(file);
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -101,26 +64,11 @@ const ProfileUpdate = ({ onClose, onUpdate }) => {
       const token = localStorage.getItem("token");
       const formDataToSend = new FormData();
       
-      // Debug logs
-      console.log("Form data before sending:", {
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone,
-        hasPassword: !!formData.password,
-        hasProfilePicture: !!profilePicture
-      });
-
       if (formData.name) formDataToSend.append("name", formData.name);
       if (formData.phone) formDataToSend.append("phone", formData.phone);
       if (formData.password) formDataToSend.append("password", formData.password);
       if (profilePicture) {
-        console.log("Appending profile picture:", profilePicture.name);
         formDataToSend.append("profilePicture", profilePicture);
-      }
-
-      // Log FormData contents
-      for (let pair of formDataToSend.entries()) {
-        console.log(pair[0] + ': ' + (pair[1] instanceof File ? pair[1].name : pair[1]));
       }
 
       const response = await axios.patch(
@@ -135,12 +83,15 @@ const ProfileUpdate = ({ onClose, onUpdate }) => {
       );
 
       console.log("Update response:", response.data);
+      
+      // Fetch updated profile data to update all components
+      await fetchProfileData();
+      
       toast.success("Profile updated successfully");
-      if (onUpdate) {
-        onUpdate();
-      } else {
-        onClose();
-      }
+      
+      // Call both callbacks if they exist
+      if (onUpdate) onUpdate();
+      if (onClose) onClose();
     } catch (error) {
       console.error("Error updating profile:", error.response || error);
       toast.error(error.response?.data?.message || "Failed to update profile");
@@ -174,9 +125,11 @@ const ProfileUpdate = ({ onClose, onUpdate }) => {
                 alt="Profile"
                 className="w-full h-full object-cover"
                 onError={(e) => {
+                  console.error("Error loading image URL:", previewUrl);
                   e.target.onerror = null;
                   e.target.src = "https://via.placeholder.com/150?text=No+Image";
                 }}
+                referrerPolicy="no-referrer"
               />
             </div>
             <label className="block mt-2">
