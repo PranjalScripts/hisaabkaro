@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from "react";
-import { Menu, X } from 'lucide-react';
+import { Menu, X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = ({ setShowLoginModal }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [activeSection, setActiveSection] = useState('');
+  const [activeSection, setActiveSection] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
-      
+
       // Update active section based on scroll position
-      const sections = ['features', 'testimonials', 'pricing'];
-      const current = sections.find(section => {
+      const sections = ["features", "testimonials", "pricing", "calculator"];
+      const current = sections.find((section) => {
         const element = document.getElementById(section);
         if (element) {
           const rect = element.getBoundingClientRect();
@@ -20,33 +22,38 @@ const Navbar = ({ setShowLoginModal }) => {
         }
         return false;
       });
-      setActiveSection(current || '');
+      setActiveSection(current || "");
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const scrollToSection = (sectionId) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+    if (sectionId === "calculator") {
+      navigate("/calculator");
+    } else {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
     }
     setIsOpen(false);
   };
 
   const navItems = [
-    { name: 'Features', href: '#features' },
-    { name: 'Testimonials', href: '#testimonials' },
-    { name: 'Pricing', href: '#pricing' },
+    { name: "Features", href: "#features" },
+    { name: "Testimonials", href: "#testimonials" },
+    { name: "Pricing", href: "#pricing" },
+    { name: "Calculator", href: "/calculator" },
   ];
 
   return (
-    <nav className={`fixed w-full z-50 transition-all duration-300 ${
-      scrolled 
-        ? 'backdrop-blur-lg bg-white/80 shadow-lg' 
-        : 'bg-transparent'
-    }`}>
+    <nav
+      className={`fixed w-full z-50 transition-all duration-300 ${
+        scrolled ? "backdrop-blur-lg bg-white/80 shadow-lg" : "bg-transparent"
+      }`}
+    >
       <div className="container mx-auto flex justify-between items-center py-4 px-6">
         {/* Logo */}
         <a href="/" className="flex items-center">
@@ -66,7 +73,9 @@ const Navbar = ({ setShowLoginModal }) => {
                 key={item.name}
                 onClick={() => scrollToSection(item.href.slice(1))}
                 className={`text-sm font-medium transition-all duration-200 ${
-                  isActive ? 'text-blue-600' : 'text-gray-700 hover:text-blue-500'
+                  isActive
+                    ? "text-blue-600"
+                    : "text-gray-700 hover:text-blue-500"
                 }`}
               >
                 {item.name}
@@ -95,11 +104,11 @@ const Navbar = ({ setShowLoginModal }) => {
         </button>
 
         {/* Mobile Menu */}
-        <div 
+        <div
           className={`lg:hidden absolute top-full left-0 w-full bg-white/95 backdrop-blur-md shadow-lg transition-all duration-300 transform ${
-            isOpen 
-              ? 'translate-y-0 opacity-100 visible' 
-              : '-translate-y-full opacity-0 invisible'
+            isOpen
+              ? "translate-y-0 opacity-100 visible"
+              : "-translate-y-full opacity-0 invisible"
           }`}
         >
           <div className="flex flex-col items-start p-6 space-y-4">
@@ -110,9 +119,9 @@ const Navbar = ({ setShowLoginModal }) => {
                   key={item.name}
                   onClick={() => scrollToSection(item.href.slice(1))}
                   className={`group relative w-full px-4 py-2 text-left transition-all duration-300 rounded-lg ${
-                    isActive 
-                      ? 'text-blue-600 bg-blue-50' 
-                      : 'text-gray-700 hover:text-blue-500 hover:bg-gray-50'
+                    isActive
+                      ? "text-blue-600 bg-blue-50"
+                      : "text-gray-700 hover:text-blue-500 hover:bg-gray-50"
                   }`}
                 >
                   <div className="flex items-center justify-between">

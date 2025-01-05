@@ -12,7 +12,7 @@ import {
   FaReceipt,
   FaFileInvoiceDollar,
 } from "react-icons/fa";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 const Sidebar = () => {
@@ -38,60 +38,76 @@ const Sidebar = () => {
       <div className="relative p-[1.19rem] bg-white bg-opacity-70 backdrop-blur-sm border-b border-slate-200">
         <div className="flex items-center gap-3">
           <div className="  rounded-lg  ">
-            <img src={`${process.env.PUBLIC_URL}/Favicon Hisaabkaro.png`} alt="fdfddf" className=" h-9"/>
+            <img
+              src={`${process.env.PUBLIC_URL}/Favicon Hisaabkaro.png`}
+              alt="fdfddf"
+              className=" h-9"
+            />
           </div>
           <span className="text-2xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-blue-900">
             Hisaab करो!
-          </span> 
+          </span>
         </div>
       </div>
 
       {/* Navigation Links */}
       <nav className="flex-1 py-6 px-3 space-y-1.5 overflow-y-auto">
         {[
-          { path: '/dashboard', icon: FaTachometerAlt, label: 'Dashboard' },
-          { path: '/your-books', icon: FaFileInvoiceDollar, label: 'Self Records' },
-          { path: '/book', icon: FaBook, label: 'Book' },
-          { path: '/users', icon: FaUsers, label: 'Client Users' },
-          { path: '/loans', icon: FaHandHoldingUsd, label: 'Loans' },
-          { path: '/invoice', icon: FaReceipt, label: 'Invoice' },
+          { path: "/dashboard", icon: FaTachometerAlt, label: "Dashboard" },
+          {
+            path: "/your-books",
+            icon: FaFileInvoiceDollar,
+            label: "Self Records",
+          },
+          { path: "/book", icon: FaBook, label: "Book" },
+          { path: "/users", icon: FaUsers, label: "Client Users" },
+          { path: "/loans", icon: FaHandHoldingUsd, label: "Loans" },
+          { path: "/invoice", icon: FaReceipt, label: "Invoice" },
         ].map((item) => (
-          <a
+          <Link
             key={item.path}
-            href={item.path}
+            to={item.path}
             className={`relative group flex items-center px-4 py-3 rounded-xl transition-all duration-200 ${
               isActive(item.path)
-                ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg'
-                : 'text-slate-600 hover:bg-white hover:shadow-md hover:scale-[1.02]'
+                ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg"
+                : "text-slate-600 hover:bg-white hover:shadow-md hover:scale-[1.02]"
             }`}
           >
-            <item.icon className={`text-lg ${
-              isActive(item.path) ? 'text-white' : 'text-blue-500 group-hover:text-blue-600'
-            }`} />
+            <item.icon
+              className={`text-lg ${
+                isActive(item.path)
+                  ? "text-white"
+                  : "text-blue-500 group-hover:text-blue-600"
+              }`}
+            />
             <span className="ml-3 font-medium">{item.label}</span>
             {isActive(item.path) && (
               <div className="absolute right-2 w-1.5 h-1.5 rounded-full bg-white shadow-md" />
             )}
-          </a>
+          </Link>
         ))}
 
         {isLoggedIn && (
-          <a
-            href="/profile"
+          <Link
+            to="/profile"
             className={`relative group flex items-center px-4 py-3 rounded-xl transition-all duration-200 ${
-              isActive('/profile')
-                ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg'
-                : 'text-slate-600 hover:bg-white hover:shadow-md hover:scale-[1.02]'
+              isActive("/profile")
+                ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg"
+                : "text-slate-600 hover:bg-white hover:shadow-md hover:scale-[1.02]"
             }`}
           >
-            <FaIdCard className={`text-lg ${
-              isActive('/profile') ? 'text-white' : 'text-blue-500 group-hover:text-blue-600'
-            }`} />
+            <FaIdCard
+              className={`text-lg ${
+                isActive("/profile")
+                  ? "text-white"
+                  : "text-blue-500 group-hover:text-blue-600"
+              }`}
+            />
             <span className="ml-3 font-medium">Your Profile</span>
-            {isActive('/profile') && (
+            {isActive("/profile") && (
               <div className="absolute right-2 w-1.5 h-1.5 rounded-full bg-white shadow-md" />
             )}
-          </a>
+          </Link>
         )}
       </nav>
 
