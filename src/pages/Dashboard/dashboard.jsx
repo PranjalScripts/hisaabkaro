@@ -1,4 +1,4 @@
- import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   AiOutlineArrowLeft,
@@ -30,57 +30,60 @@ const DashBoard = () => {
           }
         ),
       ]);
-
+  
       const clientTransactions = await clientTransactionsRes.json();
-      const transactions = await transactionsRes.json();
-
+      const transactionsData = await transactionsRes.json();
+  
       const clientTransactionsWithSource = (
         clientTransactions.transactions || []
       ).map((transaction) => {
         const confirmedYouWillGet = transaction.transactionHistory
           .filter(
             (t) =>
-              t.transactionType === "you will get" &&
+              t.transactionType === "you will give" &&
               t.confirmationStatus === "confirmed"
           )
           .reduce((acc, curr) => acc + curr.amount, 0);
-
+  
         const confirmedYouWillGive = transaction.transactionHistory
           .filter(
             (t) =>
-              t.transactionType === "you will give" &&
+              t.transactionType === "you will get" &&
               t.confirmationStatus === "confirmed"
           )
           .reduce((acc, curr) => acc + curr.amount, 0);
-
+  
         const unconfirmedYouWillGet = transaction.transactionHistory
+          .filter(
+            (t) =>
+              t.transactionType === "you will give" &&
+              t.confirmationStatus !== "confirmed"
+          )
+          .reduce((acc, curr) => acc + curr.amount, 0);
+  
+        const unconfirmedYouWillGive = transaction.transactionHistory
           .filter(
             (t) =>
               t.transactionType === "you will get" &&
               t.confirmationStatus !== "confirmed"
           )
           .reduce((acc, curr) => acc + curr.amount, 0);
-
-        const unconfirmedYouWillGive = transaction.transactionHistory
-          .filter(
-            (t) =>
-              t.transactionType === "you will give" &&
-              t.confirmationStatus !== "confirmed"
-          )
-          .reduce((acc, curr) => acc + curr.amount, 0);
-
+  
+        const outstandingBalance = confirmedYouWillGet - confirmedYouWillGive;
+  
         return {
           ...transaction,
           confirmedYouWillGet,
           confirmedYouWillGive,
           unconfirmedYouWillGet,
           unconfirmedYouWillGive,
+          outstandingBalance,
           source: "client",
           transactionId: transaction._id,
         };
       });
-
-      const transactionsWithSource = (transactions.transactions || []).map(
+  
+      const transactionsWithSource = (transactionsData.transactions || []).map(
         (transaction) => {
           const confirmedYouWillGet = transaction.transactionHistory
             .filter(
@@ -89,7 +92,7 @@ const DashBoard = () => {
                 t.confirmationStatus === "confirmed"
             )
             .reduce((acc, curr) => acc + curr.amount, 0);
-
+  
           const confirmedYouWillGive = transaction.transactionHistory
             .filter(
               (t) =>
@@ -97,7 +100,7 @@ const DashBoard = () => {
                 t.confirmationStatus === "confirmed"
             )
             .reduce((acc, curr) => acc + curr.amount, 0);
-
+  
           const unconfirmedYouWillGet = transaction.transactionHistory
             .filter(
               (t) =>
@@ -105,7 +108,7 @@ const DashBoard = () => {
                 t.confirmationStatus !== "confirmed"
             )
             .reduce((acc, curr) => acc + curr.amount, 0);
-
+  
           const unconfirmedYouWillGive = transaction.transactionHistory
             .filter(
               (t) =>
@@ -113,19 +116,22 @@ const DashBoard = () => {
                 t.confirmationStatus !== "confirmed"
             )
             .reduce((acc, curr) => acc + curr.amount, 0);
-
+  
+          const outstandingBalance = transaction.outstandingBalance;
+  
           return {
             ...transaction,
             confirmedYouWillGet,
             confirmedYouWillGive,
             unconfirmedYouWillGet,
             unconfirmedYouWillGive,
+            outstandingBalance,
             source: "transaction",
             transactionId: transaction._id,
           };
         }
       );
-
+  
       setTransactions([
         ...clientTransactionsWithSource,
         ...transactionsWithSource,
@@ -136,7 +142,6 @@ const DashBoard = () => {
       setLoading(false);
     }
   };
-
   useEffect(() => {
     fetchAllTransactions();
   }, []);
@@ -221,73 +226,81 @@ const DashBoard = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {transactions.map((transaction, index) => (
-                  <tr
-                    key={index}
-                    className="hover:bg-blue-50/50 transition-colors duration-150"
-                  >
-                    <td className="px-6 py-4">
-                      <div className="flex items-center space-x-2">
-                        <span className="font-medium text-gray-700">
-                          {transaction.source === "client"
-                            ? transaction.userId?.name || "N/A"
-                            : transaction.clientUserId?.name || "N/A"}
-                        </span>
-                        {transaction.source === "client" ? (
-                          <AiOutlineArrowLeft
-                            className="text-blue-500 text-lg"
-                            title="Client Transaction"
-                          />
-                        ) : (
-                          <AiOutlineArrowRight
-                            className="text-orange-500 text-lg"
-                            title="Transaction"
-                          />
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 capitalize text-gray-700">
-                      {transaction.bookId?.bookname || "Could Not Find Book Name"}
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="text-green-600 font-medium">
-                        {transaction.confirmedYouWillGet || 0}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="text-red-600 font-medium">
-                        {transaction.confirmedYouWillGive || 0}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className={`font-medium ${
-                        transaction.outstandingBalance > 0
-                          ? 'text-green-600'
-                          : transaction.outstandingBalance < 0
-                          ? 'text-red-600'
-                          : 'text-gray-600'
-                      }`}>
-                        {transaction.outstandingBalance === 0
-                          ? 0
-                          : transaction.outstandingBalance || "N/A"}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <button
-                        onClick={() =>
-                          viewTransactionDetails(
-                            transaction.transactionId,
-                            transaction.source
-                          )
-                        }
-                        className="text-blue-600 hover:text-blue-700 font-medium transition-colors duration-150"
-                      >
-                        View Details
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
+  {transactions.map((transaction, index) => (
+    <tr
+      key={index}
+      className="hover:bg-blue-50/50 transition-colors duration-150"
+    >
+      <td className="px-6 py-4">
+        <div className="flex items-center space-x-2">
+          <span className="font-semibold text-gray-700">
+            {transaction.source === "client"
+              ? transaction.userId?.name || "N/A"
+              : transaction.clientUserId?.name || "N/A"}
+          </span>
+          {transaction.source === "client" ? (
+            <AiOutlineArrowLeft
+              className="text-blue-500 text-xl"
+              title="Client Transaction"
+            />
+          ) : (
+            <AiOutlineArrowRight
+              className="text-orange-500 text-xl"
+              title="Transaction"
+            />
+          )}
+        </div>
+      </td>
+      <td className="px-6 py-4 text-gray-700">
+        {transaction.bookId?.bookname || "Could Not Find Book Name"}
+      </td>
+      <td className="px-6 py-4">
+        <span className="text-green-600 font-medium">
+          {transaction.confirmedYouWillGet}
+        </span>
+      </td>
+      <td className="px-6 py-4">
+        <span className="text-red-600 font-medium">
+          {transaction.confirmedYouWillGive}
+        </span>
+      </td>
+      <td className="px-6 py-4">
+        <span
+          className={`font-medium ${
+            transaction.source === "client"
+              ? transaction.outstandingBalance > 0
+                ? "text-green-600"
+                : transaction.outstandingBalance < 0
+                ? "text-red-600"
+                : "text-gray-600"
+              : transaction.outstandingBalance > 0
+              ? "text-green-600"
+              : transaction.outstandingBalance < 0
+              ? "text-red-600"
+              : "text-gray-600"
+          }`}
+        >
+          {transaction.outstandingBalance === 0
+            ? 0
+            : Math.abs(transaction.outstandingBalance) || "N/A"}
+        </span>
+      </td>
+      <td className="px-6 py-4">
+        <button
+          onClick={() =>
+            viewTransactionDetails(
+              transaction.transactionId,
+              transaction.source
+            )
+          }
+          className="text-blue-600 hover:text-blue-700 font-medium transition-colors duration-150"
+        >
+          View Details
+        </button>
+      </td>
+    </tr>
+  ))}
+</tbody>
             </table>
           </div>
         </div>

@@ -73,8 +73,8 @@ const EditTransactionForm = ({ editData, onSubmit, onChange, onCancel, isOpen })
                   required
                 >
                   <option value="" disabled>Select Transaction Type</option>
-                  <option value="you will get">You Will Get</option>
-                  <option value="you will give">You Will Give</option>
+                  <option value="you will get">You Will Give</option>
+                  <option value="you will give">You Will Get</option>
                 </select>
               </div>
 

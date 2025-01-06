@@ -44,6 +44,14 @@ export const useTransaction = (transactionId) => {
     const token = localStorage.getItem("token");
 
     try {
+      // Optimistically update the UI first
+      setTransaction((prev) => ({
+        ...prev,
+        transactionHistory: prev.transactionHistory.map((entry) =>
+          entry._id === entryId ? { ...entry, confirmationStatus: "confirmed" } : entry
+        ),
+      }));
+
       const response = await fetch(
         `${process.env.REACT_APP_URL}/api/collab-transactions/transactions/${transactionId}/entries/${entryId}/confirm`,
         {
@@ -53,14 +61,15 @@ export const useTransaction = (transactionId) => {
       );
 
       if (response.ok) {
+        setModalState(prev => ({ ...prev, showSuccessModal: true }));
+      } else {
+        // Revert the optimistic update if the API call fails
         setTransaction((prev) => ({
           ...prev,
           transactionHistory: prev.transactionHistory.map((entry) =>
-            entry.id === entryId ? { ...entry, status: "confirmed" } : entry
+            entry._id === entryId ? { ...entry, confirmationStatus: "pending" } : entry
           ),
         }));
-        setModalState(prev => ({ ...prev, showSuccessModal: true }));
-      } else {
         throw new Error("Failed to update transaction status");
       }
     } catch (error) {

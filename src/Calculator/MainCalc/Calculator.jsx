@@ -6,10 +6,10 @@ import {
   Typography,
   Container,
   Box,
-  useTheme,
   Paper,
   IconButton,
 } from "@mui/material";
+import { useTheme } from '@mui/material/styles';
 import CalculateIcon from "@mui/icons-material/Calculate";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import CompareArrowsIcon from "@mui/icons-material/CompareArrows";

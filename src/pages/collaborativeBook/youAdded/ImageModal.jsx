@@ -1,8 +1,10 @@
 import React from 'react';
 import { IoDownload } from 'react-icons/io5';
 
-const ImageModal = ({ isModalOpen, modalImage, closeModal, handleDownload }) => {
+const FileModal = ({ isModalOpen, modalImage, closeModal, handleDownload }) => {
   if (!isModalOpen) return null;
+
+  const isPDF = modalImage?.toLowerCase().endsWith('.pdf');
 
   return (
     <div
@@ -14,18 +16,26 @@ const ImageModal = ({ isModalOpen, modalImage, closeModal, handleDownload }) => 
           className="relative w-full h-full"
           onClick={(e) => e.stopPropagation()}
         >
-          <img
-            src={modalImage}
-            alt="Transaction File"
-            className="w-full h-[80vh] flex select-none"
-            style={{
-              height: "70vh",
-              width: "auto",
-              display: "flex",
-              WebkitUserSelect: "none",
-              margin: "auto",
-            }}
-          />
+          {isPDF ? (
+            <embed
+              src={modalImage}
+              type="application/pdf"
+              className="w-full h-[70vh]"
+            />
+          ) : (
+            <img
+              src={modalImage}
+              alt="Transaction File"
+              className="w-full h-[80vh] flex select-none"
+              style={{
+                height: "70vh",
+                width: "auto",
+                display: "flex",
+                WebkitUserSelect: "none",
+                margin: "auto",
+              }}
+            />
+          )}
           <button
             className="absolute top-4 right-4 bg-white rounded-full p-3 h-10 w-10 flex items-center justify-center text-xl font-bold"
             onClick={closeModal}
@@ -44,4 +54,4 @@ const ImageModal = ({ isModalOpen, modalImage, closeModal, handleDownload }) => 
   );
 };
 
-export default ImageModal;
+export default FileModal;

@@ -249,9 +249,8 @@ const CollaborativeBookRecords = () => {
                           {history?.transactionDate ? new Date(history.transactionDate).toLocaleString() : 'N/A'}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {history.initiatedBy === transaction.userId._id
-                            ? transaction.userId.name
-                            : transaction.clientUserId.name}
+                          {history.initiatedBy  
+                            }
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                           {history?.transactionType === "you will give" ? "You will get" : "You will give"}
