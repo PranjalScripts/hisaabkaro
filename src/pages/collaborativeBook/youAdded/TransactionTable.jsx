@@ -683,151 +683,168 @@ const TransactionTable = forwardRef(({
       </div>
 
       <div className="mt-2 text-sm text-gray-700">
-        Showing <span className="font-medium">{((currentPage - 1) * itemsPerPage) + 1}</span> to{' '}
-        <span className="font-medium">
-          {Math.min(currentPage * itemsPerPage, filteredAndSortedTransactions.length)}
-        </span>{' '}
-        of <span className="font-medium">{filteredAndSortedTransactions.length}</span> results
+        {filteredAndSortedTransactions.length > 0 ? (
+          <>
+            Showing <span className="font-medium">{((currentPage - 1) * itemsPerPage) + 1}</span> to{' '}
+            <span className="font-medium">
+              {Math.min(currentPage * itemsPerPage, filteredAndSortedTransactions.length)}
+            </span>{' '}
+            of <span className="font-medium">{filteredAndSortedTransactions.length}</span> results
+          </>
+        ) : (
+          <div className="text-center py-8">
+            <div className="text-gray-500 text-lg mb-2">No transactions found</div>
+            <div className="text-gray-400">
+              {addedByFilter !== 'all' 
+                ? `No transactions ${addedByFilter === 'user' 
+                    ? `added by ${transaction?.userId?.name || 'you'}` 
+                    : `added by ${transaction?.clientUserId?.name || 'client'}`}`
+                : 'No transactions match the current filters'}
+            </div>
+          </div>
+        )}
       </div>
 
-      {viewMode === 'list' ? (
-        <div className="overflow-x-auto mt-4">
-          <table className="min-w-full bg-white rounded-lg shadow-md">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  #
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Date
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Initiated By
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Type
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Amount
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Description
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Files
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Action
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {paginatedTransactions.map((entry, index) => (
-                <tr
-                  key={entry._id}
-                  className={`transition-all duration-200 ${getHoverClass(entry?.transactionType)}`}
-                >
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {((currentPage - 1) * itemsPerPage) + index + 1}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {formatDate(entry.transactionDate)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {entry?.initiatedBy || "N/A"}
-                  </td>
-                  <td
-                    className={`px-6 py-4 whitespace-nowrap text-sm font-semibold capitalize ${
-                      entry?.transactionType === "you will give" ? "text-red-600" : "text-green-600"
-                    }`}
+      {filteredAndSortedTransactions.length > 0 ? (
+        viewMode === 'list' ? (
+          <div className="overflow-x-auto mt-4">
+            <table className="min-w-full bg-white rounded-lg shadow-md">
+              <thead className="bg-gray-100">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    #
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Date
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Initiated By
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Type
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Amount
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Description
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Files
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Action
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {paginatedTransactions.map((entry, index) => (
+                  <tr
+                    key={entry._id}
+                    className={`transition-all duration-200 ${getHoverClass(entry?.transactionType)}`}
                   >
-                    {entry?.transactionType || "N/A"}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold">
-                    <span
-                      className={`${
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {((currentPage - 1) * itemsPerPage) + index + 1}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {formatDate(entry.transactionDate)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {entry?.initiatedBy || "N/A"}
+                    </td>
+                    <td
+                      className={`px-6 py-4 whitespace-nowrap text-sm font-semibold capitalize ${
                         entry?.transactionType === "you will give" ? "text-red-600" : "text-green-600"
                       }`}
                     >
-                      {formatAmountWithoutPrefix(entry?.amount)}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {entry?.description || "No description"}
-                  </td>
-                  <td className="px-6 py-4">
-                    {entry?.confirmationStatus === "confirmed" ? (
-                      <span className="flex items-center gap-2 text-green-600 font-medium">
-                        <AiOutlineCheckCircle className="text-lg" />
-                        Confirmed
-                      </span>
-                    ) : userId === entry?.initiaterId ? (
-                      <span className="flex items-center gap-2 text-yellow-600 font-medium">
-                        <AiOutlineClockCircle className="text-lg" />
-                        Pending
-                      </span>
-                    ) : (
-                      <button
-                        onClick={() => updateTransactionStatus(entry._id)}
-                        disabled={updating}
-                        className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+                      {entry?.transactionType || "N/A"}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold">
+                      <span
+                        className={`${
+                          entry?.transactionType === "you will give" ? "text-red-600" : "text-green-600"
+                        }`}
                       >
-                        {updating ? "Updating..." : "Confirm"}
-                      </button>
-                    )}
-                  </td>
-                  <td className="px-6 py-4">
-                    {entry?.file ? (
-                      <div className="group relative cursor-pointer">
-                        {entry.file.toLowerCase().endsWith('.pdf') ? (
-                          <BsFilePdf
-                            onClick={() => handleImageClick(entry.file)}
-                            className="text-2xl text-red-500 group-hover:text-red-700 transition"
-                          />
-                        ) : (
-                          <AiOutlineFileImage
-                            onClick={() => handleImageClick(entry.file)}
-                            className="text-2xl text-blue-500 group-hover:text-blue-700 transition"
-                          />
-                        )}
-                      </div>
-                    ) : (
-                      <span className="text-gray-500">No file</span>
-                    )}
-                  </td>
-                  <td className="px-6 py-4">
-                    {userId === entry?.initiaterId ? (
-                      <div className="flex gap-2">
+                        {formatAmountWithoutPrefix(entry?.amount)}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {entry?.description || "No description"}
+                    </td>
+                    <td className="px-6 py-4">
+                      {entry?.confirmationStatus === "confirmed" ? (
+                        <span className="flex items-center gap-2 text-green-600 font-medium">
+                          <AiOutlineCheckCircle className="text-lg" />
+                          Confirmed
+                        </span>
+                      ) : userId === entry?.initiaterId ? (
+                        <span className="flex items-center gap-2 text-yellow-600 font-medium">
+                          <AiOutlineClockCircle className="text-lg" />
+                          Pending
+                        </span>
+                      ) : (
                         <button
-                          onClick={() => openEditForm(entry)}
-                          className="text-yellow-500 hover:text-yellow-600"
-                          title="Edit"
+                          onClick={() => updateTransactionStatus(entry._id)}
+                          disabled={updating}
+                          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
                         >
-                          <MdEdit className="text-xl" />
+                          {updating ? "Updating..." : "Confirm"}
                         </button>
-                        <button
-                          onClick={() => handleDeleteClick(entry)}
-                          className="text-red-500 hover:text-red-600"
-                          title="Delete"
-                        >
-                          <MdDelete className="text-xl" />
-                        </button>
-                      </div>
-                    ) : (
-                      <span className="text-gray-500 italic">Not yours</span>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      ) : (
-        renderGridView()
-      )}
+                      )}
+                    </td>
+                    <td className="px-6 py-4">
+                      {entry?.file ? (
+                        <div className="group relative cursor-pointer">
+                          {entry.file.toLowerCase().endsWith('.pdf') ? (
+                            <BsFilePdf
+                              onClick={() => handleImageClick(entry.file)}
+                              className="text-2xl text-red-500 group-hover:text-red-700 transition"
+                            />
+                          ) : (
+                            <AiOutlineFileImage
+                              onClick={() => handleImageClick(entry.file)}
+                              className="text-2xl text-blue-500 group-hover:text-blue-700 transition"
+                            />
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-gray-500">No file</span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4">
+                      {userId === entry?.initiaterId ? (
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => openEditForm(entry)}
+                            className="text-yellow-500 hover:text-yellow-600"
+                            title="Edit"
+                          >
+                            <MdEdit className="text-xl" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteClick(entry)}
+                            className="text-red-500 hover:text-red-600"
+                            title="Delete"
+                          >
+                            <MdDelete className="text-xl" />
+                          </button>
+                        </div>
+                      ) : (
+                        <span className="text-gray-500 italic">Not yours</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          renderGridView()
+        )
+      ) : null}
     </div>
   );
 });

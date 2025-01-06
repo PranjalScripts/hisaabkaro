@@ -3,6 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
 import { useProfile } from "../../context/ProfileContext";
+import { LanguageProvider } from "../../context/LanguageContext";
+import LanguageSettings from "./components/LanguageSettings";
+import { useTranslation } from 'react-i18next';
 
 // Import components
 import ProfileHeader from "./components/ProfileHeader";
@@ -17,6 +20,7 @@ const GetUserProfile = () => {
   const [activeTab, setActiveTab] = useState("profile");
   const navigate = useNavigate();
   const { profileData: userProfile, loading } = useProfile();
+  const { t } = useTranslation();
 
   if (!localStorage.getItem("token")) {
     toast.warn("Please log in to access your profile");
@@ -82,8 +86,8 @@ const GetUserProfile = () => {
         transition={{ duration: 0.5 }}
       >
         <ProfileHeader
-          title="Your Profile"
-          subtitle="Manage your account information and settings"
+          title={t('profile.title')}
+          subtitle={t('profile.subtitle')}
         />
 
         {userProfile ? (
@@ -112,7 +116,7 @@ const GetUserProfile = () => {
                         <ProfileCard 
                           userProfile={userProfile} 
                         />
-                        <ProfileStats expenses="25,000" income="50,000" />
+                        <ProfileStats expenses={t('dashboard.totalExpenses')} income={t('dashboard.totalIncome')} />
                       </div>
 
                       <div className="md:w-2/3 p-8 relative">
@@ -169,12 +173,7 @@ const GetUserProfile = () => {
                           Manage your email and push notifications
                         </p>
                       </div>
-                      <div className="p-4 bg-gray-50 rounded-lg">
-                        <h4 className="font-medium">Language & Region</h4>
-                        <p className="text-sm text-gray-500 mt-1">
-                          Set your preferred language and regional settings
-                        </p>
-                      </div>
+                      <LanguageSettings />
                     </div>
                   </div>
                 )}

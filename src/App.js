@@ -25,7 +25,9 @@ import GoogleCallback from "./components/auth/GoogleCallback";
 import PrivateRoute from "./components/PrivateRoute";
 import RedirectIfLoggedIn from "./components/RedirectIfLoggedIn";
 import { ProfileProvider } from './context/ProfileContext';
+import { LanguageProvider } from './context/LanguageContext';
 import NoInternetConnection from "./components/NoInternetConnection";
+import './i18n';
 import Calculator from "./Calculator/MainCalc/Calculator"
 import Emi from "./Calculator/EmiCalculator/EmiCalculator";
 import Percentage from "./Calculator/percentageCalculator/PercentageCalculator";
@@ -47,86 +49,88 @@ function App() {
   return (
     <BrowserRouter>
       <ProfileProvider>
-        <NoInternetConnection>
-          <GlobalStyle />
-          <ToastContainer
-            position="top-right"
-            autoClose={3000}
-            hideProgressBar
-          />
-          <Routes>
-            {/* Public Routes - will redirect to /home if logged in */}
-            <Route
-              path="/"
-              element={
-                <RedirectIfLoggedIn>
-                  <Landing />
-                </RedirectIfLoggedIn>
-              }
+        <LanguageProvider>
+          <NoInternetConnection>
+            <GlobalStyle />
+            <ToastContainer
+              position="top-right"
+              autoClose={3000}
+              hideProgressBar
             />
-            <Route
-              path="/login"
-              element={
-                <RedirectIfLoggedIn>
-                  <Landing />
-                </RedirectIfLoggedIn>
-              }
-            />
-            <Route
-              path="/signup"
-              element={
-                <RedirectIfLoggedIn>
-                  <Landing />
-                </RedirectIfLoggedIn>
-              }
-            />
-
-            {/* Auth callback route */}
-            <Route path="/auth/callback" element={<GoogleCallback />} />
-
-            {/* Public Calculator Route */}
-            <Route path="/calculator" element={<Calculator />} />
-            <Route path="/calculator/emi" element={<Emi />} />
-            <Route path="/calculator/percentage" element={<Percentage />} />
-            <Route path="/calculator/compare-loan" element={<CompareLoan />} />
-            <Route path="/calculator/gst" element={<Gst />} />
-
-            {/* Protected Routes */}
-            <Route
-              path="/"
-              element={
-                <PrivateRoute>
-                  <Layout />
-                </PrivateRoute>
-              }
-            >
-              <Route path="home" element={<Home />} />
-              <Route path="dashboard" element={<DashBoard />} />
-              <Route path="your-books" element={<YourBooks />} />
+            <Routes>
+              {/* Public Routes - will redirect to /home if logged in */}
               <Route
-                path="/your-books/:bookId"
-                element={<SelfRecordByBookID />}
+                path="/"
+                element={
+                  <RedirectIfLoggedIn>
+                    <Landing />
+                  </RedirectIfLoggedIn>
+                }
               />
               <Route
-                path="transaction-history/:transactionId"
-                element={<TransactionHistory />}
+                path="/login"
+                element={
+                  <RedirectIfLoggedIn>
+                    <Landing />
+                  </RedirectIfLoggedIn>
+                }
               />
-              <Route path="users" element={<Users />} />
-              <Route path="book" element={<Book />} />
-              <Route path="profile" element={<Profile />} />
-              <Route path="loans" element={<Loans />} />
-              <Route path="invoice" element={<Invoice />} />
-              <Route path="/history/:transactionId" element={<History />} />
-              <Route path="/addtransaction" element={<AddTransactions />} />
               <Route
-                path="/transaction-details/:transactionId"
-                element={<CollaborativeBookRecords />}
+                path="/signup"
+                element={
+                  <RedirectIfLoggedIn>
+                    <Landing />
+                  </RedirectIfLoggedIn>
+                }
               />
-            </Route>
-            {/* 404 Route */}
-            <Route path="*" element={<PageNotFound />} />
-          </Routes>
-        </NoInternetConnection>
+
+              {/* Auth callback route */}
+              <Route path="/auth/callback" element={<GoogleCallback />} />
+
+              {/* Public Calculator Route */}
+              <Route path="/calculator" element={<Calculator />} />
+              <Route path="/calculator/emi" element={<Emi />} />
+              <Route path="/calculator/percentage" element={<Percentage />} />
+              <Route path="/calculator/compare-loan" element={<CompareLoan />} />
+              <Route path="/calculator/gst" element={<Gst />} />
+
+              {/* Protected Routes */}
+              <Route
+                path="/"
+                element={
+                  <PrivateRoute>
+                    <Layout />
+                  </PrivateRoute>
+                }
+              >
+                <Route path="home" element={<Home />} />
+                <Route path="dashboard" element={<DashBoard />} />
+                <Route path="your-books" element={<YourBooks />} />
+                <Route
+                  path="/your-books/:bookId"
+                  element={<SelfRecordByBookID />}
+                />
+                <Route
+                  path="transaction-history/:transactionId"
+                  element={<TransactionHistory />}
+                />
+                <Route path="users" element={<Users />} />
+                <Route path="book" element={<Book />} />
+                <Route path="profile" element={<Profile />} />
+                <Route path="loans" element={<Loans />} />
+                <Route path="invoice" element={<Invoice />} />
+                <Route path="/history/:transactionId" element={<History />} />
+                <Route path="/addtransaction" element={<AddTransactions />} />
+                <Route
+                  path="/transaction-details/:transactionId"
+                  element={<CollaborativeBookRecords />}
+                />
+              </Route>
+              {/* 404 Route */}
+              <Route path="*" element={<PageNotFound />} />
+            </Routes>
+          </NoInternetConnection>
+        </LanguageProvider>
       </ProfileProvider>
     </BrowserRouter>
   );

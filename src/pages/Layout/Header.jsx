@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useProfile } from "../../context/ProfileContext";
 import { FaSearch, FaCog, FaBell, FaUserCog, FaSignOutAlt } from "react-icons/fa";
+import { useTranslation } from 'react-i18next';
 
 export default function Header() {
   const navigate = useNavigate();
@@ -11,6 +12,7 @@ export default function Header() {
   const { profileData } = useProfile();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const profileMenuRef = useRef(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -42,7 +44,7 @@ export default function Header() {
         <div className="relative">
           <input
             type="text"
-            placeholder="Search..."
+            placeholder={t('common.search')}
             className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-blue-400 transition-colors duration-200"
           />
           <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
@@ -52,19 +54,25 @@ export default function Header() {
       {/* Right Section */}
       <div className="flex items-center space-x-4">
         {/* Settings */}
-        <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors duration-200">
+        <button 
+          className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+          title={t('common.settings')}
+        >
           <FaCog className="text-xl" />
         </button>
 
         {/* Notifications */}
-        <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors duration-200">
+        <button 
+          className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+          title={t('common.notifications')}
+        >
           <FaBell className="text-xl" />
         </button>
 
         {/* Profile Section */}
         <div className="flex items-center gap-3 pl-4 border-l border-gray-200" ref={profileMenuRef}>
           <div className="hidden md:flex flex-col items-end">
-            <p className="text-sm font-medium text-gray-700">{profileData?.name || "User"}</p>
+            <p className="text-sm font-medium text-gray-700">{profileData?.name || t('common.user')}</p>
           </div>
           <div className="relative">
             <button
@@ -94,24 +102,25 @@ export default function Header() {
               <div className="absolute right-0 mt-3 w-56 bg-white rounded-lg shadow-lg py-2 transform transition-all duration-200 border border-gray-100">
                 {/* User Info Section */}
                 <div className="px-4 py-2 border-b border-gray-100">
-                  <p className="text-sm font-semibold text-gray-700">{profileData?.name || "User"}</p>
-                  <p className="text-xs text-gray-500 mt-0.5">User Account</p>
+                  <p className="text-sm font-semibold text-gray-700">{profileData?.name || t('common.user')}</p>
+                  <p className="text-xs text-gray-500 mt-0.5">{t('common.userAccount')}</p>
                 </div>
                 
                 {/* Menu Items */}
                 <button
                   onClick={handleProfileClick}
-                  className="flex items-center w-full px-4 py-2.5 text-left text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150"
+                  className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
                 >
-                  <FaUserCog className="mr-3 text-gray-400" />
-                  Profile Settings
+                  <FaUserCog className="text-gray-400" />
+                  <span>{t('common.profile')}</span>
                 </button>
+                
                 <button
                   onClick={handleLogout}
-                  className="flex items-center w-full px-4 py-2.5 text-left text-sm text-red-600 hover:bg-red-50 transition-colors duration-150"
+                  className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
                 >
-                  <FaSignOutAlt className="mr-3 text-red-400" />
-                  Sign Out
+                  <FaSignOutAlt className="text-red-500" />
+                  <span>{t('common.logout')}</span>
                 </button>
               </div>
             )}

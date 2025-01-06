@@ -1,0 +1,119 @@
+{
+  "common": {
+    "profile": "प्रोफ़ाइल",
+    "settings": "सेटिंग्स",
+    "logout": "लॉग आउट",
+    "save": "सहेजें",
+    "cancel": "रद्द करें",
+    "loading": "लोड हो रहा है...",
+    "error": "त्रुटि",
+    "search": "खोजें",
+    "add": "जोड़ें",
+    "edit": "संपादित करें",
+    "delete": "हटाएं",
+    "back": "वापस",
+    "next": "आगे",
+    "submit": "सबमिट करें",
+    "noData": "कोई डेटा उपलब्ध नहीं",
+    "user": "उपयोगकर्ता",
+    "userAccount": "उपयोगकर्ता खाता",
+    "notifications": "सूचनाएं"
+  },
+  "auth": {
+    "login": "लॉग इन",
+    "signup": "साइन अप",
+    "email": "ईमेल",
+    "password": "पासवर्ड",
+    "forgotPassword": "पासवर्ड भूल गए?",
+    "googleLogin": "Google से लॉगिन करें",
+    "alreadyHaveAccount": "पहले से खाता है?",
+    "dontHaveAccount": "खाता नहीं है?",
+    "signupNow": "अभी साइन अप करें",
+    "loginNow": "अभी लॉगिन करें"
+  },
+  "navigation": {
+    "home": "होम",
+    "dashboard": "डैशबोर्ड",
+    "selfRecord": "निजी खाता",
+    "users": "उपयोगकर्ता",
+    "books": "बही-खाता",
+    "loans": "ऋण",
+    "invoice": "चालान",
+    "calculator": "कैलकुलेटर"
+  },
+  "dashboard": {
+    "welcome": "स्वागत है",
+    "totalExpenses": "कुल खर्च",
+    "totalIncome": "कुल आय",
+    "recentTransactions": "हाल के लेनदेन",
+    "statistics": "आंकड़े",
+    "summary": "सारांश"
+  },
+  "books": {
+    "addBook": "बही-खाता जोड़ें",
+    "editBook": "बही-खाता संपादित करें",
+    "deleteBook": "बही-खाता हटाएं",
+    "bookName": "बही-खाता का नाम",
+    "description": "विवरण",
+    "category": "श्रेणी",
+    "date": "दिनांक",
+    "amount": "राशि",
+    "status": "स्थिति",
+    "collaborators": "सहयोगी"
+  },
+  "transactions": {
+    "addTransaction": "लेनदेन जोड़ें",
+    "editTransaction": "लेनदेन संपादित करें",
+    "deleteTransaction": "लेनदेन हटाएं",
+    "transactionType": "लेनदेन का प्रकार",
+    "amount": "राशि",
+    "date": "दिनांक",
+    "description": "विवरण",
+    "category": "श्रेणी",
+    "paymentMethod": "भुगतान का तरीका",
+    "status": "स्थिति",
+    "history": "लेनदेन का इतिहास",
+    "youInitiated": "आपने शुरू किया",
+    "initiatedByOthers": "दूसरों ने शुरू किया"
+  },
+  "calculator": {
+    "basic": "बेसिक कैलकुलेटर",
+    "emi": "ईएमआई कैलकुलेटर",
+    "percentage": "प्रतिशत कैलकुलेटर",
+    "compareLoan": "ऋण तुलना",
+    "gst": "जीएसटी कैलकुलेटर",
+    "calculate": "गणना करें",
+    "reset": "रीसेट करें",
+    "result": "परिणाम"
+  },
+  "profile": {
+    "title": "आपकी प्रोफ़ाइल",
+    "subtitle": "अपनी खाता जानकारी और सेटिंग्स प्रबंधित करें",
+    "tabs": {
+      "profile": "प्रोफ़ाइल",
+      "security": "सुरक्षा",
+      "preferences": "प्राथमिकताएं"
+    },
+    "language": {
+      "title": "भाषा और क्षेत्र",
+      "subtitle": "अपनी पसंदीदा भाषा और क्षेत्रीय सेटिंग्स सेट करें",
+      "current": "वर्तमान"
+    },
+    "notifications": {
+      "title": "सूचना सेटिंग्स",
+      "subtitle": "अपने ईमेल और पुश नोटिफिकेशन प्रबंधित करें"
+    },
+    "security": {
+      "title": "सुरक्षा सेटिंग्स",
+      "changePassword": "पासवर्ड बदलें",
+      "twoFactor": "द्वि-कारक प्रमाणीकरण"
+    }
+  },
+  "errors": {
+    "pageNotFound": "पृष्ठ नहीं मिला",
+    "goBack": "होम पर वापस जाएं",
+    "noInternet": "इंटरनेट कनेक्शन नहीं है",
+    "tryAgain": "पुनः प्रयास करें",
+    "somethingWentWrong": "कुछ गलत हो गया"
+  }
+}

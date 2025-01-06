@@ -6,6 +6,7 @@ import {
   AiOutlinePlus,
 } from "react-icons/ai";
 import { FiRefreshCw } from "react-icons/fi";
+import { useTranslation } from 'react-i18next';
 
 const DashBoard = () => {
   const [transactions, setTransactions] = useState([]);

@@ -1,0 +1,119 @@
+{
+  "common": {
+    "profile": "Profile",
+    "settings": "Settings",
+    "logout": "Logout",
+    "save": "Save",
+    "cancel": "Cancel",
+    "loading": "Loading...",
+    "error": "Error",
+    "search": "Search",
+    "add": "Add",
+    "edit": "Edit",
+    "delete": "Delete",
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit",
+    "noData": "No data available",
+    "user": "User",
+    "userAccount": "User Account",
+    "notifications": "Notifications"
+  },
+  "auth": {
+    "login": "Login",
+    "signup": "Sign Up",
+    "email": "Email",
+    "password": "Password",
+    "forgotPassword": "Forgot Password?",
+    "googleLogin": "Login with Google",
+    "alreadyHaveAccount": "Already have an account?",
+    "dontHaveAccount": "Don't have an account?",
+    "signupNow": "Sign up now",
+    "loginNow": "Login now"
+  },
+  "navigation": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "selfRecord": "Self Records",
+    "users": "Users",
+    "books": "Books",
+    "loans": "Loans",
+    "invoice": "Invoice",
+    "calculator": "Calculator"
+  },
+  "dashboard": {
+    "welcome": "Welcome",
+    "totalExpenses": "Total Expenses",
+    "totalIncome": "Total Income",
+    "recentTransactions": "Recent Transactions",
+    "statistics": "Statistics",
+    "summary": "Summary"
+  },
+  "books": {
+    "addBook": "Add Book",
+    "editBook": "Edit Book",
+    "deleteBook": "Delete Book",
+    "bookName": "Book Name",
+    "description": "Description",
+    "category": "Category",
+    "date": "Date",
+    "amount": "Amount",
+    "status": "Status",
+    "collaborators": "Collaborators"
+  },
+  "transactions": {
+    "addTransaction": "Add Transaction",
+    "editTransaction": "Edit Transaction",
+    "deleteTransaction": "Delete Transaction",
+    "transactionType": "Transaction Type",
+    "amount": "Amount",
+    "date": "Date",
+    "description": "Description",
+    "category": "Category",
+    "paymentMethod": "Payment Method",
+    "status": "Status",
+    "history": "Transaction History",
+    "youInitiated": "You initiated",
+    "initiatedByOthers": "Initiated by others"
+  },
+  "calculator": {
+    "basic": "Basic Calculator",
+    "emi": "EMI Calculator",
+    "percentage": "Percentage Calculator",
+    "compareLoan": "Compare Loan",
+    "gst": "GST Calculator",
+    "calculate": "Calculate",
+    "reset": "Reset",
+    "result": "Result"
+  },
+  "profile": {
+    "title": "Your Profile",
+    "subtitle": "Manage your account information and settings",
+    "tabs": {
+      "profile": "Profile",
+      "security": "Security",
+      "preferences": "Preferences"
+    },
+    "language": {
+      "title": "Language & Region",
+      "subtitle": "Set your preferred language and regional settings",
+      "current": "Current"
+    },
+    "notifications": {
+      "title": "Notification Settings",
+      "subtitle": "Manage your email and push notifications"
+    },
+    "security": {
+      "title": "Security Settings",
+      "changePassword": "Change Password",
+      "twoFactor": "Two-Factor Authentication"
+    }
+  },
+  "errors": {
+    "pageNotFound": "Page Not Found",
+    "goBack": "Go Back Home",
+    "noInternet": "No Internet Connection",
+    "tryAgain": "Try Again",
+    "somethingWentWrong": "Something went wrong"
+  }
+}
