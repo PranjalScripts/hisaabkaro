@@ -17,7 +17,16 @@
     "noData": "कोई डेटा उपलब्ध नहीं",
     "user": "उपयोगकर्ता",
     "userAccount": "उपयोगकर्ता खाता",
-    "notifications": "सूचनाएं"
+    "notifications": "सूचनाएं",
+    "refresh": "रीफ्रेश",
+    "name": "नाम",
+    "bookName": "बही-खाता का नाम",
+    "actions": "कार्य",
+    "viewDetails": "विवरण देखें",
+    "noRecordsFound": "कोई रिकॉर्ड नहीं मिला",
+    "couldNotFindBookName": "बही-खाता का नाम नहीं मिला",
+    "na": "उपलब्ध नहीं",
+    "records": "रिकॉर्ड"
   },
   "auth": {
     "login": "लॉग इन",
@@ -63,6 +72,7 @@
   },
   "transactions": {
     "addTransaction": "लेनदेन जोड़ें",
+    "addYourFirstTransaction": "अपना पहला लेनदेन जोड़ें",
     "editTransaction": "लेनदेन संपादित करें",
     "deleteTransaction": "लेनदेन हटाएं",
     "transactionType": "लेनदेन का प्रकार",
@@ -74,7 +84,13 @@
     "status": "स्थिति",
     "history": "लेनदेन का इतिहास",
     "youInitiated": "आपने शुरू किया",
-    "initiatedByOthers": "दूसरों ने शुरू किया"
+    "initiatedByOthers": "दूसरों ने शुरू किया",
+    "youWillGet": "आपको मिलेगा",
+    "youWillGive": "आपको देना है",
+    "outstandingBalance": "बकाया राशि",
+    "settled": "हिसाब बराबर",
+    "clientTransaction": "ग्राहक लेनदेन",
+    "transaction": "लेनदेन"
   },
   "calculator": {
     "basic": "बेसिक कैलकुलेटर",
@@ -95,9 +111,9 @@
       "preferences": "प्राथमिकताएं"
     },
     "language": {
-      "title": "भाषा और क्षेत्र",
-      "subtitle": "अपनी पसंदीदा भाषा और क्षेत्रीय सेटिंग्स सेट करें",
-      "current": "वर्तमान"
+      "title": "भाषा",
+      "subtitle": "अपनी पसंदीदा भाषा चुनें",
+      "current": "वर्तमान भाषा"
     },
     "notifications": {
       "title": "सूचना सेटिंग्स",

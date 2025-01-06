@@ -20,14 +20,14 @@ const LanguageSettings = () => {
         >
           {languages.map((lang) => (
             <option key={lang.code} value={lang.code}>
-              {lang.name} ({lang.region})
+              {lang.name}
             </option>
           ))}
         </select>
       </div>
       <div className="mt-4 p-3 bg-blue-50 rounded-lg">
         <p className="text-sm text-blue-600">
-          {t('profile.language.current')}: {currentLanguage.name} - {currentLanguage.region}
+          {t('profile.language.current')}: {currentLanguage.name}
         </p>
       </div>
     </div>

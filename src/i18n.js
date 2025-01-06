@@ -4,32 +4,33 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 
 import enTranslation from './locales/en/translation.json';
 import hiTranslation from './locales/hi/translation.json';
-import guTranslation from './locales/gu/translation.json';
-import mrTranslation from './locales/mr/translation.json';
+
+const resources = {
+  en: {
+    translation: enTranslation,
+    name: 'English'
+  },
+  hi: {
+    translation: hiTranslation,
+    name: 'हिंदी'
+  }
+};
 
 i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
-    resources: {
-      en: {
-        translation: enTranslation,
-      },
-      hi: {
-        translation: hiTranslation,
-      },
-      gu: {
-        translation: guTranslation,
-      },
-      mr: {
-        translation: mrTranslation,
-      },
-    },
+    resources,
     fallbackLng: 'en',
     debug: true,
     interpolation: {
       escapeValue: false,
     },
   });
+
+export const languages = [
+  { code: 'en', name: 'English' },
+  { code: 'hi', name: 'हिंदी' }
+];
 
 export default i18n;

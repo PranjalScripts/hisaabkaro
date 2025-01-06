@@ -6,8 +6,7 @@ const LanguageContext = createContext();
 export const languages = [
   { code: 'en', name: 'English', region: 'United States' },
   { code: 'hi', name: 'हिंदी', region: 'भारत' },
-  { code: 'gu', name: 'ગુજરાતી', region: 'ભારત' },
-  { code: 'mr', name: 'मराठी', region: 'भारत' },
+  
 ];
 
 export const LanguageProvider = ({ children }) => {

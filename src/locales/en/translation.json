@@ -17,7 +17,16 @@
     "noData": "No data available",
     "user": "User",
     "userAccount": "User Account",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "refresh": "Refresh",
+    "name": "Name",
+    "bookName": "Book Name",
+    "actions": "Actions",
+    "viewDetails": "View Details",
+    "noRecordsFound": "No records found",
+    "couldNotFindBookName": "Could Not Find Book Name",
+    "na": "N/A",
+    "records": "records"
   },
   "auth": {
     "login": "Login",
@@ -63,6 +72,7 @@
   },
   "transactions": {
     "addTransaction": "Add Transaction",
+    "addYourFirstTransaction": "Add Your First Transaction",
     "editTransaction": "Edit Transaction",
     "deleteTransaction": "Delete Transaction",
     "transactionType": "Transaction Type",
@@ -74,7 +84,13 @@
     "status": "Status",
     "history": "Transaction History",
     "youInitiated": "You initiated",
-    "initiatedByOthers": "Initiated by others"
+    "initiatedByOthers": "Initiated by others",
+    "youWillGet": "You Will Get",
+    "youWillGive": "You Will Give",
+    "outstandingBalance": "Outstanding Balance",
+    "settled": "Settled",
+    "clientTransaction": "Client Transaction",
+    "transaction": "Transaction"
   },
   "calculator": {
     "basic": "Basic Calculator",
@@ -95,9 +111,9 @@
       "preferences": "Preferences"
     },
     "language": {
-      "title": "Language & Region",
-      "subtitle": "Set your preferred language and regional settings",
-      "current": "Current"
+      "title": "Language",
+      "subtitle": "Choose your preferred language",
+      "current": "Current Language"
     },
     "notifications": {
       "title": "Notification Settings",
