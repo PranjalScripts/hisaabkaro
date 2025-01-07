@@ -38,7 +38,7 @@ export default function Header() {
   const firstLetter = profileData?.name?.charAt(0).toUpperCase() || "U";
 
   return (
-    <div className="fixed top-0 flex items-center justify-between bg-white border-b border-gray-100 px-8 py-4 z-[10] shadow-sm" style={{ width: "calc(100% - 260px)" }}>
+    <div className="fixed top-0 flex items-center justify-between bg-white border-b border-gray-100 px-8 py-4 z-[10] shadow-sm" style={{ width: "calc(100% - 230px)" }}>
       {/* Search Section */}
       <div className="flex-1 max-w-2xl">
         <div className="relative">

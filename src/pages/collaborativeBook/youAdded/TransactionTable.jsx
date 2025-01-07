@@ -800,12 +800,12 @@ const TransactionTable = forwardRef(({
                         <div className="group relative cursor-pointer">
                           {entry.file.toLowerCase().endsWith('.pdf') ? (
                             <BsFilePdf
-                              onClick={() => handleImageClick(entry.file)}
+                              onClick={() => handleImageClick(`${process.env.REACT_APP_URL}/${entry.file}`)}
                               className="text-2xl text-red-500 group-hover:text-red-700 transition"
                             />
                           ) : (
                             <AiOutlineFileImage
-                              onClick={() => handleImageClick(entry.file)}
+                              onClick={() => handleImageClick(`${process.env.REACT_APP_URL}/${entry.file}`)}
                               className="text-2xl text-blue-500 group-hover:text-blue-700 transition"
                             />
                           )}

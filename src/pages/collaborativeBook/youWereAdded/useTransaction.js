@@ -5,11 +5,10 @@ export const useTransaction = (transactionId) => {
   const [transaction, setTransaction] = useState(null);
   const [updatingEntryId, setUpdatingEntryId] = useState(null);
   const [modalState, setModalState] = useState({
-    isModalOpen: false,
-    modalImage: null,
     showDeleteModal: false,
     showSuccessModal: false,
     showErrorModal: false,
+    previewImageId: null
   });
   const [deleteTransactionDetails, setDeleteTransactionDetails] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
@@ -82,11 +81,7 @@ export const useTransaction = (transactionId) => {
   };
 
   const handleImageClick = (imageUrl) => {
-    setModalState((prev) => ({
-      ...prev,
-      isModalOpen: true,
-      modalImage: imageUrl,
-    }));
+    // Removed function implementation
   };
 
   const confirmDelete = async () => {
@@ -157,19 +152,34 @@ export const useTransaction = (transactionId) => {
     setModalState(prev => ({ ...prev, isModalOpen: false }));
   };
 
-  const handleDownload = async () => {
+  const handleDownload = async (file) => {
     try {
-      const urlParts = modalState.modalImage.split("/");
-      const fileName = urlParts[urlParts.length - 1];
-      const response = await fetch(modalState.modalImage);
+      const token = localStorage.getItem("token");
+      const fileUrl = `${process.env.REACT_APP_URL}/${file.replace(/\\/g, "/")}`;
+      
+      const response = await fetch(fileUrl, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
       if (!response.ok) {
         throw new Error("Failed to fetch the file");
       }
+
       const blob = await response.blob();
-      saveAs(blob, fileName);
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = file.split(/[\/\\]/).pop(); // Get filename from path
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
     } catch (error) {
       console.error("Error downloading file:", error);
-      alert("Failed to download the file. Please try again.");
+      setErrorMessage("Failed to download the file. Please try again.");
+      setModalState(prev => ({ ...prev, showErrorModal: true }));
     }
   };
 

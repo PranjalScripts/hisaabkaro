@@ -446,10 +446,8 @@ const History = () => {
   };
 
   //handle image click
-  const handleImageClick = (imagePath) => {
-    setModalImage(
-      `${process.env.REACT_APP_URL}/${imagePath.replace(/\\/g, "/")}`
-    );
+  const handleImageClick = (fileUrl) => {
+    setModalImage(fileUrl);
     setIsModalOpen(true);
   };
 
@@ -578,10 +576,10 @@ const History = () => {
       />
 
       <FileModal
-        isModalOpen={isModalOpen}
-        modalImage={modalImage}
-        closeModal={closeModal}
-        handleDownload={handleDownload}
+        isOpen={isModalOpen}
+        fileUrl={modalImage}
+        onClose={closeModal}
+        onDownload={handleDownload}
       />
 
       <DeleteConfirmationModal

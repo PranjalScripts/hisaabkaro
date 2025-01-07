@@ -5,7 +5,7 @@ import Sidebar from "./sidebar";
 import Footer from "./Footer";
 import AddUser from "../clientUsers/AddUser";
 import SuccessModal from "../../components/SuccessModal";
-
+import FooterSide from "./FooterSide";
 export const BookContext = createContext();
 export const UserContext = createContext();
 
@@ -42,7 +42,7 @@ const Layout = () => {
         value={{ showAddUserModal, handleAddUser, userAdded, handleUserAdded }}
       >
         <div className="flex flex-row gap-2">
-          <div className="ml-64">
+          <div className="ml-56 md:block hidden">
             <Sidebar />
           </div>
           <div className="flex flex-col gap-2 w-full">
@@ -52,7 +52,10 @@ const Layout = () => {
             <div className="pb-16">
               <Outlet />
             </div>
-            <div>
+            <div className="md:hidden block" >
+              <FooterSide />
+            </div>
+            <div className="md:block hidden">
               <Footer />
             </div>
           </div>
