@@ -1,9 +1,9 @@
 import React from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route} from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { createGlobalStyle } from 'styled-components';
-import Signup from "./components/auth/login/signup";
+// import Signup from "./components/auth/login/signup";
 import Home from "./pages/Home/Home";
 import Book from "./pages/books/book";
 import Users from "./pages/clientUsers/clientUsers";

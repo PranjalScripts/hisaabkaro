@@ -477,25 +477,37 @@ const TransactionTable = forwardRef(({
               <BsFilter className="w-5 h-5 mr-2 text-gray-500" />
               <span className="text-sm font-medium text-gray-700">Sort By</span>
             </button>
-            
+
             {showSortMenu && (
               <div className="absolute z-10 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
                 <div className="py-1" role="menu" aria-orientation="vertical">
                   <button
-                    onClick={() => handleSort('transactionDate')}
+                    onClick={() => handleSort("transactionDate")}
                     className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${
-                      sortConfig.key === 'transactionDate' ? 'bg-gray-50' : ''
+                      sortConfig.key === "transactionDate" ? "bg-gray-50" : ""
                     }`}
                   >
-                    Date ({sortConfig.key === 'transactionDate' ? (sortConfig.direction === 'asc' ? 'Oldest First' : 'Newest First') : 'Newest First'})
+                    Date (
+                    {sortConfig.key === "transactionDate"
+                      ? sortConfig.direction === "asc"
+                        ? "Oldest First"
+                        : "Newest First"
+                      : "Newest First"}
+                    )
                   </button>
                   <button
-                    onClick={() => handleSort('amount')}
+                    onClick={() => handleSort("amount")}
                     className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${
-                      sortConfig.key === 'amount' ? 'bg-gray-50' : ''
+                      sortConfig.key === "amount" ? "bg-gray-50" : ""
                     }`}
                   >
-                    Amount ({sortConfig.key === 'amount' ? (sortConfig.direction === 'asc' ? 'Low to High' : 'High to Low') : 'High to Low'})
+                    Amount (
+                    {sortConfig.key === "amount"
+                      ? sortConfig.direction === "asc"
+                        ? "Low to High"
+                        : "High to Low"
+                      : "High to Low"}
+                    )
                   </button>
                 </div>
               </div>
@@ -513,26 +525,43 @@ const TransactionTable = forwardRef(({
               className="inline-flex items-center justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
             >
               <AiOutlineFilter className="-ml-0.5 h-5 w-5" aria-hidden="true" />
-              Status: {statusFilter === 'all' ? 'All' : statusFilter === 'confirmed' ? 'Confirmed' : 'Pending'}
+              Status:{" "}
+              {statusFilter === "all"
+                ? "All"
+                : statusFilter === "confirmed"
+                ? "Confirmed"
+                : "Pending"}
             </button>
             {showStatusFilterMenu && (
               <div className="absolute left-0 z-10 mt-2 w-48 origin-top-left rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                 <div className="py-1">
                   <button
-                    onClick={() => handleStatusFilter('all')}
-                    className={`w-full text-left px-4 py-2 text-sm ${statusFilter === 'all' ? 'bg-gray-100' : 'hover:bg-gray-50'}`}
+                    onClick={() => handleStatusFilter("all")}
+                    className={`w-full text-left px-4 py-2 text-sm ${
+                      statusFilter === "all"
+                        ? "bg-gray-100"
+                        : "hover:bg-gray-50"
+                    }`}
                   >
                     All
                   </button>
                   <button
-                    onClick={() => handleStatusFilter('confirmed')}
-                    className={`w-full text-left px-4 py-2 text-sm ${statusFilter === 'confirmed' ? 'bg-gray-100' : 'hover:bg-gray-50'}`}
+                    onClick={() => handleStatusFilter("confirmed")}
+                    className={`w-full text-left px-4 py-2 text-sm ${
+                      statusFilter === "confirmed"
+                        ? "bg-gray-100"
+                        : "hover:bg-gray-50"
+                    }`}
                   >
                     Confirmed
                   </button>
                   <button
-                    onClick={() => handleStatusFilter('pending')}
-                    className={`w-full text-left px-4 py-2 text-sm ${statusFilter === 'pending' ? 'bg-gray-100' : 'hover:bg-gray-50'}`}
+                    onClick={() => handleStatusFilter("pending")}
+                    className={`w-full text-left px-4 py-2 text-sm ${
+                      statusFilter === "pending"
+                        ? "bg-gray-100"
+                        : "hover:bg-gray-50"
+                    }`}
                   >
                     Pending
                   </button>
@@ -552,28 +581,45 @@ const TransactionTable = forwardRef(({
               className="inline-flex items-center justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
             >
               <AiOutlineFilter className="-ml-0.5 h-5 w-5" aria-hidden="true" />
-              Added By: {addedByFilter === 'all' ? 'Both' : addedByFilter === 'user' ? transaction?.userId?.name || 'You' : transaction?.clientUserId?.name || 'Client'}
+              Added By:{" "}
+              {addedByFilter === "all"
+                ? "Both"
+                : addedByFilter === "user"
+                ? transaction?.userId?.name || "You"
+                : transaction?.clientUserId?.name || "Client"}
             </button>
             {showAddedByFilterMenu && (
               <div className="absolute left-0 z-10 mt-2 w-48 origin-top-left rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                 <div className="py-1">
                   <button
-                    onClick={() => handleAddedByFilter('all')}
-                    className={`w-full text-left px-4 py-2 text-sm ${addedByFilter === 'all' ? 'bg-gray-100' : 'hover:bg-gray-50'}`}
+                    onClick={() => handleAddedByFilter("all")}
+                    className={`w-full text-left px-4 py-2 text-sm ${
+                      addedByFilter === "all"
+                        ? "bg-gray-100"
+                        : "hover:bg-gray-50"
+                    }`}
                   >
                     Both
                   </button>
                   <button
-                    onClick={() => handleAddedByFilter('user')}
-                    className={`w-full text-left px-4 py-2 text-sm ${addedByFilter === 'user' ? 'bg-gray-100' : 'hover:bg-gray-50'}`}
+                    onClick={() => handleAddedByFilter("user")}
+                    className={`w-full text-left px-4 py-2 text-sm ${
+                      addedByFilter === "user"
+                        ? "bg-gray-100"
+                        : "hover:bg-gray-50"
+                    }`}
                   >
-                    Added by {transaction?.userId?.name || 'You'}
+                    Added by {transaction?.userId?.name || "You"}
                   </button>
                   <button
-                    onClick={() => handleAddedByFilter('client')}
-                    className={`w-full text-left px-4 py-2 text-sm ${addedByFilter === 'client' ? 'bg-gray-100' : 'hover:bg-gray-50'}`}
+                    onClick={() => handleAddedByFilter("client")}
+                    className={`w-full text-left px-4 py-2 text-sm ${
+                      addedByFilter === "client"
+                        ? "bg-gray-100"
+                        : "hover:bg-gray-50"
+                    }`}
                   >
-                    Added by {transaction?.clientUserId?.name || 'Client'}
+                    Added by {transaction?.clientUserId?.name || "Client"}
                   </button>
                 </div>
               </div>
@@ -590,18 +636,22 @@ const TransactionTable = forwardRef(({
 
           {/* View Toggle Button */}
           <button
-            onClick={() => setViewMode(viewMode === 'list' ? 'grid' : 'list')}
+            onClick={() => setViewMode(viewMode === "list" ? "grid" : "list")}
             className="flex items-center px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
-            {viewMode === 'list' ? (
+            {viewMode === "list" ? (
               <>
                 <BsGrid className="w-5 h-5 mr-2 text-gray-500" />
-                <span className="text-sm font-medium text-gray-700">Grid View</span>
+                <span className="text-sm font-medium text-gray-700">
+                  Grid View
+                </span>
               </>
             ) : (
               <>
                 <BsListUl className="w-5 h-5 mr-2 text-gray-500" />
-                <span className="text-sm font-medium text-gray-700">List View</span>
+                <span className="text-sm font-medium text-gray-700">
+                  List View
+                </span>
               </>
             )}
           </button>
@@ -619,8 +669,16 @@ const TransactionTable = forwardRef(({
               }}
             >
               {itemsPerPage} per page
-              <svg className="-mr-1 h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clipRule="evenodd" />
+              <svg
+                className="-mr-1 h-5 w-5 text-gray-400"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                  clipRule="evenodd"
+                />
               </svg>
             </button>
 
@@ -635,7 +693,9 @@ const TransactionTable = forwardRef(({
                         setShowItemsPerPage(false);
                       }}
                       className={`block w-full px-4 py-2 text-left text-sm ${
-                        itemsPerPage === number ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
+                        itemsPerPage === number
+                          ? "bg-gray-100 text-gray-900"
+                          : "text-gray-700"
                       } hover:bg-gray-50`}
                     >
                       {number} per page
@@ -646,12 +706,15 @@ const TransactionTable = forwardRef(({
             )}
           </div>
 
-          <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+          <nav
+            className="isolate inline-flex -space-x-px rounded-md shadow-sm"
+            aria-label="Pagination"
+          >
             <button
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage === 1}
               className={`relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 ${
-                currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''
+                currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
               }`}
             >
               <HiChevronLeft className="h-5 w-5" />
@@ -662,8 +725,8 @@ const TransactionTable = forwardRef(({
                 onClick={() => handlePageChange(index + 1)}
                 className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${
                   currentPage === index + 1
-                    ? 'z-10 bg-blue-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600'
-                    : 'text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0'
+                    ? "z-10 bg-blue-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                    : "text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
                 }`}
               >
                 {index + 1}
@@ -673,7 +736,9 @@ const TransactionTable = forwardRef(({
               onClick={() => handlePageChange(currentPage + 1)}
               disabled={currentPage === totalPages}
               className={`relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 ${
-                currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''
+                currentPage === totalPages
+                  ? "opacity-50 cursor-not-allowed"
+                  : ""
               }`}
             >
               <HiChevronRight className="h-5 w-5" />
@@ -684,29 +749,46 @@ const TransactionTable = forwardRef(({
 
       <div className="mt-2 text-sm text-gray-700">
         {filteredAndSortedTransactions.length > 0 ? (
-          <>
-            Showing <span className="font-medium">{((currentPage - 1) * itemsPerPage) + 1}</span> to{' '}
-            <span className="font-medium">
-              {Math.min(currentPage * itemsPerPage, filteredAndSortedTransactions.length)}
-            </span>{' '}
-            of <span className="font-medium">{filteredAndSortedTransactions.length}</span> results
-          </>
+          <div className="flex justify-between items-center p-4 bg-gray-100 rounded-md shadow-sm">
+            <span className="text-gray-800 font-medium">
+              <b className="text-blue-600">Showing:</b>{" "}
+              {(currentPage - 1) * itemsPerPage + 1} to{" "}
+              <span className="text-blue-600">
+                {Math.min(
+                  currentPage * itemsPerPage,
+                  filteredAndSortedTransactions.length
+                )}
+              </span>
+            </span>
+            <span className="text-gray-800 font-medium">
+              <b className="text-green-600">Total Results:</b>{" "}
+              <span className="text-green-600">
+                {filteredAndSortedTransactions.length}
+              </span>
+            </span>
+          </div>
         ) : (
           <div className="text-center py-8">
-            <div className="text-gray-500 text-lg mb-2">No transactions found</div>
+            <div className="text-gray-500 text-lg mb-2">
+              No transactions found
+            </div>
             <div className="text-gray-400">
-              {addedByFilter !== 'all' 
-                ? `No transactions ${addedByFilter === 'user' 
-                    ? `added by ${transaction?.userId?.name || 'you'}` 
-                    : `added by ${transaction?.clientUserId?.name || 'client'}`}`
-                : 'No transactions match the current filters'}
+              {addedByFilter !== "all"
+                ? `No transactions ${
+                    addedByFilter === "user"
+                      ? `added by ${transaction?.userId?.name || "you"}`
+                      : `added by ${
+                          transaction?.clientUserId?.name || "client"
+                        }`
+                  }`
+                : "No transactions match the current filters"}
             </div>
           </div>
         )}
       </div>
 
       {filteredAndSortedTransactions.length > 0 ? (
-        viewMode === 'list' ? (
+        viewMode === "list" ? (
           <div className="overflow-x-auto mt-4">
             <table className="min-w-full bg-white rounded-lg shadow-md">
               <thead className="bg-gray-100">
@@ -744,10 +826,12 @@ const TransactionTable = forwardRef(({
                 {paginatedTransactions.map((entry, index) => (
                   <tr
                     key={entry._id}
-                    className={`transition-all duration-200 ${getHoverClass(entry?.transactionType)}`}
+                    className={`transition-all duration-200 ${getHoverClass(
+                      entry?.transactionType
+                    )}`}
                   >
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {((currentPage - 1) * itemsPerPage) + index + 1}
+                      {(currentPage - 1) * itemsPerPage + index + 1}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {formatDate(entry.transactionDate)}
@@ -757,7 +841,9 @@ const TransactionTable = forwardRef(({
                     </td>
                     <td
                       className={`px-6 py-4 whitespace-nowrap text-sm font-semibold capitalize ${
-                        entry?.transactionType === "you will give" ? "text-red-600" : "text-green-600"
+                        entry?.transactionType === "you will give"
+                          ? "text-red-600"
+                          : "text-green-600"
                       }`}
                     >
                       {entry?.transactionType || "N/A"}
@@ -765,7 +851,9 @@ const TransactionTable = forwardRef(({
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold">
                       <span
                         className={`${
-                          entry?.transactionType === "you will give" ? "text-red-600" : "text-green-600"
+                          entry?.transactionType === "you will give"
+                            ? "text-red-600"
+                            : "text-green-600"
                         }`}
                       >
                         {formatAmountWithoutPrefix(entry?.amount)}
@@ -798,14 +886,22 @@ const TransactionTable = forwardRef(({
                     <td className="px-6 py-4">
                       {entry?.file ? (
                         <div className="group relative cursor-pointer">
-                          {entry.file.toLowerCase().endsWith('.pdf') ? (
+                          {entry.file.toLowerCase().endsWith(".pdf") ? (
                             <BsFilePdf
-                              onClick={() => handleImageClick(entry.file)}
+                              onClick={() =>
+                                handleImageClick(
+                                  `${process.env.REACT_APP_URL}/${entry.file}`
+                                )
+                              }
                               className="text-2xl text-red-500 group-hover:text-red-700 transition"
                             />
                           ) : (
                             <AiOutlineFileImage
-                              onClick={() => handleImageClick(entry.file)}
+                              onClick={() =>
+                                handleImageClick(
+                                  `${process.env.REACT_APP_URL}/${entry.file}`
+                                )
+                              }
                               className="text-2xl text-blue-500 group-hover:text-blue-700 transition"
                             />
                           )}

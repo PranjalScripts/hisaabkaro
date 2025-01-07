@@ -1,29 +1,45 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { IoDownload } from 'react-icons/io5';
 import { IoMdClose } from 'react-icons/io';
 import { Image } from 'antd';
 import { DownloadOutlined, RotateLeftOutlined, RotateRightOutlined, ZoomInOutlined, ZoomOutOutlined } from '@ant-design/icons';
+import { AiOutlineClose } from 'react-icons/ai';
 
-const FileModal = ({ isModalOpen, modalImage, closeModal, handleDownload }) => {
-  if (!isModalOpen) return null;
+const FileModal = ({ isOpen, fileUrl, onClose, onDownload }) => {
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
 
-  const isPDF = modalImage?.toLowerCase().endsWith('.pdf');
+    if (isOpen) {
+      window.addEventListener('keydown', handleEscape);
+    }
+
+    return () => {
+      window.removeEventListener('keydown', handleEscape);
+    };
+  }, [isOpen, onClose]);
+
+  if (!isOpen || !fileUrl) return null;
+
+  const isPDF = fileUrl?.toLowerCase().endsWith('.pdf');
 
   if (!isPDF) {
     return (
-      <>
+      <div className="fixed inset-0 z-50 bg-black bg-opacity-75">
         <Image
-          style={{ display: 'none' }}
           preview={{
-            visible: isModalOpen,
-            src: modalImage,
+            visible: true,
+            src: fileUrl,
             onVisibleChange: (visible) => {
-              if (!visible) closeModal();
+              if (!visible) onClose();
             },
             toolbarRender: (_, { transform: { scale }, actions }) => (
               <div className="ant-image-preview-operations">
                 <div className="ant-image-preview-operations-operation">
-                  <DownloadOutlined onClick={handleDownload} />
+                  <DownloadOutlined onClick={onDownload} />
                 </div>
                 <div className="ant-image-preview-operations-operation">
                   <RotateLeftOutlined onClick={actions.onRotateLeft} />
@@ -47,53 +63,33 @@ const FileModal = ({ isModalOpen, modalImage, closeModal, handleDownload }) => {
             ),
           }}
         />
-        <div style={{ display: 'none' }}>
-          <Image src={modalImage} />
-        </div>
-      </>
+      </div>
     );
   }
 
   return (
-    <div
-      className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50"
-      onClick={closeModal}
-    >
-      <div className="relative">
-        {/* Buttons positioned above the modal */}
-        <div className="fixed top-4 right-4 flex gap-4 z-[60]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
+      <div className="relative w-full h-full max-w-4xl mx-auto flex flex-col">
+        <button
+          onClick={onClose}
+          className="absolute -top-10 right-0 p-2 text-white hover:text-gray-300 transition-colors"
+          title="Close Modal"
+        >
+          <IoMdClose className="text-3xl" />
+        </button>
+        <div className="flex-1 relative">
           <button
-            onClick={handleDownload}
-            className="bg-white rounded-full p-4 h-14 w-14 flex items-center justify-center shadow-lg hover:bg-gray-100 transition-colors"
-            title="Download"
+            onClick={onClose}
+            className="absolute -right-12 top-4 p-2 text-white hover:text-gray-300 transition-colors rounded-full hover:bg-white/10"
+            title="Close PDF"
           >
-            <IoDownload className="text-2xl text-gray-700" />
+            <AiOutlineClose className="text-2xl" />
           </button>
-          <button
-            className="bg-white rounded-full p-4 h-14 w-14 flex items-center justify-center shadow-lg hover:bg-gray-100 transition-colors"
-            onClick={(e) => {
-              e.stopPropagation();
-              closeModal();
-            }}
-            title="Close"
-          >
-            <IoMdClose className="text-3xl text-gray-700" />
-          </button>
-        </div>
-
-        {/* PDF modal content */}
-        <div className="bg-white p-4 rounded-lg w-[95vw] h-[98vh] relative">
-          <div
-            className="relative w-full h-full"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <embed
-              src={modalImage}
-              type="application/pdf"
-              className="w-full h-full"
-              style={{ height: 'calc(98vh - 2rem)' }}
-            />
-          </div>
+          <iframe
+            src={fileUrl}
+            className="w-full h-full rounded-lg bg-white"
+            title="PDF Viewer"
+          />
         </div>
       </div>
     </div>

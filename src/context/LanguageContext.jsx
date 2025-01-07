@@ -8,7 +8,6 @@ export const languages = [
   { code: 'hi', name: 'हिंदी', region: 'भारत' },
   
 ];
-
 export const LanguageProvider = ({ children }) => {
   const [currentLanguage, setCurrentLanguage] = useState(() => {
     const savedLanguage = localStorage.getItem('userLanguage');

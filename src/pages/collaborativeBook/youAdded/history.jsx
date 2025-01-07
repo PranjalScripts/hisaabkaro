@@ -65,6 +65,7 @@ const History = () => {
   }, [transactionId]);
 
   //fetch transaction data
+  //eslint-disable-next-line
   const fetchTransactionData = async () => {
     const token = localStorage.getItem("token");
     try {
@@ -446,10 +447,8 @@ const History = () => {
   };
 
   //handle image click
-  const handleImageClick = (imagePath) => {
-    setModalImage(
-      `${process.env.REACT_APP_URL}/${imagePath.replace(/\\/g, "/")}`
-    );
+  const handleImageClick = (fileUrl) => {
+    setModalImage(fileUrl);
     setIsModalOpen(true);
   };
 
@@ -534,12 +533,12 @@ const History = () => {
           className="flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold rounded-xl 
           hover:from-blue-600 hover:to-indigo-700 transform hover:scale-105 transition-all duration-200 shadow-md hover:shadow-lg"
         >
-          <svg
-            className="w-5 h-5 mr-2"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-          >
-            <path fillRule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v3.586L7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V8z" clipRule="evenodd" />
+          <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path
+              fillRule="evenodd"
+              d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v3.586L7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V8z"
+              clipRule="evenodd"
+            />
           </svg>
           Export PDF
         </button>
@@ -578,16 +577,18 @@ const History = () => {
       />
 
       <FileModal
-        isModalOpen={isModalOpen}
-        modalImage={modalImage}
-        closeModal={closeModal}
-        handleDownload={handleDownload}
+        isOpen={isModalOpen}
+        fileUrl={modalImage}
+        onClose={closeModal}
+        onDownload={handleDownload}
       />
 
       <DeleteConfirmationModal
         isOpen={deleteModal.isOpen}
         onClose={() => setDeleteModal({ isOpen: false, transaction: null })}
-        onConfirm={() => deleteModal.transaction && handleDelete(deleteModal.transaction._id)}
+        onConfirm={() =>
+          deleteModal.transaction && handleDelete(deleteModal.transaction._id)
+        }
         transactionDetails={deleteModal.transaction}
       />
 
