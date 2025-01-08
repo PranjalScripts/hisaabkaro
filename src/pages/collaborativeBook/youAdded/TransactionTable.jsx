@@ -29,6 +29,7 @@ const TransactionTable = forwardRef(({
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [viewMode, setViewMode] = useState('list'); // 'list' or 'grid'
   const [showItemsPerPage, setShowItemsPerPage] = useState(false);
+  const [isFilterApplied, setIsFilterApplied] = useState(false);
 
   const filteredAndSortedTransactions = useMemo(() => {
     if (!transaction?.transactionHistory) return [];
@@ -464,55 +465,75 @@ const TransactionTable = forwardRef(({
     return null;
   }
 
+  const handleSortChange = (value) => {
+    switch (value) {
+      case "oldest":
+        setSortConfig({ key: "transactionDate", direction: "asc" });
+        break;
+      case "newest":
+        setSortConfig({ key: "transactionDate", direction: "desc" });
+        break;
+      case "amount_high":
+        setSortConfig({ key: "amount", direction: "desc" });
+        break;
+      case "amount_low":
+        setSortConfig({ key: "amount", direction: "asc" });
+        break;
+      default:
+        setSortConfig({ key: "transactionDate", direction: "desc" });
+    }
+    setShowSortMenu(false);
+  };
+
+
   return (
     <div className="mt-4">
       <div className="flex justify-between items-center mb-4">
         <div className="flex items-center gap-4">
           {/* Sort Button */}
           <div className="relative">
-            <button
-              onClick={() => setShowSortMenu(!showSortMenu)}
-              className="flex items-center px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-            >
-              <BsFilter className="w-5 h-5 mr-2 text-gray-500" />
-              <span className="text-sm font-medium text-gray-700">Sort By</span>
-            </button>
-
-            {showSortMenu && (
-              <div className="absolute z-10 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
-                <div className="py-1" role="menu" aria-orientation="vertical">
-                  <button
-                    onClick={() => handleSort("transactionDate")}
-                    className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${
-                      sortConfig.key === "transactionDate" ? "bg-gray-50" : ""
-                    }`}
-                  >
-                    Date (
-                    {sortConfig.key === "transactionDate"
-                      ? sortConfig.direction === "asc"
-                        ? "Oldest First"
-                        : "Newest First"
-                      : "Newest First"}
-                    )
-                  </button>
-                  <button
-                    onClick={() => handleSort("amount")}
-                    className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${
-                      sortConfig.key === "amount" ? "bg-gray-50" : ""
-                    }`}
-                  >
-                    Amount (
-                    {sortConfig.key === "amount"
-                      ? sortConfig.direction === "asc"
-                        ? "Low to High"
-                        : "High to Low"
-                      : "High to Low"}
-                    )
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
+  <button
+    onClick={() => setShowSortMenu((prev) => !prev)}
+    className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+  >
+    <BsFilter className="mr-2 h-4 w-4" />
+    Sort By
+  </button>
+  {showSortMenu && (
+    <div
+      className="absolute left-1/2 transform -translate-x-1/2 mt-2 w-32 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10"
+      role="menu"
+      aria-orientation="vertical"
+    >
+      <div className="py-1">
+        <button
+          onClick={() => handleSortChange("newest")}
+          className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+        >
+          Newest First
+        </button>
+        <button
+          onClick={() => handleSortChange("oldest")}
+          className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+        >
+          Oldest First
+        </button>
+        <button
+          onClick={() => handleSortChange("amount_high")}
+          className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+        >
+           High to Low
+        </button>
+        <button
+          onClick={() => handleSortChange("amount_low")}
+          className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+        >
+          Low to High
+        </button>
+      </div>
+    </div>
+  )}
+</div>
 
           {/* Status Filter Button */}
           <div className="relative status-filter-dropdown">
@@ -629,6 +650,7 @@ const TransactionTable = forwardRef(({
           {/* Clear Filter Button */}
           <button
             onClick={clearAllFilters}
+            disabled={!isFilterApplied}
             className="inline-flex items-center justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
           >
             Clear Filter

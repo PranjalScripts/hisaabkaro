@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { MdEdit, MdDelete } from "react-icons/md";
+import { AiOutlineCheckCircle, AiOutlineClockCircle, AiOutlineFileImage } from "react-icons/ai";
+import { BsFilePdf } from "react-icons/bs";
 import TransactionForm from "./TransactionForm";
 import EditTransactionForm from "./EditTransactionForm";
 import { useTransaction } from "./useTransaction";
@@ -10,7 +12,7 @@ import DeleteConfirmationModal from "../youAdded/DeleteConfirmationModal";
 import SuccessModal from "../youAdded/SuccessModal";
 import ErrorModal from "../youAdded/ErrorModal";
 import FileModal from "../youAdded/FileModal";
-import { Image, Select, Button, Dropdown, Space} from "antd";
+import { Image, Button, Dropdown, Space} from "antd";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import {
@@ -30,8 +32,6 @@ import {
   LeftOutlined,
   RightOutlined,
 } from "@ant-design/icons";
-//eslint-disable-next-line
-const { Option } = Select;
 
 const CollaborativeBookRecords = () => {
   const { transactionId } = useParams();
@@ -41,13 +41,14 @@ const CollaborativeBookRecords = () => {
     updatingEntryId,
     userId,
     updateTransactionStatus,
-    handleDelete,
-     handleDownload,
+    handleDeleteClick,
+    handleDownload,
     errorMessage,
     setErrorMessage,
     confirmDelete,
     cancelDelete,
     deleteTransactionDetails,
+    setDeleteTransactionDetails, // Get the setter function
   } = useTransaction(transactionId);
 
   const {
@@ -72,7 +73,10 @@ const CollaborativeBookRecords = () => {
     isModalOpen: false,
     modalImage: null,
     currentFile: null,
+    selectedEntry: null,
   });
+
+  const [successMessage, setSuccessMessage] = useState("");
 
   const {
     isEditing,
@@ -83,6 +87,7 @@ const CollaborativeBookRecords = () => {
     handleEditSubmit,
   } = useEditTransaction(transactionId, setTransaction, {
     onSuccess: () => {
+      setSuccessMessage("Transaction updated successfully!");
       setModalState((prev) => ({ ...prev, showSuccessModal: true }));
       closeEditForm();
     },
@@ -100,10 +105,9 @@ const CollaborativeBookRecords = () => {
   });
 
   const [statusFilter, setStatusFilter] = useState("all"); // 'all', 'confirmed', 'pending'
-  const [userFilter, setUserFilter] = useState("all");
+  const [userFilter, setUserFilter] = useState({ id: 'all', name: 'All' });
   const [clientFilter, setClientFilter] = useState("all");
   const [uniqueUsers, setUniqueUsers] = useState([]);
-  //eslint-disable-next-line
   const [uniqueClients, setUniqueClients] = useState([]);
   const [viewMode, setViewMode] = useState("list"); // 'list' or 'grid'
   const [currentPage, setCurrentPage] = useState(1);
@@ -111,23 +115,51 @@ const CollaborativeBookRecords = () => {
 
   useEffect(() => {
     if (transaction?.transactionHistory) {
-      // Extract unique users and clients
-      const users = new Set();
-      const clients = new Set();
+      // Extract unique users and clients with full information
+      const usersMap = new Map();
+      const clientsMap = new Map();
 
       transaction.transactionHistory.forEach((history) => {
         if (history.initiatedBy) {
-          users.add(history.initiatedBy);
+          usersMap.set(history.initiaterId, {
+            id: history.initiaterId,
+            name: history.initiatedBy
+          });
         }
         if (history.clientName) {
-          clients.add(history.clientName);
+          clientsMap.set(history.clientId, {
+            id: history.clientId,
+            name: history.clientName
+          });
         }
       });
 
-      setUniqueUsers(Array.from(users));
-      setUniqueClients(Array.from(clients));
+      setUniqueUsers(Array.from(usersMap.values()));
+      setUniqueClients(Array.from(clientsMap.values()));
     }
   }, [transaction?.transactionHistory]);
+
+  const [userItems, setUserItems] = useState([
+    {
+      key: "all",
+      label: "All",
+    }
+  ]);
+
+  // Update userItems when uniqueUsers changes
+  useEffect(() => {
+    const updatedUserItems = [
+      {
+        key: "all",
+        label: "All",
+      },
+      ...uniqueUsers.map((user) => ({
+        key: user.id,
+        label: user.name,
+      })),
+    ];
+    setUserItems(updatedUserItems);
+  }, [uniqueUsers]);
 
   const filterAndSortTransactions = (transactions) => {
     if (!transactions) return [];
@@ -143,9 +175,9 @@ const CollaborativeBookRecords = () => {
           : true);
 
       const matchesUser =
-        userFilter === "all" || history.initiatedBy === userFilter;
+        userFilter.id === "all" || history.initiaterId === userFilter.id;
       const matchesClient =
-        clientFilter === "all" || history.clientName === clientFilter;
+        clientFilter === "all" || history.clientId === clientFilter;
 
       return matchesStatus && matchesUser && matchesClient;
     });
@@ -190,16 +222,17 @@ const CollaborativeBookRecords = () => {
   };
 
   const handleUserFilterChange = (value) => {
-    setUserFilter(value);
+    const selectedUser = uniqueUsers.find(user => user.id === value) || { id: 'all', name: 'All' };
+    setUserFilter(selectedUser);
   };
-//eslint-disable-next-line
+
   const handleClientFilterChange = (value) => {
     setClientFilter(value);
   };
 
   const clearAllFilters = () => {
     setStatusFilter("all");
-    setUserFilter("all");
+    setUserFilter({ id: 'all', name: 'All' });
     setClientFilter("all");
     setSortConfig({
       type: "date",
@@ -241,17 +274,6 @@ const CollaborativeBookRecords = () => {
     },
   ]);
 
-  const [userItems] = useState([
-    {
-      key: "all",
-      label: "All",
-    },
-    ...uniqueUsers.map((user) => ({
-      key: user,
-      label: user,
-    })),
-  ]);
-
   const handleFileClick = (file) => {
     setModalState((prev) => ({
       ...prev,
@@ -278,12 +300,12 @@ const CollaborativeBookRecords = () => {
 
   useEffect(() => {
     if (success) {
+      setSuccessMessage("Transaction added successfully!");
       setModalState((prev) => ({ ...prev, showSuccessModal: true }));
       setSuccess(false);
     }
   }, [success, setSuccess, setModalState]);
   
-//eslint-disable-next-line
   const getSortLabel = () => {
     if (sortConfig.type === "date") {
       return sortConfig.order === "desc" ? "Newest First" : "Oldest First";
@@ -305,190 +327,166 @@ const CollaborativeBookRecords = () => {
   };
 
   const getUserLabel = () => {
-    if (userFilter === "all") return "Both";
-    return userFilter;
+    return userFilter.name;
   };
 
-  const renderGridView = (transactions) => (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      {transactions.map((history, index) => (
-        <div
-          key={history._id}
-          className="bg-white rounded-lg shadow p-4 hover:shadow-lg transition-shadow"
-        >
-          <div className="flex justify-between items-start mb-3">
-            <div className="text-sm font-medium text-gray-900">
-              #{(currentPage - 1) * pageSize + index + 1}
-            </div>
-            <div className="text-sm text-gray-500">
-              {history?.transactionDate
-                ? new Date(history.transactionDate).toLocaleString()
-                : "N/A"}
-            </div>
-          </div>
+  const renderGridView = () => {
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
+        {sortedAndFilteredTransactions.map((entry, index) => (
+          <div
+            key={entry._id}
+            className={`bg-white rounded-2xl shadow-sm p-6 hover:shadow-md transition-all duration-200 relative overflow-hidden ${
+              entry.confirmationStatus === 'pending'
+                ? 'border border-yellow-200'
+                : entry.transactionType === 'you will get'
+                  ? 'border border-red-200'
+                  : 'border border-green-200'
+            }`}
+          >
+            {/* Status Notch */}
+            <div
+              className={`absolute -top-4 -right-4 w-16 h-16 rounded-full transform rotate-45 ${
+                entry.confirmationStatus === 'pending'
+                  ? 'bg-yellow-200'
+                  : entry.transactionType === 'you will get'
+                    ? 'bg-red-200'
+                    : 'bg-green-200'
+              }`}
+            />
 
-          <div className="mb-3">
-            <div className="text-sm font-medium text-gray-700">
-              Initiated By
-            </div>
-            <div className="text-sm text-gray-900">{history.initiatedBy}</div>
-          </div>
-
-          <div className="mb-3">
-            <div className="text-sm font-medium text-gray-700">Type</div>
-            <div className="text-sm text-gray-900">
-              {history?.transactionType === "you will give"
-                ? "You will get"
-                : "You will give"}
-            </div>
-          </div>
-
-          <div className="mb-3">
-            <div className="text-sm font-medium text-gray-700">Amount</div>
-            <div className="text-sm font-medium text-gray-900">
-              <span className={`font-medium ${history?.transactionType === "you will give" ? "text-green-600" : "text-red-600"}`}>
-                ₹{history?.amount?.toFixed(2) || "0.00"}
-              </span>
-            </div>
-          </div>
-
-          <div className="mb-3">
-            <div className="text-sm font-medium text-gray-700">Description</div>
-            <div className="text-sm text-gray-900 break-words">
-              {history?.description || "-"}
-            </div>
-          </div>
-
-          <div className="mb-3">
-            <div className="text-sm font-medium text-gray-700">File</div>
-            <div className="mt-1">
-              {typeof history.file === "string" &&
-              history.file.trim() !== "" ? (
-                history.file.toLowerCase().endsWith(".pdf") ? (
-                  <div
-                    className="cursor-pointer hover:opacity-80"
-                    onClick={() => handleFileClick(history.file)}
-                  >
-                    <FilePdfOutlined
-                      style={{ fontSize: "24px", color: "#ff4d4f" }}
-                    />
-                  </div>
-                ) : (
-                  <div className="relative cursor-pointer">
-                    <div onClick={() => handleFileClick(history.file)}>
-                      <FileImageOutlined
-                        style={{ fontSize: "24px", color: "#1890ff" }}
-                        className="hover:opacity-80"
-                      />
-                    </div>
-                    <Image
-                      src={`${process.env.REACT_APP_URL}/${history.file.replace(
-                        /\\/g,
-                        "/"
-                      )}`}
-                      alt="Transaction File"
-                      className="hidden"
-                      preview={{
-                        visible: modalState.previewImageId === history._id,
-                        onVisibleChange: (visible) => {
-                          setModalState((prev) => ({
-                            ...prev,
-                            previewImageId: visible ? history._id : null,
-                          }));
-                        },
-                        mask: null,
-                        toolbarRender: (
-                          _,
-                          { transform: { scale }, actions }
-                        ) => (
-                          <div className="ant-image-preview-operations">
-                            <div className="ant-image-preview-operations-operation">
-                              <DownloadOutlined
-                                onClick={() => handleDownload(history.file)}
-                              />
-                            </div>
-                            <div className="ant-image-preview-operations-operation">
-                              <RotateLeftOutlined
-                                onClick={actions.onRotateLeft}
-                              />
-                            </div>
-                            <div className="ant-image-preview-operations-operation">
-                              <RotateRightOutlined
-                                onClick={actions.onRotateRight}
-                              />
-                            </div>
-                            <div className="ant-image-preview-operations-operation">
-                              <ZoomOutOutlined
-                                disabled={scale === 1}
-                                onClick={actions.onZoomOut}
-                              />
-                            </div>
-                            <div className="ant-image-preview-operations-operation">
-                              <ZoomInOutlined
-                                disabled={scale === 50}
-                                onClick={actions.onZoomIn}
-                              />
-                            </div>
-                          </div>
-                        ),
-                      }}
-                    />
-                  </div>
-                )
-              ) : (
-                <span className="text-sm text-gray-500">No file</span>
-              )}
-            </div>
-          </div>
-
-          <div className="flex justify-between items-center">
-            <div>
-              {history?.confirmationStatus === "confirmed" ? (
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                  Confirmed
+            {/* User Info */}
+            <div className="flex items-start space-x-3 mb-6">
+              <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
+                <span className="text-xl font-medium text-gray-600">
+                  {entry.initiatedBy.charAt(0).toUpperCase()}
                 </span>
-              ) : userId === history?.initiaterId ? (
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                  Pending
-                </span>
-              ) : (
-                <button
-                  onClick={() => updateTransactionStatus(history._id)}
-                  disabled={updatingEntryId === history._id}
-                  className={`inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-full shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
-                    updatingEntryId === history._id
-                      ? "opacity-50 cursor-not-allowed"
-                      : ""
-                  }`}
-                >
-                  {updatingEntryId === history._id ? "Updating..." : "Confirm"}
-                </button>
-              )}
-            </div>
-
-            {userId === history?.initiaterId && (
-              <div className="flex space-x-3">
-                <button
-                  onClick={() => openEditForm(history)}
-                  className="text-yellow-600 hover:text-yellow-900 transition-colors"
-                  title="Edit"
-                >
-                  <MdEdit className="h-5 w-5" />
-                </button>
-                <button
-                  onClick={() => handleDelete(history)}
-                  className="text-red-600 hover:text-red-900 transition-colors"
-                  title="Delete"
-                >
-                  <MdDelete className="h-5 w-5" />
-                </button>
               </div>
-            )}
+              <div>
+                <h3 className="text-lg font-medium text-gray-900">{entry.initiatedBy}</h3>
+                <span className={`inline-block mt-1 px-2 py-0.5 rounded-full text-sm font-medium ${
+                  entry.transactionType === 'you will get'
+                    ? 'bg-red-100 text-red-800'
+                    : 'bg-green-100 text-green-800'
+                }`}>
+                  <span className={
+                    entry.transactionType === 'you will get' 
+                      ? 'text-red-800'
+                      : 'text-green-800'
+                  }>
+                    {entry.transactionType === 'you will get' ? 'you will give' : 'you will get'}
+                  </span>
+                </span>
+                <p className="text-sm text-gray-500 mt-1">{entry.description || 'No description'}</p>
+              </div>
+            </div>
+
+            {/* Amount */}
+            <div className="mb-4">
+              <span className={`text-3xl font-bold ${
+                entry.transactionType === 'you will get'
+                  ? 'text-red-600'
+                  : 'text-green-600'
+              }`}>
+                ₹{entry.amount?.toFixed(2) || "0.00"}
+              </span>
+              <p className="text-sm text-gray-500 mt-1">{new Date(entry.transactionDate).toLocaleString()}</p>
+            </div>
+
+            {/* Status and Actions */}
+            <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100">
+              <div className="flex items-center">
+                {entry.confirmationStatus === 'confirmed' ? (
+                  <span className="flex items-center text-green-600">
+                    <AiOutlineCheckCircle className="w-5 h-5 mr-1" />
+                    <span className="text-sm">Confirmed</span>
+                  </span>
+                ) : (
+                  <span className="flex items-center text-yellow-600">
+                    <AiOutlineClockCircle className="w-5 h-5 mr-1" />
+                    <span className="text-sm">Pending</span>
+                  </span>
+                )}
+              </div>
+
+              <div className="flex items-center space-x-2">
+                {entry.file && (
+                  <button
+                    onClick={() => handleFileClick(entry.file)}
+                    className={`p-2 rounded-full hover:bg-gray-50 transition-colors ${
+                      entry.file.toLowerCase().endsWith('.pdf')
+                        ? 'text-red-500'
+                        : 'text-blue-500'
+                    }`}
+                    title={entry.file.toLowerCase().endsWith('.pdf') ? 'View PDF' : 'View Image'}
+                  >
+                    {entry.file.toLowerCase().endsWith('.pdf') ? (
+                      <BsFilePdf className="w-5 h-5" />
+                    ) : (
+                      <AiOutlineFileImage className="w-5 h-5" />
+                    )}
+                  </button>
+                )}
+
+                {userId === entry.initiaterId ? (
+                  <>
+                    <button
+                      onClick={() => openEditForm(entry)}
+                      className="p-2 rounded-full hover:bg-gray-50 transition-colors text-yellow-500"
+                      title="Edit"
+                    >
+                      <MdEdit className="w-5 h-5" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(entry)}
+                      className="p-2 rounded-full hover:bg-gray-50 transition-colors text-red-500"
+                      title="Delete"
+                    >
+                      <MdDelete className="w-5 h-5" />
+                    </button>
+                  </>
+                ) : entry.confirmationStatus === 'pending' ? (
+                  <button
+                    onClick={() => updateTransactionStatus(entry._id)}
+                    disabled={updatingEntryId === entry._id}
+                    className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 text-sm"
+                  >
+                    {updatingEntryId === entry._id ? 'Updating...' : 'Confirm'}
+                  </button>
+                ) : null}
+              </div>
+            </div>
           </div>
-        </div>
-      ))}
-    </div>
-  );
+        ))}
+      </div>
+    );
+  };
+
+  const handleDelete = (entry) => {
+    setDeleteTransactionDetails(entry);
+    setModalState((prev) => ({
+      ...prev,
+      showDeleteModal: true,
+    }));
+  };
+
+  const handleConfirmDelete = async () => {
+    await confirmDelete();
+    setSuccessMessage("Transaction deleted successfully!");
+    setModalState((prev) => ({
+      ...prev,
+      showDeleteModal: false,
+      showSuccessModal: true,
+    }));
+  };
+
+  const handleCancelDelete = () => {
+    setDeleteTransactionDetails(null);
+    setModalState((prev) => ({
+      ...prev,
+      showDeleteModal: false,
+    }));
+  };
 
   const totalItems = sortedAndFilteredTransactions?.length || 0;
   const totalPages = Math.ceil(totalItems / pageSize);
@@ -511,16 +509,99 @@ const CollaborativeBookRecords = () => {
 
     // Add title
     doc.setFontSize(16);
+    doc.setTextColor(37, 99, 235); // Set title to blue
     doc.text("Transaction History", 14, 15);
+
+    // Add cards for user info and balance
+    const pageWidth = doc.internal.pageSize.width;
+    const cardWidth = (pageWidth - 28 - (3 * 7)) / 4; // Distribute space evenly among 4 cards with gaps
+    const cardHeight = 30;
+    const startY = 25;
+    const gap = 7;
+
+    // Card 1 - User Name (Blue)
+    doc.setFillColor(239, 246, 255); // Light blue background
+    doc.setDrawColor(37, 99, 235); // Blue border
+    doc.roundedRect(14, startY, cardWidth, cardHeight, 3, 3, 'FD');
+    doc.setFontSize(8);
+    doc.setTextColor(71, 85, 105);
+    doc.text("Your Name", 17, startY + 7);
+    doc.setFontSize(11);
+    doc.setTextColor(37, 99, 235);
+    doc.text(transaction.userId.name, 17, startY + 15, { maxWidth: cardWidth - 6 });
+
+    // Card 2 - Other User (Purple)
+    doc.setFillColor(245, 243, 255); // Light purple background
+    doc.setDrawColor(139, 92, 246); // Purple border
+    doc.roundedRect(14 + cardWidth + gap, startY, cardWidth, cardHeight, 3, 3, 'FD');
+    doc.setFontSize(8);
+    doc.setTextColor(71, 85, 105);
+    doc.text("Other User", 17 + cardWidth + gap, startY + 7);
+    doc.setFontSize(11);
+    doc.setTextColor(139, 92, 246);
+    doc.text(transaction.clientUserId.name, 17 + cardWidth + gap, startY + 15, { maxWidth: cardWidth - 6 });
+
+    // Card 3 - Book Name (Green)
+    doc.setFillColor(240, 253, 244); // Light green background
+    doc.setDrawColor(34, 197, 94); // Green border
+    doc.roundedRect(14 + (cardWidth + gap) * 2, startY, cardWidth, cardHeight, 3, 3, 'FD');
+    doc.setFontSize(8);
+    doc.setTextColor(71, 85, 105);
+    doc.text("Book Name", 17 + (cardWidth + gap) * 2, startY + 7);
+    doc.setFontSize(11);
+    doc.setTextColor(34, 197, 94);
+    doc.text(transaction.bookId.bookname, 17 + (cardWidth + gap) * 2, startY + 15, { maxWidth: cardWidth - 6 });
+
+    // Card 4 - Outstanding Balance (Orange/Red based on balance)
+    const balance = transaction.outstandingBalance || 0;
+    const isPositive = balance >= 0;
+    
+    // Set fill color based on balance
+    if (isPositive) {
+        doc.setFillColor(255, 247, 237); // Light orange background
+        doc.setDrawColor(249, 115, 22); // Orange border
+    } else {
+        doc.setFillColor(254, 242, 242); // Light red background
+        doc.setDrawColor(239, 68, 68); // Red border
+    }
+    
+    const card4X = 14 + (cardWidth + gap) * 3;
+    doc.roundedRect(card4X, startY, cardWidth, cardHeight, 3, 3, 'FD');
+    doc.setFontSize(8);
+    doc.setTextColor(71, 85, 105);
+    doc.text("Outstanding Balance", card4X + 3, startY + 7);
+    doc.setFontSize(11);
+    
+    // Set text color based on balance
+    if (isPositive) {
+        doc.setTextColor(249, 115, 22); // Orange text
+    } else {
+        doc.setTextColor(239, 68, 68); // Red text
+    }
+    
+    // Format the balance with appropriate spacing
+    const formattedBalance = Math.abs(balance).toLocaleString('en-IN', {
+        maximumFractionDigits: 2,
+        minimumFractionDigits: 2
+    });
+    const balanceText = `${formattedBalance}`;
+    doc.text(
+      balanceText,
+      card4X + 3,
+      startY + 15,
+      { maxWidth: cardWidth - 6 }
+    );
+    
+    doc.setFontSize(8);
+    doc.text(
+      isPositive ? "You will give" : "You will get",
+      card4X + 3,
+      startY + 22
+    );
 
     // Add filters info
     doc.setFontSize(10);
-    doc.text(`Status: ${getStatusLabel()}`, 14, 25);
-    doc.text(`Added By: ${getUserLabel()}`, 14, 30);
-
-    // Add current date
-    const currentDate = new Date().toLocaleString();
-    doc.text(`Generated on: ${currentDate}`, 14, 35);
+    doc.setTextColor(71, 85, 105); // Reset text color
 
     // Prepare table data
     const tableData = sortedAndFilteredTransactions.map((history, index) => [
@@ -554,7 +635,7 @@ const CollaborativeBookRecords = () => {
     doc.autoTable({
       head: headers,
       body: tableData,
-      startY: 40,
+      startY: startY + cardHeight + 10, // Adjusted starting position for table
       styles: { fontSize: 8 },
       columnStyles: {
         0: { cellWidth: 10 }, // S.No
@@ -566,15 +647,58 @@ const CollaborativeBookRecords = () => {
         6: { cellWidth: 20 }, // Status
       },
       headStyles: {
-        fillColor: [71, 85, 105],
+        fillColor: [37, 99, 235], // Changed to blue
         textColor: 255,
         fontSize: 8,
         fontStyle: "bold",
       },
+      bodyStyles: {
+        textColor: [71, 85, 105], // Slate gray for better readability
+      },
       alternateRowStyles: {
-        fillColor: [245, 247, 250],
+        fillColor: [239, 246, 255], // Light blue background
       },
       margin: { top: 40 },
+      didDrawPage: function (data) {
+        // Add footer to each page
+        const pageHeight = doc.internal.pageSize.height;
+        const pageWidth = doc.internal.pageSize.width;
+        const footerY = pageHeight - 25;
+
+        // Footer divider line
+        doc.setDrawColor(37, 99, 235); // Blue divider
+        doc.setLineWidth(0.5);
+        doc.line(14, footerY, pageWidth - 14, footerY);
+
+        // Footer content
+        doc.setFontSize(12);
+        doc.setTextColor(37, 99, 235);
+        doc.text("HisaabKaro", 14, footerY + 8);
+
+        doc.setFontSize(8);
+        doc.setTextColor(71, 85, 105); // Slate gray
+        doc.text("Your Digital Expense Management Partner", 14, footerY + 14);
+
+        doc.setTextColor(37, 99, 235);
+        doc.text(
+          "www.hisaabkaro.com",
+          pageWidth / 2,
+          footerY + 14,
+          { align: "center" }
+        );
+
+        doc.setFontSize(7);
+        doc.setTextColor(71, 85, 105); // Slate gray
+        const currentDate = new Date().toLocaleDateString("en-US");
+        const year = new Date().getFullYear();
+        doc.text(`Generated: ${currentDate}`, 14, footerY + 20);
+        doc.text(
+          ` ${year} HisaabKaro. All rights reserved`,
+          pageWidth - 14,
+          footerY + 20,
+          { align: "right" }
+        );
+      }
     });
 
     // Save PDF
@@ -683,7 +807,10 @@ const CollaborativeBookRecords = () => {
                     : "text-teal-700"
                 }`}
               >
-                {Math.abs(transaction.outstandingBalance).toFixed(2)}
+                {Math.abs(transaction.outstandingBalance).toLocaleString('en-IN', {
+                  maximumFractionDigits: 2,
+                  minimumFractionDigits: 2
+                })}
               </p>
             </div>
           </div>
@@ -795,7 +922,16 @@ const CollaborativeBookRecords = () => {
 
               <Dropdown
                 menu={{
-                  items: userItems,
+                  items: [
+                    {
+                      key: 'all',
+                      label: 'All'
+                    },
+                    ...uniqueUsers.map(user => ({
+                      key: user.id,
+                      label: user.name
+                    }))
+                  ],
                   onClick: ({ key }) => handleUserFilterChange(key),
                 }}
                 trigger={["click"]}
@@ -804,7 +940,7 @@ const CollaborativeBookRecords = () => {
                   <Space>
                     <FilterOutlined />
                     <span className="font-semibold">
-                      Added By: {getUserLabel()}
+                      Added By: {userFilter.name}
                     </span>
                   </Space>
                 </Button>
@@ -815,7 +951,7 @@ const CollaborativeBookRecords = () => {
                 className="flex items-center h-10"
                 disabled={
                   statusFilter === "all" &&
-                  userFilter === "all" &&
+                  userFilter.id === "all" &&
                   sortConfig.type === "date" &&
                   sortConfig.order === "desc"
                 }
@@ -848,17 +984,26 @@ const CollaborativeBookRecords = () => {
             </div>
 
             <div className="flex items-center gap-4">
-              <Select
-                value={pageSize}
-                onChange={handlePageSizeChange}
-                className="w-32 h-10"
-                options={[
-                  { value: 10, label: "10 per page" },
-                  { value: 20, label: "20 per page" },
-                  { value: 50, label: "50 per page" },
-                  { value: 100, label: "100 per page" },
-                ]}
-              />
+              <Dropdown
+                menu={{
+                  items: [
+                    { value: 10, label: "10 per page" },
+                    { value: 20, label: "20 per page" },
+                    { value: 50, label: "50 per page" },
+                    { value: 100, label: "100 per page" },
+                  ],
+                  onClick: ({ key }) => handlePageSizeChange(parseInt(key)),
+                }}
+                trigger={["click"]}
+              >
+                <Button className="flex items-center h-10">
+                  <Space>
+                    <span className="font-semibold">
+                      {pageSize} per page
+                    </span>
+                  </Space>
+                </Button>
+              </Dropdown>
               <div className="flex items-center gap-2">
                 <Button
                   onClick={() => handlePageChange(currentPage - 1)}
@@ -1097,13 +1242,7 @@ const CollaborativeBookRecords = () => {
                                   <MdEdit className="h-5 w-5" />
                                 </button>
                                 <button
-                                  onClick={() => {
-                                    console.log(
-                                      "Delete clicked for history:",
-                                      history
-                                    );
-                                    handleDelete(history);
-                                  }}
+                                  onClick={() => handleDelete(history)}
                                   className="text-red-600 hover:text-red-900 transition-colors"
                                   title="Delete"
                                 >
@@ -1131,7 +1270,7 @@ const CollaborativeBookRecords = () => {
                   </tbody>
                 </table>
               ) : (
-                renderGridView(currentItems)
+                renderGridView()
               )}
             </div>
           </div>
@@ -1149,21 +1288,18 @@ const CollaborativeBookRecords = () => {
 
         <DeleteConfirmationModal
           isOpen={modalState.showDeleteModal}
-          onClose={cancelDelete}
-          onConfirm={confirmDelete}
+          onClose={handleCancelDelete}
+          onConfirm={handleConfirmDelete}
           transactionDetails={deleteTransactionDetails}
         />
 
         <SuccessModal
           isOpen={modalState.showSuccessModal}
-          message={
-            updatingEntryId
-              ? "Transaction status updated successfully!"
-              : "Action Done Successfully"
-          }
-          onClose={() =>
-            setModalState((prev) => ({ ...prev, showSuccessModal: false }))
-          }
+          message={successMessage}
+          onClose={() => {
+            setModalState((prev) => ({ ...prev, showSuccessModal: false }));
+            setSuccessMessage("");
+          }}
         />
 
         <ErrorModal
