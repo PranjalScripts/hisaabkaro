@@ -4,7 +4,7 @@ import { ArrowRight, Sparkles, Users, Receipt, Shield } from "lucide-react";
 
 export default function HeroSection({ setShowLoginModal }) {
   return (
-    <div className="relative overflow-hidden bg-gradient-to-b from-indigo-50 via-white to-white pt-20 pb-16 sm:pb-24">
+    <div className="relative  overflow-hidden bg-gradient-to-b from-indigo-50 via-white to-white pt-20 pb-16 sm:pb-24">
       <div className="absolute inset-y-0 w-full h-full">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px]" />
       </div>

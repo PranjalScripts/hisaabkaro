@@ -30,6 +30,7 @@ import NoInternetConnection from "./components/NoInternetConnection";
 import './i18n';
 import Calculator from "./Calculator/MainCalc/Calculator"
 import Emi from "./Calculator/EmiCalculator/EmiCalculator";
+import Basic from "./Calculator/ClassicalCalculator/ClassicalCalculator"
 import Percentage from "./Calculator/percentageCalculator/PercentageCalculator";
 import CompareLoan from "./Calculator/CompareLoanCalculator/CompareLoanCalculator";
 import Gst from "./Calculator/GST/GST";
@@ -93,6 +94,7 @@ function App() {
               <Route path="/calculator/percentage" element={<Percentage />} />
               <Route path="/calculator/compare-loan" element={<CompareLoan />} />
               <Route path="/calculator/gst" element={<Gst />} />
+              <Route path="/calculator/basic" element={<Basic />} />
 
               {/* Protected Routes */}
               <Route
