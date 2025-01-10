@@ -90,7 +90,12 @@
     "outstandingBalance": "Outstanding Balance",
     "settled": "Settled",
     "clientTransaction": "Client Transaction",
-    "transaction": "Transaction"
+    "transaction": "Transaction",
+    "totalYouWillGet": "Total You Will Get",
+    "totalYouWillGive": "Total You Will Give",
+    "totalOutstanding": "Total Outstanding",
+    "unconfirmed": "unconfirmed",
+    "afterSettlement": "After settlement"
   },
   "calculator": {
     "basic": "Basic Calculator",

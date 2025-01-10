@@ -90,7 +90,12 @@
     "outstandingBalance": "बकाया राशि",
     "settled": "हिसाब बराबर",
     "clientTransaction": "ग्राहक लेनदेन",
-    "transaction": "लेनदेन"
+    "transaction": "लेनदेन",
+    "totalYouWillGet": "कुल आपको मिलेगा",
+    "totalYouWillGive": "कुल आप देंगे",
+    "totalOutstanding": "कुल बकाया",
+    "unconfirmed": "अपुष्ट",
+    "afterSettlement": "निपटान के बाद"
   },
   "calculator": {
     "basic": "बेसिक कैलकुलेटर",

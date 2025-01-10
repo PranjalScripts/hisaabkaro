@@ -1,9 +1,10 @@
- import React, { useState } from "react";
+import React, { useState } from "react";
 import Navbar from "./Navbar";
 import HeroSection from "./HeroSection";
 import FeaturesSection from "./FeaturesSection";
 import Stats from "./stats";
 import { Testimonials } from "./Testimonials";
+import FAQSection from "./FAQSection";
 import CTASection from "./CTASection";
 import Footer from "./Footer";
 import LoginModal from "./LoginModal";
@@ -25,6 +26,7 @@ function Landing() {
       <Stats />
       <FeaturesSection />
       <Testimonials />
+      <FAQSection />
       <CTASection />
       <Footer />
       <LoginModal
