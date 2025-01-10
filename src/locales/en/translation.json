@@ -23,10 +23,19 @@
     "bookName": "Book Name",
     "actions": "Actions",
     "viewDetails": "View Details",
+    "listView": "List",
+    "gridView": "Grid",
     "noRecordsFound": "No records found",
     "couldNotFindBookName": "Could Not Find Book Name",
     "na": "N/A",
-    "records": "records"
+    "records": "records",
+    "perPage": "per page",
+    "showing": "Showing",
+    "to": "to",
+    "of": "of",
+    "transactions": "transactions",
+    "previous": "Previous",
+    "next": "Next"
   },
   "auth": {
     "login": "Login",
@@ -95,7 +104,8 @@
     "totalYouWillGive": "Total You Will Give",
     "totalOutstanding": "Total Outstanding",
     "unconfirmed": "unconfirmed",
-    "afterSettlement": "After settlement"
+    "afterSettlement": "After settlement",
+    "summary": "Summary"
   },
   "calculator": {
     "basic": "Basic Calculator",

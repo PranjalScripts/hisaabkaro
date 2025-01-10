@@ -1,13 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   FaTachometerAlt,
-  FaFileAlt,
+ 
   FaUsers,
   FaSignOutAlt,
-  FaSignInAlt,
+ 
   FaBook,
   FaIdCard,
-  FaHandshake,
+ 
   FaHandHoldingUsd,
   FaReceipt,
   FaFileInvoiceDollar,
@@ -15,6 +15,7 @@ import {
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useTranslation } from 'react-i18next';
+import SidebarTransactionSummary from "../../components/Dashboard/SidebarTransactionSummary";
 
 const Sidebar = () => {
   const { isLoggedIn, logout } = useAuth() || {};
@@ -22,12 +23,137 @@ const Sidebar = () => {
   const location = useLocation();
   const [isCollabOpen, setCollabOpen] = useState(false);
   const { t } = useTranslation();
+  const [transactions, setTransactions] = useState([]);
+
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      const token = localStorage.getItem("token");
+      try {
+        const [clientTransactionsRes, transactionsRes] = await Promise.all([
+          fetch(
+            `${process.env.REACT_APP_URL}/api/collab-transactions/client-transactions`,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          ),
+          fetch(
+            `${process.env.REACT_APP_URL}/api/collab-transactions/transactions`,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          ),
+        ]);
+
+        const clientTransactions = await clientTransactionsRes.json();
+        const transactionsData = await transactionsRes.json();
+
+        const processedClientTransactions = (clientTransactions.transactions || []).map((transaction) => {
+          const confirmedYouWillGet = transaction.transactionHistory
+            .filter(
+              (t) =>
+                t.transactionType === "you will give" &&
+                t.confirmationStatus === "confirmed"
+            )
+            .reduce((acc, curr) => acc + curr.amount, 0);
+
+          const confirmedYouWillGive = transaction.transactionHistory
+            .filter(
+              (t) =>
+                t.transactionType === "you will get" &&
+                t.confirmationStatus === "confirmed"
+            )
+            .reduce((acc, curr) => acc + curr.amount, 0);
+
+          const unconfirmedYouWillGet = transaction.transactionHistory
+            .filter(
+              (t) =>
+                t.transactionType === "you will give" &&
+                t.confirmationStatus !== "confirmed"
+            )
+            .reduce((acc, curr) => acc + curr.amount, 0);
+
+          const unconfirmedYouWillGive = transaction.transactionHistory
+            .filter(
+              (t) =>
+                t.transactionType === "you will get" &&
+                t.confirmationStatus !== "confirmed"
+            )
+            .reduce((acc, curr) => acc + curr.amount, 0);
+
+          const outstandingBalance = confirmedYouWillGet - confirmedYouWillGive;
+
+          return {
+            ...transaction,
+            confirmedYouWillGet,
+            confirmedYouWillGive,
+            unconfirmedYouWillGet,
+            unconfirmedYouWillGive,
+            outstandingBalance,
+          };
+        });
+
+        const processedTransactions = (transactionsData.transactions || []).map((transaction) => {
+          const confirmedYouWillGet = transaction.transactionHistory
+            .filter(
+              (t) =>
+                t.transactionType === "you will get" &&
+                t.confirmationStatus === "confirmed"
+            )
+            .reduce((acc, curr) => acc + curr.amount, 0);
+
+          const confirmedYouWillGive = transaction.transactionHistory
+            .filter(
+              (t) =>
+                t.transactionType === "you will give" &&
+                t.confirmationStatus === "confirmed"
+            )
+            .reduce((acc, curr) => acc + curr.amount, 0);
+
+          const unconfirmedYouWillGet = transaction.transactionHistory
+            .filter(
+              (t) =>
+                t.transactionType === "you will get" &&
+                t.confirmationStatus !== "confirmed"
+            )
+            .reduce((acc, curr) => acc + curr.amount, 0);
+
+          const unconfirmedYouWillGive = transaction.transactionHistory
+            .filter(
+              (t) =>
+                t.transactionType === "you will give" &&
+                t.confirmationStatus !== "confirmed"
+            )
+            .reduce((acc, curr) => acc + curr.amount, 0);
+
+          const outstandingBalance = confirmedYouWillGet - confirmedYouWillGive;
+
+          return {
+            ...transaction,
+            confirmedYouWillGet,
+            confirmedYouWillGive,
+            unconfirmedYouWillGet,
+            unconfirmedYouWillGive,
+            outstandingBalance,
+          };
+        });
+
+        const allTransactions = [...processedClientTransactions, ...processedTransactions];
+        setTransactions(allTransactions);
+      } catch (error) {
+        console.error("Error fetching transactions:", error);
+      }
+    };
+
+    if (isLoggedIn) {
+      fetchTransactions();
+    }
+  }, [isLoggedIn]);
 
   const handleLogout = () => {
     logout();
     navigate("/");
   };
-
+// eslint-disable-next-line
   const toggleCollabDropdown = () => {
     setCollabOpen(!isCollabOpen);
   };
@@ -39,7 +165,7 @@ const Sidebar = () => {
     { path: "/your-books", icon: FaFileInvoiceDollar, label: t('navigation.selfRecord') },
     { path: "/book", icon: FaBook, label: t('navigation.books') },
     { path: "/users", icon: FaUsers, label: t('navigation.users') },
-    { path: "/loans", icon: FaHandHoldingUsd, label: t('navigation.loans') },
+    // { path: "/loans", icon: FaHandHoldingUsd, label: t('navigation.loans') },
     { path: "/invoice", icon: FaReceipt, label: t('navigation.invoice') },
   ];
 
@@ -111,8 +237,16 @@ const Sidebar = () => {
         )}
       </nav>
 
+      {/* Transaction Summary Section */}
+      {location.pathname !== '/dashboard' && (
+        <div className="px-2 py-0.5 border-t border-slate-200 bg-white">
+          <h2 className="text-[9px] font-semibold text-slate-600 mb-0.5">{t('transactions.summary')}</h2>
+          <SidebarTransactionSummary transactions={transactions} />
+        </div>
+      )}
+
       {/* Logout Button */}
-      <div className="p-4 border-t border-slate-200">
+      <div className="p-1.5">
         <button
           onClick={handleLogout}
           className="w-full flex items-center px-4 py-3 text-slate-600 hover:bg-white hover:shadow-md rounded-xl transition-all duration-200 hover:scale-[1.02]"

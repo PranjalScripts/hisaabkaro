@@ -21,12 +21,21 @@
     "refresh": "रीफ्रेश",
     "name": "नाम",
     "bookName": "बही-खाता का नाम",
-    "actions": "कार्य",
+    "actions": "कार्रवाई",
     "viewDetails": "विवरण देखें",
+    "listView": "सूची",
+    "gridView": "ग्रिड",
     "noRecordsFound": "कोई रिकॉर्ड नहीं मिला",
     "couldNotFindBookName": "बही-खाता का नाम नहीं मिला",
     "na": "उपलब्ध नहीं",
-    "records": "रिकॉर्ड"
+    "records": "रिकॉर्ड",
+    "perPage": "प्रति पृष्ठ",
+    "showing": "दिखा रहा है",
+    "to": "से",
+    "of": "में से",
+    "transactions": "लेनदेन",
+    "previous": "पिछला",
+    "next": "अगला"
   },
   "auth": {
     "login": "लॉग इन",
@@ -95,7 +104,8 @@
     "totalYouWillGive": "कुल आप देंगे",
     "totalOutstanding": "कुल बकाया",
     "unconfirmed": "अपुष्ट",
-    "afterSettlement": "निपटान के बाद"
+    "afterSettlement": "निपटान के बाद",
+    "summary": "सारांश"
   },
   "calculator": {
     "basic": "बेसिक कैलकुलेटर",

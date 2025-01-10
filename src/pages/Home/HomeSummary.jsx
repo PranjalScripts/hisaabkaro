@@ -2,7 +2,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { AiOutlineArrowDown, AiOutlineArrowUp, AiOutlineSwap, AiOutlineClockCircle } from "react-icons/ai";
 
-const TransactionSummary = ({ transactions }) => {
+const HomeSummary = ({ transactions }) => {
   const { t } = useTranslation();
 
   const calculateTotals = () => {
@@ -11,7 +11,7 @@ const TransactionSummary = ({ transactions }) => {
         const unconfirmedBalance =
           transaction.unconfirmedYouWillGet -
           transaction.unconfirmedYouWillGive;
-          return {
+        return {
           totalWillGet: acc.totalWillGet + transaction.confirmedYouWillGet,
           totalWillGive: acc.totalWillGive + transaction.confirmedYouWillGive,
           totalOutstanding:
@@ -22,7 +22,7 @@ const TransactionSummary = ({ transactions }) => {
             acc.unconfirmedWillGive + transaction.unconfirmedYouWillGive,
           totalUnconfirmedBalance:
             acc.totalUnconfirmedBalance + unconfirmedBalance,
-          };
+        };
       },
       {
         totalWillGet: 0,
@@ -138,4 +138,4 @@ const TransactionSummary = ({ transactions }) => {
   );
 };
 
-export default TransactionSummary;
+export default HomeSummary;

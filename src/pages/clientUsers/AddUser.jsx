@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import countryData from '../../data/country';
 
 const AddUser = ({ onUserAdded, onClose }) => {
   const [newUser, setNewUser] = useState({ name: "", email: "", mobile: "" });
+  const [selectedCountry, setSelectedCountry] = useState(countryData[0]); // Default to first country (India)
   const [errorMessage, setErrorMessage] = useState("");
 
   const API_URL = `${process.env.REACT_APP_URL}/api/v3/client/create-client`;
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-  const mobileRegex = /^[0-9]{10}$/;
 
   const validateForm = () => {
     if (!newUser.name.trim()) {
@@ -26,8 +27,8 @@ const AddUser = ({ onUserAdded, onClose }) => {
       setErrorMessage("Invalid email format");
       return false;
     }
-    if (!mobileRegex.test(newUser.mobile)) {
-      setErrorMessage("Mobile number should be 10 digits");
+    if (newUser.mobile.length !== selectedCountry.numberLength) {
+      setErrorMessage(`Mobile number should be ${selectedCountry.numberLength} digits for ${selectedCountry.countryName}`);
       return false;
     }
     return true;
@@ -44,7 +45,10 @@ const AddUser = ({ onUserAdded, onClose }) => {
         return;
       }
 
-      const response = await axios.post(API_URL, newUser, {
+      const response = await axios.post(API_URL, {
+        ...newUser,
+        mobile: `${selectedCountry.callingCode}${newUser.mobile}`
+      }, {
         headers: { Authorization: `Bearer ${token}` },
       });
       
@@ -131,20 +135,42 @@ const AddUser = ({ onUserAdded, onClose }) => {
                 <label htmlFor="mobile" className="block text-sm font-medium text-gray-700 mb-1">
                   Mobile Number
                 </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-                      <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
-                    </svg>
+                <div className="flex space-x-2">
+                  <select
+                    className="w-32 rounded-lg border border-gray-300 shadow-sm px-3 py-2 bg-white text-gray-700 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-colors"
+                    value={selectedCountry.countryCode}
+                    onChange={(e) => {
+                      const country = countryData.find(c => c.countryCode === e.target.value);
+                      setSelectedCountry(country);
+                      setNewUser({ ...newUser, mobile: "" }); // Reset mobile when country changes
+                    }}
+                  >
+                    {countryData.map((country) => (
+                      <option key={country.countryCode} value={country.countryCode}>
+                        {country.callingCode} ({country.countryCode})
+                      </option>
+                    ))}
+                  </select>
+                  <div className="relative flex-1">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+                      </svg>
+                    </div>
+                    <input
+                      id="mobile"
+                      type="tel"
+                      value={newUser.mobile}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/\D/g, '');
+                        if (value.length <= selectedCountry.numberLength) {
+                          setNewUser({ ...newUser, mobile: value });
+                        }
+                      }}
+                      placeholder={`${selectedCountry.numberLength} digits`}
+                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-colors"
+                    />
                   </div>
-                  <input
-                    id="mobile"
-                    type="tel"
-                    value={newUser.mobile}
-                    onChange={(e) => setNewUser({ ...newUser, mobile: e.target.value })}
-                    placeholder="Enter 10-digit mobile number"
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-colors"
-                  />
                 </div>
               </div>
             </div>

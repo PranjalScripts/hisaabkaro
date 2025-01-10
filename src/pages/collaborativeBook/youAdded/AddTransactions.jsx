@@ -64,12 +64,17 @@ const AddTransactions = () => {
     };
 
     try {
-      await createTransaction(transactionData, file); // Pass the file to the API
+      await createTransaction(transactionData, file);
       setShowSuccessModal(true);
     } catch (error) {
       console.error("Error creating transaction:", error);
       setShowFailureModal(true);
     }
+  };
+
+  const handleSuccessModalClose = () => {
+    setShowSuccessModal(false);
+    navigate('/dashboard');
   };
 
   const handleFileChange = (e) => {
@@ -288,9 +293,11 @@ const AddTransactions = () => {
 
         {showSuccessModal && (
           <Modal
+            isOpen={showSuccessModal}
+            onClose={handleSuccessModalClose}
             type="success"
-            message="Transaction created successfully!"
-            onClose={() => setShowSuccessModal(false)}
+            title="Success"
+            message="Transaction added successfully!"
           />
         )}
 

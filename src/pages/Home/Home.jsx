@@ -7,13 +7,16 @@ import BarChart from "./BarChart";
 import PieChart from "./PieChart";
 import TransactionList from "./TransactionList";
 import TransactionDetails from "./TransactionDetails";
-
+import HomeSummary from "./HomeSummary";
+import { useAuth } from "../../context/AuthContext";
 const Home = () => {
   const navigate = useNavigate();
+  const { isLoggedIn, logout } = useAuth() || {};
   const [totalBalance, setTotalBalance] = useState(0);
   const [totalCredit, setTotalCredit] = useState(0);
   const [totalDebit, setTotalDebit] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [transactions, setTransactions] = useState([]);
 
   useEffect(() => {
     const fetchTotals = async () => {
@@ -56,6 +59,129 @@ const Home = () => {
   const handleDashboardClick = () => {
     navigate("/dashboard");
   };
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      const token = localStorage.getItem("token");
+      try {
+        const [clientTransactionsRes, transactionsRes] = await Promise.all([
+          fetch(
+            `${process.env.REACT_APP_URL}/api/collab-transactions/client-transactions`,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          ),
+          fetch(
+            `${process.env.REACT_APP_URL}/api/collab-transactions/transactions`,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          ),
+        ]);
+
+        const clientTransactions = await clientTransactionsRes.json();
+        const transactionsData = await transactionsRes.json();
+
+        const processedClientTransactions = (clientTransactions.transactions || []).map((transaction) => {
+          const confirmedYouWillGet = transaction.transactionHistory
+            .filter(
+              (t) =>
+                t.transactionType === "you will give" &&
+                t.confirmationStatus === "confirmed"
+            )
+            .reduce((acc, curr) => acc + curr.amount, 0);
+
+          const confirmedYouWillGive = transaction.transactionHistory
+            .filter(
+              (t) =>
+                t.transactionType === "you will get" &&
+                t.confirmationStatus === "confirmed"
+            )
+            .reduce((acc, curr) => acc + curr.amount, 0);
+
+          const unconfirmedYouWillGet = transaction.transactionHistory
+            .filter(
+              (t) =>
+                t.transactionType === "you will give" &&
+                t.confirmationStatus !== "confirmed"
+            )
+            .reduce((acc, curr) => acc + curr.amount, 0);
+
+          const unconfirmedYouWillGive = transaction.transactionHistory
+            .filter(
+              (t) =>
+                t.transactionType === "you will get" &&
+                t.confirmationStatus !== "confirmed"
+            )
+            .reduce((acc, curr) => acc + curr.amount, 0);
+
+          const outstandingBalance = confirmedYouWillGet - confirmedYouWillGive;
+
+          return {
+            ...transaction,
+            confirmedYouWillGet,
+            confirmedYouWillGive,
+            unconfirmedYouWillGet,
+            unconfirmedYouWillGive,
+            outstandingBalance,
+          };
+        });
+
+        const processedTransactions = (transactionsData.transactions || []).map((transaction) => {
+          const confirmedYouWillGet = transaction.transactionHistory
+            .filter(
+              (t) =>
+                t.transactionType === "you will get" &&
+                t.confirmationStatus === "confirmed"
+            )
+            .reduce((acc, curr) => acc + curr.amount, 0);
+
+          const confirmedYouWillGive = transaction.transactionHistory
+            .filter(
+              (t) =>
+                t.transactionType === "you will give" &&
+                t.confirmationStatus === "confirmed"
+            )
+            .reduce((acc, curr) => acc + curr.amount, 0);
+
+          const unconfirmedYouWillGet = transaction.transactionHistory
+            .filter(
+              (t) =>
+                t.transactionType === "you will get" &&
+                t.confirmationStatus !== "confirmed"
+            )
+            .reduce((acc, curr) => acc + curr.amount, 0);
+
+          const unconfirmedYouWillGive = transaction.transactionHistory
+            .filter(
+              (t) =>
+                t.transactionType === "you will give" &&
+                t.confirmationStatus !== "confirmed"
+            )
+            .reduce((acc, curr) => acc + curr.amount, 0);
+
+          const outstandingBalance = confirmedYouWillGet - confirmedYouWillGive;
+
+          return {
+            ...transaction,
+            confirmedYouWillGet,
+            confirmedYouWillGive,
+            unconfirmedYouWillGet,
+            unconfirmedYouWillGive,
+            outstandingBalance,
+          };
+        });
+
+        const allTransactions = [...processedClientTransactions, ...processedTransactions];
+        setTransactions(allTransactions);
+      } catch (error) {
+        console.error("Error fetching transactions:", error);
+      }
+    };
+
+    if (isLoggedIn) {
+      fetchTransactions();
+    }
+  }, [isLoggedIn]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
@@ -69,41 +195,9 @@ const Home = () => {
             Track your transactions and financial activities
           </p>
         </div>
-
+     <HomeSummary transactions={transactions}/>
         {/* Top Summary Section */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          {loading ? (
-            Array(3)
-              .fill(0)
-              .map((_, i) => (
-                <div
-                  key={i}
-                  className="bg-white p-6 rounded-2xl shadow-sm animate-pulse"
-                >
-                  <div className="h-4 bg-gray-200 rounded w-1/2 mb-2"></div>
-                  <div className="h-8 bg-gray-200 rounded"></div>
-                </div>
-              ))
-          ) : (
-            <>
-              <SummaryCard
-                title="Total Balance"
-                value={`₹${totalBalance.toFixed(2)}`}
-                color="bg-gradient-to-br from-yellow-50 to-yellow-100 hover:shadow-lg transition-shadow duration-300"
-              />
-              <SummaryCard
-                title="Credit"
-                value={`₹${totalCredit.toFixed(2)}`}
-                color="bg-gradient-to-br from-green-50 to-green-100 hover:shadow-lg transition-shadow duration-300"
-              />
-              <SummaryCard
-                title="Debit"
-                value={`₹${totalDebit.toFixed(2)}`}
-                color="bg-gradient-to-br from-red-50 to-red-100 hover:shadow-lg transition-shadow duration-300"
-              />
-            </>
-          )}
-        </div>
+       
 
         {/* Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
@@ -154,3 +248,4 @@ const Home = () => {
 };
 
 export default Home;
+

@@ -4,7 +4,7 @@ import { motion, LazyMotion, domAnimation } from "framer-motion";
 const Modal = ({ type, message, onClose }) => (
   <LazyMotion features={domAnimation}>
     <motion.div
-      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
+      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[9999]"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
