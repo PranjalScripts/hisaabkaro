@@ -11,12 +11,11 @@ body {
   -moz-osx-font-smoothing: grayscale;
   overflow-y: scroll;
   ::selection {
-    background-color: #b64aac; /* Change this to your desired color */
-    color: #ffffff; /* Optional: change text color */
+    background-color: #b64aac;
+    color: #ffffff; 
   }
 }
 
-/* Hide scrollbar for Chrome, Safari and Opera */
 body::-webkit-scrollbar,
 div::-webkit-scrollbar,
 *::-webkit-scrollbar {
@@ -25,7 +24,7 @@ div::-webkit-scrollbar,
   background: transparent !important;
 }
 
-/* Hide scrollbar for Firefox */
+
 body, div, * {
   scrollbar-width: none !important;
   scrollbar-color: transparent transparent !important;

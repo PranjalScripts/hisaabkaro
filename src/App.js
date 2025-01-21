@@ -20,6 +20,13 @@ import SelfRecordByBookID from "./pages/selfRecord/selfrecordbyBookID";
 import TransactionHistory from "./pages/selfRecord/history";
 import PageNotFound from "./pages/pageNotFound/PageNotFound";
 import DashBoard from "./pages/Dashboard/dashboard";
+import Privacy from "./components/LandingPage/Footer/Privacy";
+import About from "./components/LandingPage/Footer/About";
+import Features from "./components/LandingPage/Features";
+import Blogs from "./components/LandingPage/Footer/Blogs";
+import Terms from "./components/LandingPage/Footer/Terms";
+import Careers from "./components/LandingPage/Footer/Careers";
+import ContactUs from "./components/LandingPage/Footer/ContactUs";
 // import DevToolsProtection from './components/DevToolsProtection';
 import GoogleCallback from "./components/auth/GoogleCallback";
 import PrivateRoute from "./components/PrivateRoute";
@@ -70,6 +77,13 @@ function App() {
                     </RedirectIfLoggedIn>
                   }
                 />
+                <Route path="/privacy" element={<Privacy />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/features" element={<Features />} />
+                <Route path="/blogs" element={<Blogs />} />
+                <Route path="/terms" element={<Terms />} />
+                <Route path="/careers" element={<Careers />} />
+                <Route path="/contact" element={<ContactUs />} />
                 <Route
                   path="/login"
                   element={

@@ -238,7 +238,7 @@ const Sidebar = () => {
       </nav>
 
       {/* Transaction Summary Section */}
-      {location.pathname !== '/dashboard' && (
+      {location.pathname !== '/dashboard' && location.pathname !== '/home' &&(
         <div className="px-2 py-0.5 border-t border-slate-200 bg-white">
           <h2 className="text-[9px] font-semibold text-slate-600 mb-0.5">{t('transactions.summary')}</h2>
           <SidebarTransactionSummary transactions={transactions} />

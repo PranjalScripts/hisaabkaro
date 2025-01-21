@@ -6,7 +6,7 @@ import Stats from "./stats";
 import { Testimonials } from "./Testimonials";
 import FAQSection from "./FAQSection";
 import CTASection from "./CTASection";
-import Footer from "./Footer";
+import Footer from "./Footer/Footer";
 import LoginModal from "./LoginModal";
 import Signup from "../auth/login/signup";
 

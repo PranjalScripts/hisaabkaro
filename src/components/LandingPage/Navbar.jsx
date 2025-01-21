@@ -10,10 +10,10 @@ const Navbar = ({ setShowLoginModal }) => {
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 350);
+      setScrolled(window.scrollY > 30);
 
       // Update active section based on scroll position
-      const sections = ["features", "testimonials", "pricing", "calculator"];
+      const sections = ["features", "testimonials", "faq","calculator"];
       const current = sections.find((section) => {
         const element = document.getElementById(section);
         if (element) {
@@ -45,7 +45,6 @@ const Navbar = ({ setShowLoginModal }) => {
     { name: "Features", href: "#features" },
     { name: "Testimonials", href: "#testimonials" },
     { name: "FAQ", href: "#faq" },
-    { name: "Pricing", href: "#pricing" },
     { name: "Calculator", href: "/calculator" },
   ];
 
