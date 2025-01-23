@@ -4,16 +4,24 @@ import SuccessModal from "../../components/SuccessModal";
 import ErrorModal from "../../components/ErrorModal";
 
 const AddBook = ({ onBookAdded, onBookUpdated, editingBook = null, onClose }) => {
-  const [bookName, setBookName] = useState(editingBook ? editingBook.bookname : "");
-  const [successModal, setSuccessModal] = useState({ isOpen: false, message: '' });
+  const [bookName, setBookName] = useState(editingBook?.bookname || "");
+  const [profileImage, setProfileImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(editingBook?.profile || null);
   const [errorMessage, setErrorMessage] = useState("");
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const getAuthToken = () => localStorage.getItem("token");
 
-  const handleSuccessModalClose = () => {
-    setSuccessModal({ isOpen: false, message: '' });
-    onClose();
-    setBookName("");
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setProfileImage(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSaveBook = async () => {
@@ -23,107 +31,133 @@ const AddBook = ({ onBookAdded, onBookUpdated, editingBook = null, onClose }) =>
     }
 
     try {
+      const formData = new FormData();
+      formData.append('bookname', bookName.trim());
+      if (profileImage) {
+        formData.append('profile', profileImage);
+      }
+
       if (editingBook) {
         const response = await axios.put(
           `${process.env.REACT_APP_URL}/api/v2/transactionBooks/update-book/${editingBook._id}`,
-          { bookname: bookName.trim() },
+          formData,
           {
             headers: {
               Authorization: `Bearer ${getAuthToken()}`,
+              'Content-Type': 'multipart/form-data',
             },
           }
         );
         onBookUpdated(response.data.book);
-        setSuccessModal({
-          isOpen: true,
-          message: 'Book updated successfully!'
-        });
+        const event = new CustomEvent('bookAdded', { detail: response.data.book });
+        window.dispatchEvent(event);
+        setShowSuccess(true);
+        // Modal will be closed by the success modal's onClose handler
       } else {
         const response = await axios.post(
-          `${process.env.REACT_APP_URL}/api/v2/transactionBooks/create-books`,
-          { bookname: bookName.trim() },
+          `${process.env.REACT_APP_URL}/api/v2/transactionBooks/create-book`,
+          formData,
           {
             headers: {
               Authorization: `Bearer ${getAuthToken()}`,
+              'Content-Type': 'multipart/form-data',
             },
           }
         );
         onBookAdded(response.data.book);
-        setSuccessModal({
-          isOpen: true,
-          message: 'Book added successfully!'
-        });
+        const event = new CustomEvent('bookAdded', { detail: response.data.book });
+        window.dispatchEvent(event);
+        setShowSuccess(true);
+        // Modal will be closed by the success modal's onClose handler
       }
     } catch (error) {
-      console.error("Error saving book", error);
-      setErrorMessage(editingBook ? 
-        'Failed to update book. Please try again.' : 
-        'Failed to add book. Please try again.'
+      console.error("Error saving book:", error);
+      setErrorMessage(
+        error.response?.data?.message || "An error occurred while saving the book"
       );
     }
   };
 
+  const handleSuccessClose = () => {
+    setShowSuccess(false);
+    // Close the form after success modal is closed
+    onClose();
+  };
+
   return (
-    <div className="fixed inset-0 overflow-y-auto z-40" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-      <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 backdrop-blur-sm transition-opacity" aria-hidden="true"></div>
-        <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-        
-        <div className="inline-block align-bottom bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h3 className="text-xl font-semibold text-gray-900">
-              {editingBook ? "Edit Book" : "Add New Book"}
-            </h3>
+    <>
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[100]">
+        <div className="bg-white rounded-lg p-6 w-full max-w-md relative">
+          <h2 className="text-2xl font-bold mb-4">
+            {editingBook ? "Edit Book" : "Add New Book"}
+          </h2>
+
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Book Name
+            </label>
+            <input
+              type="text"
+              value={bookName}
+              onChange={(e) => setBookName(e.target.value)}
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              placeholder="Enter book name"
+            />
           </div>
 
-          <div className="px-6 py-4">
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Book Name
-                </label>
-                <input
-                  type="text"
-                  value={bookName}
-                  onChange={(e) => setBookName(e.target.value)}
-                  placeholder="Enter book name"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-colors"
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Book Profile Image
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            />
+            {imagePreview && (
+              <div className="mt-2">
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  className="w-32 h-32 object-cover rounded"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = 'https://via.placeholder.com/128?text=No+Image';
+                  }}
                 />
               </div>
-            </div>
+            )}
           </div>
 
-          <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end space-x-3">
+          {errorMessage && (
+            <ErrorModal message={errorMessage} onClose={() => setErrorMessage("")} />
+          )}
+
+          <div className="flex justify-end gap-2">
             <button
-              type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+              className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
             >
               Cancel
             </button>
             <button
-              type="button"
               onClick={handleSaveBook}
-              className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
             >
-              {editingBook ? "Save Changes" : "Add Book"}
+              {editingBook ? "Update" : "Add"}
             </button>
           </div>
         </div>
       </div>
 
-      <SuccessModal
-        isOpen={successModal.isOpen}
-        message={successModal.message}
-        onClose={handleSuccessModalClose}
-      />
-      {errorMessage && (
-        <ErrorModal
-          message={errorMessage}
-          onClose={() => setErrorMessage("")}
+      {showSuccess && (
+        <SuccessModal
+          message={editingBook ? "Book updated successfully!" : "Book added successfully!"}
+          onClose={handleSuccessClose}
         />
       )}
-    </div>
+    </>
   );
 };
 

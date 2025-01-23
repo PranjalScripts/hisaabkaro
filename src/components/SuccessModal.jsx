@@ -12,7 +12,7 @@ const SuccessModal = ({ message, onClose }) => {
   }, [onClose]);
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[9999]">
       <div 
         className="bg-white rounded-lg p-8 max-w-sm w-full mx-4 shadow-2xl transform transition-all duration-300 ease-in-out animate-fadeIn"
         onClick={(e) => e.stopPropagation()}

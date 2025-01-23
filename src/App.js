@@ -1,5 +1,5 @@
-import React from "react";
-import { BrowserRouter, Routes, Route} from "react-router-dom";
+import React, { useEffect } from "react";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { createGlobalStyle } from 'styled-components';
@@ -42,6 +42,8 @@ import Basic from "./Calculator/ClassicalCalculator/ClassicalCalculator"
 import Percentage from "./Calculator/percentageCalculator/PercentageCalculator";
 import CompareLoan from "./Calculator/CompareLoanCalculator/CompareLoanCalculator";
 import Gst from "./Calculator/GST/GST";
+import { initGA, pageView } from './utils/analytics';
+
 const GlobalStyle = createGlobalStyle`
   * {
     scrollbar-width: none !important;
@@ -54,13 +56,29 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
+// Analytics tracker component
+const AnalyticsTracker = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    pageView(location.pathname + location.search);
+  }, [location]);
+
+  return null;
+};
+
 function App() {
+  useEffect(() => {
+    initGA();
+  }, []);
+
   return (
     <BrowserRouter>
       <AuthProvider>
         <ProfileProvider>
           <LanguageProvider>
             <NoInternetConnection>
+              <AnalyticsTracker />
               <GlobalStyle />
               <ToastContainer
                 position="top-right"

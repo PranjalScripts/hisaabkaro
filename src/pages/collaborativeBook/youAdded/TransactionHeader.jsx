@@ -55,15 +55,17 @@ const TransactionHeader = ({ transaction }) => {
 
           {/* Outstanding Balance Card */}
           <div className="relative group">
-            <div className="absolute inset-0 bg-gradient-to-r from-rose-400 to-rose-600 rounded-xl blur opacity-25 group-hover:opacity-40 transition duration-200"></div>
-            <div className="relative bg-white ring-1 ring-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow duration-200">
-              <div className="text-rose-600 mb-2 flex items-center">
+            <div className={`absolute inset-0 ${transaction.outstandingBalance < 0 ? 'bg-gradient-to-r from-red-400 to-red-600' : 'bg-gradient-to-r from-green-400 to-green-600'} rounded-xl blur opacity-25 group-hover:opacity-40 transition duration-200`}></div>
+            <div className={`relative ${transaction.outstandingBalance < 0 ? 'bg-red-50' : 'bg-green-50'} ring-1 ${transaction.outstandingBalance < 0 ? 'ring-red-200' : 'ring-green-200'} rounded-xl p-6 hover:shadow-lg transition-shadow duration-200`}>
+              <div className={`mb-2 flex items-center ${transaction.outstandingBalance < 0 ? 'text-red-600' : 'text-green-600'}`}>
                 <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <span className="font-semibold">Outstanding Balance</span>
               </div>
-              <p className="text-gray-700 font-medium">{transaction.outstandingBalance}</p>
+              <p className={`font-medium ${transaction.outstandingBalance < 0 ? 'text-red-600' : 'text-green-600'}`}>
+                {Math.abs(transaction.outstandingBalance)}
+              </p>
             </div>
           </div>
         </div>

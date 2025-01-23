@@ -43,9 +43,24 @@ export const useTransaction = (transactionId) => {
     const token = localStorage.getItem("token");
 
     try {
+      // Find the entry being confirmed
+      const entryToConfirm = transaction.transactionHistory.find(
+        (entry) => entry._id === entryId
+      );
+
+      if (!entryToConfirm) {
+        throw new Error("Transaction entry not found");
+      }
+
+      // Calculate the new outstanding balance
+      const balanceAdjustment = entryToConfirm.transactionType === "credit" 
+        ? entryToConfirm.amount 
+        : -entryToConfirm.amount;
+
       // Optimistically update the UI first
       setTransaction((prev) => ({
         ...prev,
+        outstandingBalance: prev.outstandingBalance + balanceAdjustment,
         transactionHistory: prev.transactionHistory.map((entry) =>
           entry._id === entryId ? { ...entry, confirmationStatus: "confirmed" } : entry
         ),
@@ -65,6 +80,7 @@ export const useTransaction = (transactionId) => {
         // Revert the optimistic update if the API call fails
         setTransaction((prev) => ({
           ...prev,
+          outstandingBalance: prev.outstandingBalance - balanceAdjustment,
           transactionHistory: prev.transactionHistory.map((entry) =>
             entry._id === entryId ? { ...entry, confirmationStatus: "pending" } : entry
           ),

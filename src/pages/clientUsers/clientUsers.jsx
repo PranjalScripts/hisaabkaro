@@ -136,43 +136,55 @@ const ClientUsers = () => {
 
         {/* Delete Confirmation Modal */}
         {deleteModal.isOpen && deleteModal.user && (
-          <div className="fixed inset-0 overflow-y-auto z-50">
-            <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-              <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
-              <span className="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
-              
-              <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                  <div className="sm:flex sm:items-start">
-                    <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                      <svg className="h-6 w-6 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                      </svg>
-                    </div>
-                    <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                      <h3 className="text-lg leading-6 font-medium text-gray-900">Delete User</h3>
-                      <div className="mt-2">
-                        <p className="text-sm text-gray-500">
-                          Are you sure you want to delete {deleteModal.user.name}? This action cannot be undone.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+          <div className="fixed inset-0 flex items-center justify-center z-50">
+            <div className="absolute inset-0 bg-black/30 backdrop-blur-sm"></div>
+            <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8 w-full max-w-md mx-4 relative z-10">
+              <div className="text-center">
+                {/* Warning Icon */}
+                <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-4">
+                  <svg className="h-10 w-10 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
                 </div>
-                <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+
+                {/* Title */}
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  Delete {deleteModal.user.name}?
+                </h3>
+
+                {/* Warning Message */}
+                <div className="mb-6 space-y-3">
+                  <p className="text-gray-500">
+                    This action cannot be undone. Are you sure you want to delete this user?
+                  </p>
+                  <div className="bg-yellow-50 p-3 rounded-lg">
+                    <p className="text-sm text-yellow-800 font-medium">
+                      ⚠️ Warning: This will permanently delete:
+                    </p>
+                    <ul className="mt-2 text-sm text-yellow-700 list-disc list-inside">
+                      <li>All transaction records associated with this user</li>
+                      <li>All payment history and outstanding balances</li>
+                      <li>User profile and contact information</li>
+                    </ul>
+                  </div>
+                  <p className="text-sm text-red-600 font-medium">
+                    * These changes are irreversible and cannot be recovered
+                  </p>
+                </div>
+
+                {/* Buttons */}
+                <div className="flex gap-3">
                   <button
-                    type="button"
-                    onClick={handleDeleteConfirm}
-                    className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
-                  >
-                    Delete
-                  </button>
-                  <button
-                    type="button"
                     onClick={handleDeleteCancel}
-                    className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                    className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
                   >
                     Cancel
+                  </button>
+                  <button
+                    onClick={handleDeleteConfirm}
+                    className="flex-1 px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg hover:from-red-600 hover:to-red-700 transition-colors"
+                  >
+                    Yes, Delete User
                   </button>
                 </div>
               </div>

@@ -15,7 +15,7 @@ import { BookContext, UserContext } from "./Layout";
 const Footer = () => {
   const navigate = useNavigate();
   const [showAddBookModal, setShowAddBookModal] = useState(false);
-  const { handleBookAdded } = useContext(BookContext);
+  const { handleBookAdded: handleBookAddedContext } = useContext(BookContext);
   const { handleAddUser } = useContext(UserContext);
   const { t } = useTranslation();
 
@@ -29,6 +29,12 @@ const Footer = () => {
   const handleHome = () => {
     navigate("/home");
   };
+
+  const handleBookAdded = (book) => {
+    handleBookAddedContext(book);
+    setShowAddBookModal(false);
+  };
+
   return (
     <>
       <footer
@@ -166,5 +172,3 @@ const Footer = () => {
 };
 
 export default Footer;
-
-

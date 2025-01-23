@@ -237,7 +237,7 @@ const TransactionTable = forwardRef(({
       doc.setFontSize(11);
       doc.text("Book Name", startX + (cardWidth + gap) * 2 + 5, startY + 10);
       doc.setFontSize(10);
-      const bookName = transaction?.bookName || "";
+      const bookName = transaction?.bookId?.bookname || "";
       const bookNameLines = doc.splitTextToSize(bookName, cardWidth - 10);
       doc.text(bookNameLines, startX + (cardWidth + gap) * 2 + 5, startY + 20);
 

@@ -59,3 +59,22 @@ export const createTransaction = async (transactionData, file) => {
     throw new Error("Failed to create transaction");
   }
 };
+
+export const createBook = async (formData) => {
+  const token = localStorage.getItem("token");
+  const response = await fetch(
+    `${process.env.REACT_APP_URL}/api/v2/transactionBooks/create-book`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    }
+  );
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.message || "Failed to create book");
+  }
+  return data.book;
+};

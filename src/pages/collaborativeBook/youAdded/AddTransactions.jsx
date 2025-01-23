@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, LazyMotion, domAnimation } from "framer-motion";
 import Modal from "./Modal";
 import { fetchClients, fetchBooks, createTransaction } from "./api";
+import { trackTransaction, trackError } from "../../../utils/analytics";
+import { ClientRefreshContext } from "../../Layout/Layout";
 
 const AddTransactions = () => {
   const [clientUserId, setClientUserId] = useState("");
@@ -12,6 +14,7 @@ const AddTransactions = () => {
   const [description, setDescription] = useState("");
   const [file, setFile] = useState(null); // State to store the file
   const navigate = useNavigate();
+  const { refreshClientTrigger } = useContext(ClientRefreshContext);
 
   const [clients, setClients] = useState([]);
   const [books, setBooks] = useState([]);
@@ -20,18 +23,23 @@ const AddTransactions = () => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showFailureModal, setShowFailureModal] = useState(false);
 
-  useEffect(() => {
-    const loadClients = async () => {
-      try {
-        const clientsData = await fetchClients();
-        setClients(clientsData);
-      } catch (error) {
-        console.error("Error fetching clients:", error);
-      } finally {
-        setIsLoadingClients(false);
-      }
-    };
+  const loadClients = async () => {
+    try {
+      setIsLoadingClients(true);
+      const clientsData = await fetchClients();
+      setClients(clientsData);
+    } catch (error) {
+      console.error("Error fetching clients:", error);
+    } finally {
+      setIsLoadingClients(false);
+    }
+  };
 
+  useEffect(() => {
+    loadClients();
+  }, [refreshClientTrigger]);
+
+  useEffect(() => {
     const loadBooks = async () => {
       try {
         const booksData = await fetchBooks();
@@ -43,8 +51,16 @@ const AddTransactions = () => {
       }
     };
 
-    loadClients();
+    const handleBookAdded = (event) => {
+      setBooks(prevBooks => [...prevBooks, event.detail]);
+    };
+
+    window.addEventListener('bookAdded', handleBookAdded);
     loadBooks();
+
+    return () => {
+      window.removeEventListener('bookAdded', handleBookAdded);
+    };
   }, []);
 
   const handleSubmit = async (event) => {
@@ -52,6 +68,7 @@ const AddTransactions = () => {
     const parsedAmount = parseFloat(amount);
     if (isNaN(parsedAmount)) {
       setShowFailureModal(true);
+      trackError({ message: "Invalid amount entered" });
       return;
     }
 
@@ -65,9 +82,11 @@ const AddTransactions = () => {
 
     try {
       await createTransaction(transactionData, file);
+      trackTransaction(transactionData);
       setShowSuccessModal(true);
     } catch (error) {
       console.error("Error creating transaction:", error);
+      trackError(error);
       setShowFailureModal(true);
     }
   };

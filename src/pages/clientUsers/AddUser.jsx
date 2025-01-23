@@ -59,6 +59,13 @@ const AddUser = ({ onUserAdded, onClose }) => {
       if (onUserAdded) {
         onUserAdded(response.data.data);
       }
+
+      // Trigger a refresh of the client list in AddTransactions
+      const addTransactionsElement = document.querySelector('[data-refresh-clients]');
+      if (addTransactionsElement) {
+        addTransactionsElement.dispatchEvent(new CustomEvent('refreshClients'));
+      }
+
       if (onClose) {
         onClose();
       }

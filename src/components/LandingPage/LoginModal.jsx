@@ -5,6 +5,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { motion, AnimatePresence } from "framer-motion";
 import { Eye, EyeOff, Mail, Phone, Lock, X, ChevronDown, Search } from "lucide-react";
+import ReCAPTCHA from "react-google-recaptcha";
 
 const LoginModal = ({ showLoginModal, setShowLoginModal, setShowSignupModal }) => {
   const [loginMethod, setLoginMethod] = useState('email'); // 'email' or 'phone'
@@ -16,10 +17,14 @@ const LoginModal = ({ showLoginModal, setShowLoginModal, setShowSignupModal }) =
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [showCountryList, setShowCountryList] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [captchaToken, setCaptchaToken] = useState(null);
+  
+  
   const { login } = useAuth();
   const navigate = useNavigate();
   const modalRef = useRef(null);
   const countryListRef = useRef(null);
+  const recaptchaRef = useRef(null);
 
   useEffect(() => {
     // Fetch and set countries data
@@ -82,20 +87,30 @@ const LoginModal = ({ showLoginModal, setShowLoginModal, setShowSignupModal }) =
       return;
     }
 
+    if (!captchaToken) {
+      toast.warn("Please complete the captcha verification");
+      return;
+    }
+
     let loginPayload;
     if (loginMethod === 'email') {
-      loginPayload = { email: identifier, password };
+      loginPayload = { 
+        email: identifier, 
+        password,
+        captchaToken 
+      };
     } else {
       // Combine country code and phone number
       const formattedPhone = `${selectedCountry.callingCode}${identifier}`;
       loginPayload = { 
         phone: formattedPhone,
         password,
-        country: selectedCountry.countryCode 
+        country: selectedCountry.countryCode,
+        captchaToken
       };
     }
 
-    console.log("Sending login request with payload:", loginPayload);
+    // console.log("Sending login request with payload:", loginPayload);
 
     try {
       const response = await axios.post(
@@ -325,6 +340,16 @@ const LoginModal = ({ showLoginModal, setShowLoginModal, setShowSignupModal }) =
                   <Eye className="h-5 w-5" />
                 )}
               </button>
+            </div>
+
+            {/* reCAPTCHA */}
+            <div className="flex justify-center">
+              <ReCAPTCHA
+                ref={recaptchaRef}
+                sitekey={process.env.REACT_APP_RECAPTCHA}
+                onChange={(token) => setCaptchaToken(token)}
+                onExpired={() => setCaptchaToken(null)}
+              />
             </div>
 
             {/* Submit Button */}
