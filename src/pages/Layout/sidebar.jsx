@@ -1,20 +1,17 @@
 import React, { useState, useEffect } from "react";
 import {
   FaTachometerAlt,
- 
   FaUsers,
   FaSignOutAlt,
- 
   FaBook,
   FaIdCard,
- 
   FaHandHoldingUsd,
   FaReceipt,
   FaFileInvoiceDollar,
 } from "react-icons/fa";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 import SidebarTransactionSummary from "../../components/Dashboard/SidebarTransactionSummary";
 
 const Sidebar = () => {
@@ -47,7 +44,9 @@ const Sidebar = () => {
         const clientTransactions = await clientTransactionsRes.json();
         const transactionsData = await transactionsRes.json();
 
-        const processedClientTransactions = (clientTransactions.transactions || []).map((transaction) => {
+        const processedClientTransactions = (
+          clientTransactions.transactions || []
+        ).map((transaction) => {
           const confirmedYouWillGet = transaction.transactionHistory
             .filter(
               (t) =>
@@ -92,52 +91,58 @@ const Sidebar = () => {
           };
         });
 
-        const processedTransactions = (transactionsData.transactions || []).map((transaction) => {
-          const confirmedYouWillGet = transaction.transactionHistory
-            .filter(
-              (t) =>
-                t.transactionType === "you will get" &&
-                t.confirmationStatus === "confirmed"
-            )
-            .reduce((acc, curr) => acc + curr.amount, 0);
+        const processedTransactions = (transactionsData.transactions || []).map(
+          (transaction) => {
+            const confirmedYouWillGet = transaction.transactionHistory
+              .filter(
+                (t) =>
+                  t.transactionType === "you will get" &&
+                  t.confirmationStatus === "confirmed"
+              )
+              .reduce((acc, curr) => acc + curr.amount, 0);
 
-          const confirmedYouWillGive = transaction.transactionHistory
-            .filter(
-              (t) =>
-                t.transactionType === "you will give" &&
-                t.confirmationStatus === "confirmed"
-            )
-            .reduce((acc, curr) => acc + curr.amount, 0);
+            const confirmedYouWillGive = transaction.transactionHistory
+              .filter(
+                (t) =>
+                  t.transactionType === "you will give" &&
+                  t.confirmationStatus === "confirmed"
+              )
+              .reduce((acc, curr) => acc + curr.amount, 0);
 
-          const unconfirmedYouWillGet = transaction.transactionHistory
-            .filter(
-              (t) =>
-                t.transactionType === "you will get" &&
-                t.confirmationStatus !== "confirmed"
-            )
-            .reduce((acc, curr) => acc + curr.amount, 0);
+            const unconfirmedYouWillGet = transaction.transactionHistory
+              .filter(
+                (t) =>
+                  t.transactionType === "you will get" &&
+                  t.confirmationStatus !== "confirmed"
+              )
+              .reduce((acc, curr) => acc + curr.amount, 0);
 
-          const unconfirmedYouWillGive = transaction.transactionHistory
-            .filter(
-              (t) =>
-                t.transactionType === "you will give" &&
-                t.confirmationStatus !== "confirmed"
-            )
-            .reduce((acc, curr) => acc + curr.amount, 0);
+            const unconfirmedYouWillGive = transaction.transactionHistory
+              .filter(
+                (t) =>
+                  t.transactionType === "you will give" &&
+                  t.confirmationStatus !== "confirmed"
+              )
+              .reduce((acc, curr) => acc + curr.amount, 0);
 
-          const outstandingBalance = confirmedYouWillGet - confirmedYouWillGive;
+            const outstandingBalance =
+              confirmedYouWillGet - confirmedYouWillGive;
 
-          return {
-            ...transaction,
-            confirmedYouWillGet,
-            confirmedYouWillGive,
-            unconfirmedYouWillGet,
-            unconfirmedYouWillGive,
-            outstandingBalance,
-          };
-        });
+            return {
+              ...transaction,
+              confirmedYouWillGet,
+              confirmedYouWillGive,
+              unconfirmedYouWillGet,
+              unconfirmedYouWillGive,
+              outstandingBalance,
+            };
+          }
+        );
 
-        const allTransactions = [...processedClientTransactions, ...processedTransactions];
+        const allTransactions = [
+          ...processedClientTransactions,
+          ...processedTransactions,
+        ];
         setTransactions(allTransactions);
       } catch (error) {
         console.error("Error fetching transactions:", error);
@@ -153,7 +158,7 @@ const Sidebar = () => {
     logout();
     navigate("/");
   };
-// eslint-disable-next-line
+  // eslint-disable-next-line
   const toggleCollabDropdown = () => {
     setCollabOpen(!isCollabOpen);
   };
@@ -161,12 +166,20 @@ const Sidebar = () => {
   const isActive = (path) => location.pathname === path;
 
   const navigationItems = [
-    { path: "/dashboard", icon: FaTachometerAlt, label: t('navigation.dashboard') },
-    { path: "/your-books", icon: FaFileInvoiceDollar, label: t('navigation.selfRecord') },
-    { path: "/book", icon: FaBook, label: t('navigation.books') },
-    { path: "/users", icon: FaUsers, label: t('navigation.users') },
+    {
+      path: "/dashboard",
+      icon: FaTachometerAlt,
+      label: t("navigation.dashboard"),
+    },
+    {
+      path: "/your-books",
+      icon: FaFileInvoiceDollar,
+      label: t("navigation.selfRecord"),
+    },
+    { path: "/book", icon: FaBook, label: t("navigation.books") },
+    { path: "/users", icon: FaUsers, label: t("navigation.users") },
     // { path: "/loans", icon: FaHandHoldingUsd, label: t('navigation.loans') },
-    { path: "/invoice", icon: FaReceipt, label: t('navigation.invoice') },
+    { path: "/invoice", icon: FaReceipt, label: t("navigation.invoice") },
   ];
 
   return (
@@ -176,7 +189,7 @@ const Sidebar = () => {
         <div className="flex items-center gap-3">
           <div className="rounded-lg">
             <img
-              src={`${process.env.PUBLIC_URL}/Favicon Hisaabkaro.png`}
+              src={`${process.env.PUBLIC_URL}/favicon.png`}
               alt="Logo"
               className="h-9"
             />
@@ -229,7 +242,7 @@ const Sidebar = () => {
                   : "text-blue-500 group-hover:text-blue-600"
               }`}
             />
-            <span className="ml-3 font-medium">{t('common.profile')}</span>
+            <span className="ml-3 font-medium">{t("common.profile")}</span>
             {isActive("/profile") && (
               <div className="absolute right-2 w-1.5 h-1.5 rounded-full bg-white shadow-md" />
             )}
@@ -238,9 +251,11 @@ const Sidebar = () => {
       </nav>
 
       {/* Transaction Summary Section */}
-      {location.pathname !== '/dashboard' && location.pathname !== '/home' &&(
+      {location.pathname !== "/dashboard" && location.pathname !== "/home" && (
         <div className="px-2 py-0.5 border-t border-slate-200 bg-white">
-          <h2 className="text-[9px] font-semibold text-slate-600 mb-0.5">{t('transactions.summary')}</h2>
+          <h2 className="text-[9px] font-semibold text-slate-600 mb-0.5">
+            {t("transactions.summary")}
+          </h2>
           <SidebarTransactionSummary transactions={transactions} />
         </div>
       )}
@@ -252,7 +267,7 @@ const Sidebar = () => {
           className="w-full flex items-center px-4 py-3 text-slate-600 hover:bg-white hover:shadow-md rounded-xl transition-all duration-200 hover:scale-[1.02]"
         >
           <FaSignOutAlt className="text-lg text-blue-500" />
-          <span className="ml-3 font-medium">{t('common.logout')}</span>
+          <span className="ml-3 font-medium">{t("common.logout")}</span>
         </button>
       </div>
     </div>
