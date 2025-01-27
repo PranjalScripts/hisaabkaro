@@ -11,6 +11,13 @@ const EditTransactionForm = ({
 }) => {
   if (!isEditing) return null;
 
+  const handleDescriptionChange = (e) => {
+    const words = e.target.value.trim().split(/\s+/);
+    if (words.length <= 50) {
+      setEditData({ ...editData, description: e.target.value });
+    }
+  };
+
   return (
     <AnimatePresence>
       <motion.div
@@ -105,19 +112,20 @@ const EditTransactionForm = ({
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Description
                   </label>
-                  <input
-                    type="text"
-                    placeholder="Enter transaction description"
-                    value={editData.description}
-                    onChange={(e) =>
-                      setEditData((prev) => ({
-                        ...prev,
-                        description: e.target.value,
-                      }))
-                    }
-                    className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 
-                    focus:ring-violet-500 focus:border-transparent transition-all duration-200"
-                  />
+                  <div className="relative">
+                    <textarea
+                      value={editData.description}
+                      onChange={handleDescriptionChange}
+                      className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 
+                      focus:ring-violet-500 focus:border-transparent transition-all duration-200 resize-none"
+                      rows="3"
+                      maxLength={200}
+                      placeholder="Enter transaction description (max 50 words)"
+                    />
+                    <div className="absolute bottom-2 right-2 text-xs text-gray-500">
+                      {editData.description ? editData.description.trim().split(/\s+/).length : 0}/50 words
+                    </div>
+                  </div>
                 </div>
 
                 {/* File Upload */}

@@ -379,7 +379,7 @@ const History = () => {
 
     // Add the file if it exists
     if (file) {
-      formData.append("file", file); // The key 'file' must match the backend field
+      formData.append("file", file);
     }
 
     try {
@@ -388,7 +388,7 @@ const History = () => {
         {
           method: "PATCH",
           headers: {
-            Authorization: `Bearer ${token}`, // Note: 'Content-Type' is automatically set for FormData
+            Authorization: `Bearer ${token}`,
           },
           body: formData,
         }
@@ -396,9 +396,60 @@ const History = () => {
 
       if (response.ok) {
         const updatedEntry = await response.json();
-        console.log("Edit response:", updatedEntry); // Debug log
+        console.log("Updated entry response:", updatedEntry); // Debug log
 
-        // Fetch latest transaction data to get updated balance
+        // First update the local state with the edited transaction
+        setTransaction((prev) => {
+          // Get the current history entry
+          const currentEntry = prev.transactionHistory.find(h => h._id === id);
+          console.log("Current entry:", currentEntry);
+          console.log("Server response file:", updatedEntry?.data?.file);
+          
+          let fileUrl;
+          if (updatedEntry?.data?.file) {
+            // Clean up and encode the server file path
+            const filePath = updatedEntry.data.file
+              .replace(/\\/g, '/') // Replace backslashes with forward slashes
+              .replace(/^\/+/, ''); // Remove leading slashes
+            
+            // Check if the file path already includes the API URL
+            if (filePath.includes(process.env.REACT_APP_URL)) {
+              fileUrl = filePath;
+            } else {
+              // First decode to handle any existing encoding
+              const decodedPath = decodeURIComponent(filePath);
+              // Then encode properly
+              const encodedPath = encodeURIComponent(decodedPath).replace(/%2F/g, '/');
+              fileUrl = `${process.env.REACT_APP_URL}/${encodedPath}`;
+            }
+            console.log("Using server file URL:", fileUrl);
+          } else if (file instanceof File) {
+            // If we have a new file but no server URL yet, create a temporary URL
+            fileUrl = URL.createObjectURL(file);
+            console.log("Using temporary file URL:", fileUrl);
+          } else {
+            // Keep existing file URL
+            fileUrl = currentEntry?.file;
+            console.log("Keeping existing file URL:", fileUrl);
+          }
+
+          return {
+            ...prev,
+            transactionHistory: prev.transactionHistory.map((history) =>
+              history._id === id ? {
+                ...history,
+                amount: parseFloat(amount),
+                transactionType: transactionType.toLowerCase(),
+                description: description,
+                file: fileUrl,
+                confirmationStatus: "pending",
+                transactionDate: new Date().toISOString()
+              } : history
+            ),
+          };
+        });
+
+        // Then fetch latest transaction data to get updated balance and complete transaction data
         const updatedDataResponse = await fetch(
           `${process.env.REACT_APP_URL}/api/collab-transactions/single-transaction/${transactionId}`,
           {
@@ -407,20 +458,44 @@ const History = () => {
         );
         
         const updatedData = await updatedDataResponse.json();
+        console.log("Complete updated data:", updatedData); // Debug log
         
         if (updatedData.success) {
-          setTransaction((prev) => ({
-            ...prev,
-            outstandingBalance: updatedData.data.outstandingBalance,
-            transactionHistory: prev.transactionHistory.map((history) =>
-              history._id === id ? {
-                ...history,
-                ...updatedEntry.data,
-                confirmationStatus: "pending",
-                transactionDate: new Date().toISOString()
-              } : history
-            ),
-          }));
+          // Update with the complete data from server, including correct file paths
+          setTransaction((prev) => {
+            const updatedHistory = prev.transactionHistory.map(history => {
+              const serverEntry = updatedData.data.transactionHistory.find(h => h._id === history._id);
+              if (serverEntry && serverEntry.file) {
+                const filePath = serverEntry.file
+                  .replace(/\\/g, '/') // Replace backslashes with forward slashes
+                  .replace(/^\/+/, ''); // Remove leading slashes
+                
+                // Check if the file path already includes the API URL
+                let finalFileUrl;
+                if (filePath.includes(process.env.REACT_APP_URL)) {
+                  finalFileUrl = filePath;
+                } else {
+                  // First decode to handle any existing encoding
+                  const decodedPath = decodeURIComponent(filePath);
+                  // Then encode properly
+                  const encodedPath = encodeURIComponent(decodedPath).replace(/%2F/g, '/');
+                  finalFileUrl = `${process.env.REACT_APP_URL}/${encodedPath}`;
+                }
+
+                return {
+                  ...history,
+                  ...serverEntry,
+                  file: finalFileUrl
+                };
+              }
+              return history;
+            });
+
+            return {
+              ...updatedData.data,
+              transactionHistory: updatedHistory
+            };
+          });
         }
 
         setSuccessModal({
@@ -448,14 +523,69 @@ const History = () => {
 
   //handle image click
   const handleImageClick = (fileUrl) => {
-    setModalImage(fileUrl);
-    setIsModalOpen(true);
+    console.log("Opening file with URL:", fileUrl); // Debug log
+    if (!fileUrl) {
+      console.error("No file URL provided");
+      return;
+    }
+
+    try {
+      // Remove any duplicate base URLs
+      const baseUrl = process.env.REACT_APP_URL;
+      let cleanUrl = fileUrl;
+      
+      // If the URL starts with the base URL multiple times, remove the extras
+      while (cleanUrl.includes(`${baseUrl}/${baseUrl}`)) {
+        cleanUrl = cleanUrl.replace(`${baseUrl}/${baseUrl}`, baseUrl);
+      }
+      
+      // If the URL doesn't start with the base URL at all, add it
+      if (!cleanUrl.startsWith(baseUrl)) {
+        cleanUrl = `${baseUrl}/${cleanUrl.replace(/^\/+/, '')}`;
+      }
+
+      console.log("Final URL:", cleanUrl);
+      setModalImage(cleanUrl);
+      setIsModalOpen(true);
+    } catch (error) {
+      console.error("Error processing file URL:", error);
+      setErrorModal({
+        isOpen: true,
+        message: "Error opening file. Please try again."
+      });
+    }
   };
 
-  //close modal
   const closeModal = () => {
     setIsModalOpen(false);
     setModalImage(null);
+  };
+
+  const handleSplitSuccess = (updatedData) => {
+    if (!updatedData) return;
+
+    // Update the transaction state with the new data
+    setTransaction(prevTransaction => {
+      if (!prevTransaction?.transactionHistory) return prevTransaction;
+
+      // Only update the original transaction amount, don't add the split transaction
+      const updatedEntries = prevTransaction.transactionHistory.map(entry =>
+        entry._id === updatedData.originalTransaction._id
+          ? { ...entry, amount: updatedData.originalTransaction.amount }
+          : entry
+      );
+
+      return {
+        ...prevTransaction,
+        transactionHistory: updatedEntries,
+        outstandingBalance: prevTransaction.outstandingBalance
+      };
+    });
+
+    setSuccessModal({
+      isOpen: true,
+      message: "Transaction split successfully!"
+    });
   };
 
   if (loading) {
@@ -547,12 +677,14 @@ const History = () => {
       <TransactionTable
         ref={transactionTableRef}
         transaction={transaction}
-        openEditForm={openEditForm}
-        handleDeleteClick={handleDeleteClick}
-        handleImageClick={handleImageClick}
         userId={userId}
         updating={updating}
         updateTransactionStatus={updateTransactionStatus}
+        handleDeleteClick={handleDeleteClick}
+        handleImageClick={handleImageClick}
+        handleAddTransaction={fetchTransactionData}
+        onSplitSuccess={handleSplitSuccess}
+        openEditForm={openEditForm}
       />
 
       {showForm && (
