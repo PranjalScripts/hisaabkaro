@@ -8,6 +8,7 @@ import {
   FaHandHoldingUsd,
   FaReceipt,
   FaFileInvoiceDollar,
+  FaTools,
 } from "react-icons/fa";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
@@ -180,6 +181,7 @@ const Sidebar = () => {
     { path: "/users", icon: FaUsers, label: t("navigation.users") },
     // { path: "/loans", icon: FaHandHoldingUsd, label: t('navigation.loans') },
     { path: "/invoice", icon: FaReceipt, label: t("navigation.invoice") },
+    { path: "/tools", icon: FaTools, label: "Tools" },
   ];
 
   return (

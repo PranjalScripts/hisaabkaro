@@ -42,6 +42,7 @@ import Basic from "./Calculator/ClassicalCalculator/ClassicalCalculator"
 import Percentage from "./Calculator/percentageCalculator/PercentageCalculator";
 import CompareLoan from "./Calculator/CompareLoanCalculator/CompareLoanCalculator";
 import Gst from "./Calculator/GST/GST";
+import Tools from "./pages/tools/tools";
 import { initGA, pageView } from './utils/analytics';
 
 const GlobalStyle = createGlobalStyle`
@@ -155,6 +156,7 @@ function App() {
                   <Route path="profile" element={<Profile />} />
                   <Route path="loans" element={<Loans />} />
                   <Route path="invoice" element={<Invoice />} />
+                  <Route path="tools" element={<Tools />} />
                   <Route path="/history/:transactionId" element={<History />} />
                   <Route path="/addtransaction" element={<AddTransactions />} />
                   <Route

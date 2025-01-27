@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import SuccessModal from "../../components/SuccessModal";
 import ErrorModal from "../../components/ErrorModal";
 import DeleteConfirmationModal from "../../components/DeleteConfirmationModal";
@@ -7,7 +8,9 @@ import EditUser from "./EditUser";
 import { UserContext } from "../Layout/Layout";
 
 const ClientUsers = () => {
+  const navigate = useNavigate();
   const [users, setUsers] = useState([]);
+  const [collaboratorClients, setCollaboratorClients] = useState([]); // New state for collaborator clients
   const [editingUser, setEditingUser] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [successModal, setSuccessModal] = useState({ isOpen: false, message: "" });
@@ -72,6 +75,37 @@ const ClientUsers = () => {
     }
   };
 
+  const fetchCollaboratorClients = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        return;
+      }
+
+      const response = await axios.get(`${process.env.REACT_APP_URL}/api/collab-transactions/client-transactions`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      
+      const usersWithTransactions = response.data.transactions.map(transaction => ({
+        _id: transaction.userId._id,
+        name: transaction.userId.name,
+        email: transaction.userId.email,
+        phone: transaction.userId.phone,
+        profilePicture: transaction.userId.profilePicture,
+        transactionId: transaction._id,
+        bookId: transaction.bookId._id,
+        bookName: transaction.bookId.bookname,
+        createdAt: transaction.bookId.createdAt
+      }));
+      
+      console.log('Processed users:', usersWithTransactions);
+      setCollaboratorClients(usersWithTransactions);
+    } catch (error) {
+      console.error('Error fetching collaborator clients:', error);
+      setErrorMessage(error.message);
+    }
+  };
+
   const handleDeleteClick = (user) => {
     setDeleteModal({ isOpen: true, user });
   };
@@ -102,13 +136,27 @@ const ClientUsers = () => {
     setEditingUser(user);
   };
 
-  const handleUserUpdated = (updatedUser) => {
-    setUsers(users.map(user => user._id === updatedUser._id ? updatedUser : user));
-    showNotification("User updated successfully!", "success");
+  const handleUserUpdate = (updatedUser) => {
+    // Ensure we have the updated user data
+    if (!updatedUser || !updatedUser._id) {
+      console.error("Invalid updated user data:", updatedUser);
+      return;
+    }
+
+    setUsers(prevUsers => 
+      prevUsers.map(user => 
+        user._id === updatedUser._id ? { ...user, ...updatedUser } : user
+      )
+    );
+    
+    // Refresh the users list to ensure we have the latest data
+    fetchUsers();
+    showNotification("User updated successfully", "success");
   };
 
   useEffect(() => {
     fetchUsers();
+    fetchCollaboratorClients(); // Fetch collaborator clients when component mounts
   }, [userAdded]); // Add userAdded as a dependency to refresh when a new user is added
 
   const filteredUsers = users.filter(
@@ -278,8 +326,7 @@ const ClientUsers = () => {
                     {user.email && (
                       <div className="flex items-center justify-center gap-2 text-gray-600 mt-1">
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                          <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-                          <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                          <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
                         </svg>
                         <span className="text-sm truncate max-w-[200px]">{user.email}</span>
                       </div>
@@ -302,7 +349,7 @@ const ClientUsers = () => {
                       className="flex-1 px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors duration-200 flex items-center justify-center gap-2 font-medium"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                        <path fillRule="evenodd" d="M9 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
                       </svg>
                       Delete
                     </button>
@@ -338,7 +385,9 @@ const ClientUsers = () => {
                   <tr key={user._id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <div className={`h-10 w-10 rounded-full bg-gradient-to-br ${gradients[index % gradients.length].avatar} flex items-center justify-center shadow-sm`}>
+                        <div
+                          className={`w-10 h-10 rounded-full bg-gradient-to-br ${gradients[index % gradients.length].avatar} flex items-center justify-center shadow-sm`}
+                        >
                           <span className="text-sm font-medium text-white">
                             {user.name.charAt(0).toUpperCase()}
                           </span>
@@ -369,7 +418,7 @@ const ClientUsers = () => {
                         className="text-red-600 hover:text-red-800 transition-colors flex items-center gap-1"
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                          <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                          <path fillRule="evenodd" d="M9 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
                         </svg>
                         Delete
                       </button>
@@ -379,6 +428,145 @@ const ClientUsers = () => {
               </tbody>
             </table>
           </div>
+        </div>
+
+        {/* Display Users who added me */}
+        <div className="mb-6">
+          <h2 className="text-2xl font-semibold mb-4">Users Who Added Me As Client</h2>
+          {viewType === 'grid' ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {collaboratorClients.map((user, index) => (
+                <div
+                  key={user._id}
+                  className="relative rounded-xl shadow-md hover:shadow-xl overflow-hidden bg-white border border-gray-100 transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+                  onClick={() => navigate(`/transaction-details/${user.transactionId}`)}
+                >
+                  {/* Index Number */}
+                  <div className="absolute top-2 left-2 bg-white/90 rounded-full w-6 h-6 flex items-center justify-center text-sm font-medium z-10">
+                    {index + 1}
+                  </div>
+
+                  {/* Card Header with Avatar */}
+                  <div className={`h-24 w-full bg-gradient-to-r ${gradients[index % gradients.length].bg}`}>
+                    <div className="flex justify-center">
+                      <div className={`w-20 h-20 rounded-full border-4 border-white shadow-md transform translate-y-12 bg-gradient-to-br ${gradients[index % gradients.length].avatar} flex items-center justify-center overflow-hidden`}>
+                        {user.profilePicture ? (
+                          <img 
+                            src={user.profilePicture} 
+                            alt={user.name}
+                            className="w-full h-full rounded-full object-cover"
+                          />
+                        ) : (
+                          <span className="text-2xl font-bold text-white">
+                            {user.name ? user.name[0].toUpperCase() : "?"}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Card Content */}
+                  <div className="px-4 pt-14 pb-4">
+                    <div className="text-center mb-4">
+                      <h3 className="text-xl font-semibold text-gray-800 mb-1">
+                        {user.name}
+                      </h3>
+                      <div className="flex items-center justify-center gap-2 text-gray-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+                        </svg>
+                        <span className="text-sm">{user.phone || '-'}</span>
+                      </div>
+                      <div className="flex items-center justify-center gap-2 text-gray-600 mt-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                          <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                        </svg>
+                        <span className="text-sm truncate max-w-[200px]">{user.email}</span>
+                      </div>
+                      <div className="flex items-center justify-center gap-2 text-gray-600 mt-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                        </svg>
+                        <span className="text-sm">{new Date(user.createdAt).toLocaleDateString()}</span>
+                      </div>
+                    </div>
+
+                    {/* Action Button */}
+                    <div className="flex justify-center mt-4 pt-4 border-t border-gray-100">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/transaction-details/${user.transactionId}`);
+                        }}
+                        className="w-full px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors duration-200 flex items-center justify-center gap-2 font-medium"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                          <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
+                        </svg>
+                        See Details
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="bg-white rounded-lg shadow overflow-hidden">
+              {/* Column Headers */}
+              <div className="grid grid-cols-[40px_1fr_1fr_1fr_1fr_1fr] gap-2 items-center bg-gray-50 p-2 border-b">
+                <div className="font-medium text-gray-500 text-sm uppercase">#</div>
+                <div className="font-medium text-gray-500 text-sm uppercase">Date Added</div>
+                <div className="font-medium text-gray-500 text-sm uppercase">Name</div>
+                <div className="font-medium text-gray-500 text-sm uppercase">Email</div>
+                <div className="font-medium text-gray-500 text-sm uppercase">Phone</div>
+                <div className="font-medium text-gray-500 text-sm uppercase">Actions</div>
+              </div>
+              {/* List Items */}
+              {collaboratorClients.map((user, index) => (
+                <div
+                  key={user._id}
+                  className="p-2 border-b hover:bg-gray-50 cursor-pointer"
+                  onClick={() => navigate(`/transaction-details/${user.transactionId}`)}
+                >
+                  <div className="grid grid-cols-[40px_1fr_1fr_1fr_1fr_1fr] gap-2 items-center">
+                    <div className="text-gray-600 font-medium">{index + 1}</div>
+                    <div className="text-gray-600">{new Date(user.createdAt).toLocaleDateString()}</div>
+
+                    <div className="flex items-center space-x-3">
+                      {user.profilePicture ? (
+                        <img 
+                          src={user.profilePicture} 
+                          alt={user.name} 
+                          className="w-10 h-10 rounded-full object-cover"
+                        />
+                      ) : (
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold bg-gradient-to-br ${gradients[index % gradients.length].avatar}`}>
+                          {user.name ? user.name[0].toUpperCase() : '?'}
+                        </div>
+                      )}
+
+                      <span className="font-medium">{user.name}</span>
+                    </div>
+                    <div className="text-gray-600">{user.email}</div>
+                    <div className="text-gray-600">{user.phone || '-'}</div>
+                    <div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevent row click
+                          navigate(`/transaction-details/${user.transactionId}`);
+                        }}
+                        className="px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-700 border border-blue-600 rounded-md hover:bg-blue-50 transition-colors"
+                      >
+                        See Details
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {filteredUsers.length === 0 && (
@@ -469,7 +657,7 @@ const ClientUsers = () => {
           <EditUser
             user={editingUser}
             onClose={() => setEditingUser(null)}
-            onUserUpdated={handleUserUpdated}
+            onUserUpdated={handleUserUpdate}
           />
         )}
       </div>
