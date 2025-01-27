@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import * as pdfjsLib from 'pdfjs-dist';
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist';
 import { Document, Page } from 'react-pdf';
