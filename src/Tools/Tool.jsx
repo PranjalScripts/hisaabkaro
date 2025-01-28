@@ -14,7 +14,6 @@ import ImageToPdf from './Component/ImageToPdf.jsx';
 import SplitPdf from './Component/SplitPdf.jsx';
 import NewTab from './NewTab.jsx';
 import Hours from './Component/Hours.jsx';
-import Header from './Component/Header.jsx';
 import Compress from './Component/Compress.jsx';
 import MergePDF from './Component/MergePDF.jsx';
 import PdfConverter from './Component/PdfConverter.jsx';
@@ -69,7 +68,7 @@ import TestScoreCalculator from './Component/TestScoreCalculator.jsx';
 import TrafficChecker from './Component/TrafficChecker.jsx';
 function App() {
   return (
-    <div className='mt-14'>
+    <div className=''>
 
         {/* Routes */}
       

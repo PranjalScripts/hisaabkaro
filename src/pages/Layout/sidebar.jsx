@@ -187,8 +187,8 @@ const Sidebar = () => {
   return (
     <div className="fixed left-0 h-screen w-50 bg-gradient-to-b from-slate-50 to-slate-100 shadow-2xl flex flex-col">
       {/* Logo Section with glass effect */}
-      <div className="relative p-[1.19rem] bg-white bg-opacity-70 backdrop-blur-sm border-b border-slate-200">
-        <div className="flex items-center gap-3">
+      <div className="relative p-[1.19rem] bg-[#f3f7fa] bg-opacity-70 backdrop-blur-sm border-b border-slate-200">
+        <div className="flex items-center gap-3 ">
           <div className="rounded-lg">
             <img
               src={`${process.env.PUBLIC_URL}/favicon.png`}
@@ -228,7 +228,7 @@ const Sidebar = () => {
           </Link>
         ))}
 
-        {isLoggedIn && (
+        {/* {isLoggedIn && (
           <Link
             to="/profile"
             className={`relative group flex items-center px-4 py-3 rounded-xl transition-all duration-200 ${
@@ -249,12 +249,12 @@ const Sidebar = () => {
               <div className="absolute right-2 w-1.5 h-1.5 rounded-full bg-white shadow-md" />
             )}
           </Link>
-        )}
+        )} */}
       </nav>
 
       {/* Transaction Summary Section */}
       {location.pathname !== "/dashboard" && location.pathname !== "/home" && (
-        <div className="px-2 py-0.5 border-t border-slate-200 bg-white">
+        <div className="px-2 py-0.5 border-t border-slate-200 bg-[#f3f7fa]">
           <h2 className="text-[9px] font-semibold text-slate-600 mb-0.5">
             {t("transactions.summary")}
           </h2>
@@ -263,7 +263,7 @@ const Sidebar = () => {
       )}
 
       {/* Logout Button */}
-      <div className="p-1.5">
+      {/* <div className="p-1.5">
         <button
           onClick={handleLogout}
           className="w-full flex items-center px-4 py-3 text-slate-600 hover:bg-white hover:shadow-md rounded-xl transition-all duration-200 hover:scale-[1.02]"
@@ -271,7 +271,7 @@ const Sidebar = () => {
           <FaSignOutAlt className="text-lg text-blue-500" />
           <span className="ml-3 font-medium">{t("common.logout")}</span>
         </button>
-      </div>
+      </div> */}
     </div>
   );
 };

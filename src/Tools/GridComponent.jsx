@@ -21,8 +21,6 @@
 
 // // export default GridComponent
 
-
-
 // import React from 'react';
 // import { Link } from 'react-router-dom';
 
@@ -52,8 +50,8 @@
 // const GridComponent = ({ path, name, icon }) => {
 //   return (
 //     <div className="flex justify-center w-64 sm:w-auto bg-white mb-6">
-//       <Link 
-//         to={path} 
+//       <Link
+//         to={path}
 //         className="relative block w-64 h-36 bg-white-100 shadow-sm rounded-lg border border-blue-500/20 hover:border-blue-300 transition-shadow duration-300"
 //       >
 //         {/* Icon with overlap */}
@@ -74,31 +72,34 @@
 
 // export default GridComponent;
 
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React from "react";
+import { Link } from "react-router-dom";
 
-const GridComponent = ({ path, name, icon }) => {
+const GridComponent = ({ path, name, icon, onToolUse }) => {
+  const handleClick = () => {
+    // Store tool usage in localStorage
+    const usedTools = JSON.parse(localStorage.getItem("usedTools") || "[]");
+    if (!usedTools.includes(path)) {
+      usedTools.push(path);
+      localStorage.setItem("usedTools", JSON.stringify(usedTools));
+      if (onToolUse) onToolUse();
+    }
+  };
+
   return (
-    <div className="flex justify-center w-64 sm:w-auto mb-6">
-      <Link
-        to={path}
-        className="relative block shadow w-64 h-24 bg-white rounded-lg border border-blue-500/20 hover:border-blue-300 transition-transform duration-300 transform hover:scale-105 hover:shadow-md"
-      >
-        {/* Icon with overlap */}
-        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-16 h-16 text-white rounded-full flex justify-center items-center">
-          <span className="text-4xl">{icon}</span>
-        </div>
-
-        {/* Tool Name */}
-        <div className="flex items-center justify-center h-full pt-12">
-          <button className=" text-gray-800 px-4 py-2 rounded-lg font-medium transition duration-300">
+    <Link to={path} className="block group" onClick={handleClick}>
+      <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm hover:shadow-md hover:border-blue-300 transition-all duration-200">
+        <div className="flex flex-col items-center">
+          <div className="w-12 h-12 flex items-center justify-center rounded-lg bg-gray-50 group-hover:bg-blue-50 transition-colors duration-200 mb-3">
+            <span className="text-2xl">{icon}</span>
+          </div>
+          <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900 text-center">
             {name}
-          </button>
+          </span>
         </div>
-      </Link>
-    </div>
+      </div>
+    </Link>
   );
 };
 
 export default GridComponent;
-

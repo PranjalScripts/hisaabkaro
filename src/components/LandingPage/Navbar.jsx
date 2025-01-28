@@ -31,7 +31,7 @@ const Navbar = ({ setShowLoginModal }) => {
 
   const scrollToSection = (sectionId) => {
     if (sectionId === "calculator") {
-      navigate("/calculator");
+      navigate("/calculators");
     } else {
       const element = document.getElementById(sectionId);
       if (element) {
