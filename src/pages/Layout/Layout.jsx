@@ -51,11 +51,11 @@ const Layout = () => {
           value={{ showAddUserModal, handleAddUser, userAdded, handleUserAdded }}
         >
           <ClientRefreshContext.Provider value={{ refreshClientTrigger }}>
-            <div className="flex flex-row gap-2">
+            <div className="flex flex-row">
               <div className="ml-56 md:block hidden">
                 <Sidebar />
               </div>
-              <div className="flex flex-col gap-2 w-full">
+              <div className="flex flex-col w-full">
                 <div className="mb-16">
                   <Header />
                 </div>

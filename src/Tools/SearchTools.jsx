@@ -229,7 +229,7 @@ const SearchTools = ({ placeholder }) => {
             value={searchQuery}
             onChange={handleSearchChange}
             onFocus={() => setShowSearchResults(true)}
-            placeholder={`${placeholder} (Ctrl+K)`}
+            placeholder={`${placeholder}`}
             className="w-full pl-12 pr-24 py-3 rounded-xl border border-gray-200 bg-white/80 backdrop-blur-sm 
                      focus:outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-100 
                      shadow-sm hover:shadow-md transition-all duration-300"
@@ -240,9 +240,7 @@ const SearchTools = ({ placeholder }) => {
 
           {/* Enhanced Keyboard shortcut indicator */}
           <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center gap-1.5">
-            <div className="text-xs text-gray-400 hidden sm:block mr-2">
-              Search
-            </div>
+            
             <kbd
               className="hidden sm:inline-flex items-center justify-center h-6 min-w-[1.5rem] px-1.5
                          text-xs font-medium text-gray-500 bg-gray-50 border border-gray-200 

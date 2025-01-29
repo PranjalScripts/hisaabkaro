@@ -79,8 +79,8 @@ export default function Header() {
   ];
 
   return (
-    <header className="fixed top-0 right-0 w-full md:w-[calc(100%-230px)] bg-white/95 backdrop-blur-sm border-b border-gray-100 z-[10]">
-      <div className="px-3 md:px-6 py-[0.46rem] bg-[#f3f7fa] shadow-sm">
+    <header className="fixed top-0 right-auto w-full md:w-[calc(100%-224.2px)] bg-white/95 backdrop-blur-sm border-b border-gray-100 z-[10]">
+      <div className="px-2 md:px-6 py-[0.45rem] bg-[#f3f7fa] shadow-sm">
         <div className="flex items-center justify-between">
           {/* Search Section */}
           <div className="w-full max-w-[180px] sm:max-w-xs md:max-w-xl lg:max-w-2xl">

@@ -38,11 +38,11 @@ const Footer = () => {
   return (
     <>
       <footer
-        className="fixed bottom-0 bg-white/70 backdrop-blur-[2px]
-        p-1 min-[768px]:p-1.5 min-[1024px]:p-2 min-[1200px]:p-3 border-t border-gray-200 z-[10] 
-        hidden min-[640px]:block
-        w-full min-[640px]:w-[calc(100%-230px)]
-        left-[230px] overflow-x-auto"
+         className="fixed bottom-0 bg-[#f3f7fa]
+         p-1 min-[768px]:p-1.5 min-[1024px]:p-2 min-[1200px]:p-3 border-t border-gray-200 z-[10] 
+         hidden min-[640px]:block 
+         w-full min-[640px]:w-[calc(100%-224.2px)] md:w-[calc(100%-224.2px)] 
+         left-auto overflow-x-auto border-l border-slate-200"
       >
         <div className="flex items-center justify-center gap-1 min-[768px]:gap-1.5 min-[1024px]:gap-2 min-[1200px]:gap-4">
           {/* Transaction Direction Legend */}

@@ -89,7 +89,7 @@ const GST = () => {
     <div className="relative">
       {/* Back Button */}
       <button
-        onClick={() => navigate("/calculator")}
+        onClick={() => navigate("/calculators")}
         className="fixed top-20 left-4 z-50 text-blue-800 hover:text-blue-900 flex items-center space-x-2 transition-colors px-4 py-2 rounded-lg hover:bg-blue-50"
         title="Back to Calculators"
       >

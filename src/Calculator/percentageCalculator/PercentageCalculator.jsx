@@ -102,7 +102,7 @@ function PercentageCalculator() {
     <div className="relative min-h-screen bg-gray-50 py-8">
       <style>{inputStyles}</style>
       <button
-        onClick={() => navigate("/calculator")}
+        onClick={() => navigate("/calculators")}
         className="fixed left-8 top-8 z-50 inline-flex items-center px-4 py-2 bg-white text-blue-600 rounded-lg shadow-md hover:bg-blue-50 transition-all duration-200 font-medium border border-blue-100"
       >
         <svg
@@ -323,7 +323,7 @@ function InterestCalculator() {
     <div className="relative min-h-screen bg-gray-50 py-8">
       <style>{inputStyles}</style>
       <button
-        onClick={() => navigate("/calculator")}
+        onClick={() => navigate("/calculators")}
         className="fixed left-8 top-8 z-50 inline-flex items-center px-4 py-2 bg-white text-blue-600 rounded-lg shadow-md hover:bg-blue-50 transition-all duration-200 font-medium border border-blue-100"
       >
         <svg

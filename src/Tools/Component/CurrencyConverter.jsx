@@ -125,7 +125,7 @@ const CurrencyConverter = () => {
   const handleFromCurrencyChange = (e) => setFromCurrency(e.target.value);
   const handleToCurrencyChange = (e) => setToCurrency(e.target.value);
 
-  const convertedAmount = (amount * exchangeRate).toFixed(2);
+  const convertedAmount = (amount * exchangeRate).toFixed(8);
 
   const chartData = {
     labels: Object.keys(allRates).slice(0, 10),
@@ -202,7 +202,7 @@ const CurrencyConverter = () => {
                       {amount} {fromCurrency} = {convertedAmount} {toCurrency}
                     </p>
                     <p className="text-sm text-gray-500 mt-1">
-                      1 {fromCurrency} = {exchangeRate.toFixed(4)} {toCurrency}
+                      1 {fromCurrency} = {exchangeRate.toFixed(8)} {toCurrency}
                     </p>
                   </div>
                 </div>
@@ -251,7 +251,7 @@ const CurrencyConverter = () => {
                           <tr key={currency} className="border-t border-gray-100 hover:bg-gray-50">
                             <td className="px-4 py-2 text-sm font-medium text-gray-700">{currency}</td>
                             <td className="px-4 py-2 text-sm text-gray-600">{currencyNames[currency] || currency}</td>
-                            <td className="px-4 py-2 text-sm text-right font-medium text-gray-700">{rate.toFixed(4)}</td>
+                            <td className="px-4 py-2 text-sm text-right font-medium text-gray-700">{rate.toFixed(8)}</td>
                           </tr>
                         ))}
                       </tbody>

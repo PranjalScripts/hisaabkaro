@@ -185,7 +185,7 @@ const Sidebar = () => {
   ];
 
   return (
-    <div className="fixed left-0 h-screen w-50 bg-gradient-to-b from-slate-50 to-slate-100 shadow-2xl flex flex-col">
+    <div className="fixed left-0 h-screen w-50 bg-gradient-to-b from-slate-50 to-slate-100 shadow-lg flex flex-col">
       {/* Logo Section with glass effect */}
       <div className="relative p-[1.19rem] bg-[#f3f7fa] bg-opacity-70 backdrop-blur-sm border-b border-slate-200">
         <div className="flex items-center gap-3 ">

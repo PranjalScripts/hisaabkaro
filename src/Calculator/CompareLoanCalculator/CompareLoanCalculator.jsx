@@ -148,7 +148,7 @@ const CompareLoanCalculator = () => {
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
           <Button
             variant="text"
-            onClick={() => navigate('/calculator')}
+            onClick={() => navigate('/calculators')}
             startIcon={<ArrowBackIcon />}
             sx={{
               color: '#1e40af',
