@@ -21,7 +21,7 @@ const ProfileStats = ({ expenses, income }) => {
             delay: 0.6,
           }}
         >
-          ₹{expenses}
+           {expenses}
         </motion.p>
       </div>
       <div className="text-center p-3 bg-white/10 rounded-xl backdrop-blur-sm">
@@ -36,7 +36,7 @@ const ProfileStats = ({ expenses, income }) => {
             delay: 0.7,
           }}
         >
-          ₹{income}
+           {income}
         </motion.p>
       </div>
     </motion.div>

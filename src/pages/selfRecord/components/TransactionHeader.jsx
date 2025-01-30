@@ -47,7 +47,7 @@ const TransactionHeader = ({ bookName, clientName, outstandingBalance }) => {
                 : "text-green-600"
             }`}
           >
-            ₹{Math.abs(outstandingBalance).toLocaleString()}
+             {Math.abs(outstandingBalance).toLocaleString()}
           </p>
         </div>
 

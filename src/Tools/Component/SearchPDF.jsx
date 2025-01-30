@@ -315,8 +315,8 @@
 //                 <th className="border p-2 text-left">VALUE DATE</th>
 //                 <th className="border p-2 text-left">TRANSACTION DETAILS</th>
 //                 <th className="border p-2 text-left">CHQ / REF NO.</th>
-//                 <th className="border p-2 text-right">DEBIT/CREDIT(₹)</th>
-//                 <th className="border p-2 text-right">BALANCE(₹)</th>
+//                 <th className="border p-2 text-right">DEBIT/CREDIT( )</th>
+//                 <th className="border p-2 text-right">BALANCE( )</th>
 //               </tr>
 //             </thead>
 //             <tbody>
@@ -511,8 +511,8 @@
 //                 <th className="border p-2 text-left">VALUE DATE</th>
 //                 <th className="border p-2 text-left">TRANSACTION DETAILS</th>
 //                 <th className="border p-2 text-left">CHQ / REF NO.</th>
-//                 <th className="border p-2 text-right">DEBIT/CREDIT(₹)</th>
-//                 <th className="border p-2 text-right">BALANCE(₹)</th>
+//                 <th className="border p-2 text-right">DEBIT/CREDIT( )</th>
+//                 <th className="border p-2 text-right">BALANCE( )</th>
 //               </tr>
 //             </thead>
 //             <tbody>
@@ -713,8 +713,8 @@
 //                                 <th className="border p-2 text-left">VALUE DATE</th>
 //                                 <th className="border p-2 text-left">TRANSACTION DETAILS</th>
 //                                 <th className="border p-2 text-left">CHQ / REF NO.</th>
-//                                 <th className="border p-2 text-right">DEBIT/CREDIT(₹)</th>
-//                                 <th className="border p-2 text-right">BALANCE(₹)</th>
+//                                 <th className="border p-2 text-right">DEBIT/CREDIT( )</th>
+//                                 <th className="border p-2 text-right">BALANCE( )</th>
 //                             </tr>
 //                         </thead>
 //                         <tbody>

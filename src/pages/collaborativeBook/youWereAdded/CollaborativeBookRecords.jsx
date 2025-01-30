@@ -388,7 +388,7 @@ const CollaborativeBookRecords = () => {
                   ? 'text-red-600'
                   : 'text-green-600'
               }`}>
-                ₹{entry.amount?.toFixed(2) || "0.00"}
+                 {entry.amount?.toFixed(2) || "0.00"}
               </span>
               <p className="text-sm text-gray-500 mt-1">{new Date(entry.transactionDate).toLocaleString()}</p>
             </div>
@@ -1101,7 +1101,7 @@ const CollaborativeBookRecords = () => {
                           </td>
                           <td className="px-3 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                             <span className={`font-medium ${history?.transactionType === "you will give" ? "text-green-600" : "text-red-600"}`}>
-                              ₹{history?.amount?.toFixed(2) || "0.00"}
+                               {history?.amount?.toFixed(2) || "0.00"}
                             </span>
                           </td>
                           <td className="px-3 py-4 text-sm text-gray-900 break-words w-64">

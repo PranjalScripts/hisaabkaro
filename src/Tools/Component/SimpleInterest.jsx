@@ -130,7 +130,7 @@ const SimpleInterestCalculator = () => {
                 <form onSubmit={calculateInterest} className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-600 mb-2">
-                      Principal Amount (₹)
+                      Principal Amount ( )
                     </label>
                     <input
                       type="text"

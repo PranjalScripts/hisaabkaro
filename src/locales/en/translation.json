@@ -100,9 +100,9 @@
     "settled": "Settled",
     "clientTransaction": "Client Transaction",
     "transaction": "Transaction",
-    "totalYouWillGet": "Total You Will Get",
-    "totalYouWillGive": "Total You Will Give",
-    "totalOutstanding": "Total Outstanding",
+    "totalYouWillGet": "You Got",
+    "totalYouWillGive": "You Gave",
+    "totalOutstanding": "Total",
     "unconfirmed": "unconfirmed",
     "afterSettlement": "After settlement",
     "summary": "Summary"

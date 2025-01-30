@@ -19,7 +19,7 @@ const VATCalculator = () => {
   const [showTooltip, setShowTooltip] = useState({ add: false, remove: false });
 
   const countries = {
-    India: { vat: 18, currency: "₹" },
+    India: { vat: 18, currency: " " },
     USA: { vat: 10, currency: "$" },
     UK: { vat: 20, currency: "£" },
     Germany: { vat: 19, currency: "€" },

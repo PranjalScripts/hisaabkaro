@@ -59,14 +59,14 @@ const HomeSummary = ({ transactions }) => {
             </div>
           </div>
           <p className="text-2xl font-bold text-green-600 mb-1">
-            ₹{totalWillGet.toLocaleString('en-IN')}
+             {totalWillGet.toLocaleString('en-IN')}
           </p>
           {unconfirmedWillGet > 0 && (
             <div className="flex items-center text-xs bg-white/50 rounded-md p-1.5">
               <AiOutlineClockCircle className="w-3.5 h-3.5 text-green-500 mr-1" />
               <span className="text-green-600 font-medium">+</span>
               <span className="text-green-600 font-medium ml-1">
-                ₹{unconfirmedWillGet.toLocaleString('en-IN')}
+                 {unconfirmedWillGet.toLocaleString('en-IN')}
               </span>
               <span className="text-green-500 ml-1">
                 {t("transactions.unconfirmed")}
@@ -87,14 +87,14 @@ const HomeSummary = ({ transactions }) => {
             </div>
           </div>
           <p className="text-2xl font-bold text-red-600 mb-1">
-            ₹{totalWillGive.toLocaleString('en-IN')}
+             {totalWillGive.toLocaleString('en-IN')}
           </p>
           {unconfirmedWillGive > 0 && (
             <div className="flex items-center text-xs bg-white/50 rounded-md p-1.5">
               <AiOutlineClockCircle className="w-3.5 h-3.5 text-red-500 mr-1" />
               <span className="text-red-600 font-medium">+</span>
               <span className="text-red-600 font-medium ml-1">
-                ₹{unconfirmedWillGive.toLocaleString('en-IN')}
+                 {unconfirmedWillGive.toLocaleString('en-IN')}
               </span>
               <span className="text-red-500 ml-1">
                 {t("transactions.unconfirmed")}
@@ -117,7 +117,7 @@ const HomeSummary = ({ transactions }) => {
           <p className={`text-2xl font-bold mb-1 ${
             totalOutstanding >= 0 ? "text-green-600" : "text-red-600"
           }`}>
-            ₹{Math.abs(totalOutstanding).toLocaleString('en-IN')}
+             {Math.abs(totalOutstanding).toLocaleString('en-IN')}
           </p>
           {(unconfirmedWillGet > 0 || unconfirmedWillGive > 0) && (
             <div className="flex items-center text-xs bg-white/50 rounded-md p-1.5">
@@ -128,7 +128,7 @@ const HomeSummary = ({ transactions }) => {
               <span className={`font-medium ml-1 ${
                 potentialOutstanding >= 0 ? "text-green-600" : "text-red-600"
               }`}>
-                ₹{Math.abs(potentialOutstanding).toLocaleString('en-IN')}
+                 {Math.abs(potentialOutstanding).toLocaleString('en-IN')}
               </span>
             </div>
           )}

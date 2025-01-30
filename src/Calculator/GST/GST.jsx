@@ -150,8 +150,8 @@ const GST = () => {
                   fullWidth
                   label={
                     calculationType === "exclusive"
-                      ? "Base Amount (₹)"
-                      : "Total Amount (₹)"
+                      ? "Base Amount ()"
+                      : "Total Amount ()"
                   }
                   type="number"
                   value={amount}
@@ -182,7 +182,7 @@ const GST = () => {
                   InputProps={{
                     startAdornment: (
                       <Typography sx={{ mr: 1, color: "text.secondary" }}>
-                        ₹
+                        
                       </Typography>
                     ),
                   }}
@@ -271,7 +271,7 @@ const GST = () => {
                           Base Amount:
                         </Typography>
                         <Typography fontWeight="medium">
-                          ₹{baseAmount}
+                          {baseAmount}
                         </Typography>
                       </Box>
                       <Box
@@ -285,7 +285,7 @@ const GST = () => {
                           GST Amount ({gstRate}%):
                         </Typography>
                         <Typography fontWeight="medium" color="primary.main">
-                          ₹{gstAmount}
+                          {gstAmount}
                         </Typography>
                       </Box>
                       <Box
@@ -301,7 +301,7 @@ const GST = () => {
                           Total Amount:
                         </Typography>
                         <Typography fontWeight="bold" fontSize="1.1rem">
-                          ₹{totalAmount}
+                          {totalAmount}
                         </Typography>
                       </Box>
                     </Grid>

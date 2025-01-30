@@ -150,15 +150,15 @@ const CompareLoan = () => {
                                         <div className="space-y-2">
                                             <div>
                                                 <p className="text-sm text-gray-600">Monthly EMI</p>
-                                                <p className="text-lg font-bold text-gray-800">₹ {results.emi1.toFixed(2)}</p>
+                                                <p className="text-lg font-bold text-gray-800">  {results.emi1.toFixed(2)}</p>
                                             </div>
                                             <div>
                                                 <p className="text-sm text-gray-600">Total Interest</p>
-                                                <p className="text-lg font-bold text-gray-800">₹ {results.totalInterest1.toFixed(2)}</p>
+                                                <p className="text-lg font-bold text-gray-800">  {results.totalInterest1.toFixed(2)}</p>
                                             </div>
                                             <div>
                                                 <p className="text-sm text-gray-600">Total Payment</p>
-                                                <p className="text-lg font-bold text-gray-800">₹ {results.totalPayment1.toFixed(2)}</p>
+                                                <p className="text-lg font-bold text-gray-800">  {results.totalPayment1.toFixed(2)}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -169,15 +169,15 @@ const CompareLoan = () => {
                                         <div className="space-y-2">
                                             <div>
                                                 <p className="text-sm text-gray-600">Monthly EMI</p>
-                                                <p className="text-lg font-bold text-gray-800">₹ {results.emi2.toFixed(2)}</p>
+                                                <p className="text-lg font-bold text-gray-800">  {results.emi2.toFixed(2)}</p>
                                             </div>
                                             <div>
                                                 <p className="text-sm text-gray-600">Total Interest</p>
-                                                <p className="text-lg font-bold text-gray-800">₹ {results.totalInterest2.toFixed(2)}</p>
+                                                <p className="text-lg font-bold text-gray-800">  {results.totalInterest2.toFixed(2)}</p>
                                             </div>
                                             <div>
                                                 <p className="text-sm text-gray-600">Total Payment</p>
-                                                <p className="text-lg font-bold text-gray-800">₹ {results.totalPayment2.toFixed(2)}</p>
+                                                <p className="text-lg font-bold text-gray-800">  {results.totalPayment2.toFixed(2)}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -188,15 +188,15 @@ const CompareLoan = () => {
                                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                             <div>
                                                 <p className="text-sm text-gray-600">EMI Difference</p>
-                                                <p className="text-lg font-bold text-gray-800">₹ {(results.emi1 - results.emi2).toFixed(2)}</p>
+                                                <p className="text-lg font-bold text-gray-800">  {(results.emi1 - results.emi2).toFixed(2)}</p>
                                             </div>
                                             <div>
                                                 <p className="text-sm text-gray-600">Interest Difference</p>
-                                                <p className="text-lg font-bold text-gray-800">₹ {(results.totalInterest1 - results.totalInterest2).toFixed(2)}</p>
+                                                <p className="text-lg font-bold text-gray-800">  {(results.totalInterest1 - results.totalInterest2).toFixed(2)}</p>
                                             </div>
                                             <div>
                                                 <p className="text-sm text-gray-600">Total Payment Difference</p>
-                                                <p className="text-lg font-bold text-gray-800">₹ {(results.totalPayment1 - results.totalPayment2).toFixed(2)}</p>
+                                                <p className="text-lg font-bold text-gray-800">  {(results.totalPayment1 - results.totalPayment2).toFixed(2)}</p>
                                             </div>
                                         </div>
                                     </div>

@@ -103,7 +103,7 @@ function App() {
                     <option value="NZD">New Zealand Dollar ($)</option>
                     <option value="EUR">Euro (€)</option>
                     <option value="GBP">British Pound (£)</option>
-                    <option value="INR">Indian Rupee (₹)</option>
+                    <option value="INR">Indian Rupee ( )</option>
                   </select>
                 </div>
               </div>

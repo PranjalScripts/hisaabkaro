@@ -68,7 +68,7 @@ const TransactionHeader = ({ transaction }) => {
                 </svg>
                 <span className="font-semibold">Outstanding Balance</span>
               </div>
-              <p className="text-gray-700 font-medium">₹{outstandingBalance.toLocaleString('en-IN')}</p>
+              <p className="text-gray-700 font-medium"> {outstandingBalance.toLocaleString('en-IN')}</p>
             </div>
           </div>
         </div>

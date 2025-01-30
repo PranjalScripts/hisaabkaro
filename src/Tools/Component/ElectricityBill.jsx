@@ -96,7 +96,7 @@ const ElectricityBillCalculator = () => {
   };
 
   const formatCurrency = (value) => {
-    return `₹${value.toFixed(2)}`;
+    return ` ${value.toFixed(2)}`;
   };
 
   return (
@@ -148,7 +148,7 @@ const ElectricityBillCalculator = () => {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-600 mb-2">
-                      Rate per Unit (₹)
+                      Rate per Unit ( )
                     </label>
                     <input
                       type="text"
@@ -162,7 +162,7 @@ const ElectricityBillCalculator = () => {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-600 mb-2">
-                      Fixed Charges (₹)
+                      Fixed Charges ( )
                     </label>
                     <input
                       type="text"

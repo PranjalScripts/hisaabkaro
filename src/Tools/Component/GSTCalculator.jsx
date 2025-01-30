@@ -145,7 +145,7 @@ const GSTCalculator = () => {
                         {showTooltip.exclusive && (
                           <div className="absolute z-10 w-64 p-2 mt-2 text-sm text-white bg-gray-900 rounded-lg shadow-lg">
                             When GST is exclusive, the tax is added to the base amount. 
-                            Example: Base ₹100 + 18% GST = Total ₹118
+                            Example: Base  100 + 18% GST = Total  118
                           </div>
                         )}
                       </div>
@@ -166,7 +166,7 @@ const GSTCalculator = () => {
                         {showTooltip.inclusive && (
                           <div className="absolute z-10 w-64 p-2 mt-2 text-sm text-white bg-gray-900 rounded-lg shadow-lg">
                             When GST is inclusive, the tax is already included in the total amount. 
-                            Example: Total ₹118 includes 18% GST (Base ₹100)
+                            Example: Total  118 includes 18% GST (Base  100)
                           </div>
                         )}
                       </div>
@@ -175,7 +175,7 @@ const GSTCalculator = () => {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-600 mb-2">
-                      {calculationType === "exclusive" ? "Base Amount (₹)" : "Total Amount (₹)"}
+                      {calculationType === "exclusive" ? "Base Amount ( )" : "Total Amount ( )"}
                     </label>
                     <input
                       type="text"

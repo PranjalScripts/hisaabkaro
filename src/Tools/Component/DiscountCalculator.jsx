@@ -142,7 +142,7 @@ const DiscountCalculator = () => {
                 <form onSubmit={calculateDiscount} className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-600 mb-2">
-                      Original Price (₹)
+                      Original Price ( )
                     </label>
                     <input
                       type="text"

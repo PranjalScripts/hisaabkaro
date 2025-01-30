@@ -342,7 +342,7 @@ const AddTransactions = ({ onClose, onTransactionAdded, onStatus }) => {
                     : transactionData.transactionType === "you will give"
                     ? "text-red-600"
                     : "text-gray-500"
-                }`}>₹</span>
+                }`}> </span>
                 <input
                   type="number"
                   id="amount"

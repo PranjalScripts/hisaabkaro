@@ -259,7 +259,7 @@ const SelfRecordByBookID = () => {
                             ? 'text-green-600'
                             : 'text-red-600'
                         }`}>
-                          ₹{Math.abs(transaction.outstandingBalance).toLocaleString('en-IN')}
+                           {Math.abs(transaction.outstandingBalance).toLocaleString('en-IN')}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -360,7 +360,7 @@ const SelfRecordByBookID = () => {
                           ? 'text-red-600'
                           : 'text-gray-600'
                       }`}>
-                        ₹{Math.abs(transaction.outstandingBalance).toLocaleString('en-IN')}
+                         {Math.abs(transaction.outstandingBalance).toLocaleString('en-IN')}
                       </span>
                     </div>
                     <button

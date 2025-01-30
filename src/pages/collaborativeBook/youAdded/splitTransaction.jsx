@@ -159,7 +159,7 @@ const SplitTransaction = ({
         <div className="flex justify-between items-center mb-8 pb-4 border-b border-gray-200">
           <div>
             <h2 className="text-2xl font-bold text-gray-800">Split Transaction</h2>
-            <p className="text-gray-600 mt-1">Original Amount: ₹{originalTransaction?.amount.toLocaleString('en-IN')}</p>
+            <p className="text-gray-600 mt-1">Original Amount:  {originalTransaction?.amount.toLocaleString('en-IN')}</p>
           </div>
           <button
             onClick={onClose}
@@ -210,7 +210,7 @@ const SplitTransaction = ({
                 Amount to Split
               </label>
               <div className="relative">
-                <span className="absolute left-3 top-2.5 text-gray-500">₹</span>
+                <span className="absolute left-3 top-2.5 text-gray-500"> </span>
                 <input
                   type="number"
                   value={amount}
@@ -226,7 +226,7 @@ const SplitTransaction = ({
               <div className="mt-2 flex items-center justify-between">
                 <span className="text-sm text-gray-600">Remaining Amount:</span>
                 <span className={`font-medium ${remainingAmount < 0 ? 'text-red-600' : 'text-green-600'}`}>
-                  ₹{remainingAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                   {remainingAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                 </span>
               </div>
             </div>

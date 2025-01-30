@@ -103,14 +103,14 @@ const TransactionTable = ({
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       {entry?.transactionType === "you will give" ? (
-                        <span className="text-red-600">₹{(entry?.amount || 0).toLocaleString()}</span>
+                        <span className="text-red-600"> {(entry?.amount || 0).toLocaleString()}</span>
                       ) : (
                         "-"
                       )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       {entry?.transactionType === "you will get" ? (
-                        <span className="text-green-600">₹{(entry?.amount || 0).toLocaleString()}</span>
+                        <span className="text-green-600"> {(entry?.amount || 0).toLocaleString()}</span>
                       ) : (
                         "-"
                       )}
@@ -121,7 +121,7 @@ const TransactionTable = ({
                     <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium text-right ${
                       (entry?.outstandingBalance || 0) < 0 ? "text-red-600" : "text-green-600"
                     }`}>
-                      ₹{Math.abs(entry?.outstandingBalance || 0).toLocaleString()}
+                       {Math.abs(entry?.outstandingBalance || 0).toLocaleString()}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
                       {entry?.file ? (

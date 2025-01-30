@@ -97,7 +97,7 @@ const BarChart = () => {
           label: function(context) {
             let label = context.dataset.label || '';
             if (label) {
-              label += ': ₹';
+              label += ':  ';
             }
             if (context.parsed.y !== null) {
               label += new Intl.NumberFormat('en-IN').format(context.parsed.y);
@@ -141,7 +141,7 @@ const BarChart = () => {
           },
           color: "#6b7280",
           callback: function(value) {
-            return '₹' + new Intl.NumberFormat('en-IN').format(value);
+            return ' ' + new Intl.NumberFormat('en-IN').format(value);
           },
         },
       },
@@ -177,13 +177,13 @@ const BarChart = () => {
         <div className="text-center p-3 rounded-md bg-emerald-50">
           <p className="text-sm font-medium text-emerald-600">Total Credit</p>
           <p className="text-lg font-semibold text-emerald-700">
-            ₹{new Intl.NumberFormat('en-IN').format(data.datasets[0].data.reduce((a, b) => a + b, 0))}
+             {new Intl.NumberFormat('en-IN').format(data.datasets[0].data.reduce((a, b) => a + b, 0))}
           </p>
         </div>
         <div className="text-center p-3 rounded-md bg-red-50">
           <p className="text-sm font-medium text-red-600">Total Debit</p>
           <p className="text-lg font-semibold text-red-700">
-            ₹{new Intl.NumberFormat('en-IN').format(data.datasets[1].data.reduce((a, b) => a + b, 0))}
+             {new Intl.NumberFormat('en-IN').format(data.datasets[1].data.reduce((a, b) => a + b, 0))}
           </p>
         </div>
       </div>
