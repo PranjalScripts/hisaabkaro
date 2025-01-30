@@ -601,77 +601,152 @@ const History = () => {
       <TransactionHeader transaction={transaction} />
 
       {/* Action Buttons */}
-      <div className="relative z-5 flex gap-4 mb-6 mt-6">
-        <button
-          type="button"
-          onClick={() => {
-            setNewTransaction({ amount: "", description: "", file: null });
-            setSelectedTransactionType("you will get");
-            setShowForm(true);
-          }}
-          className="flex items-center px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold rounded-xl 
-          hover:from-green-600 hover:to-emerald-700 transform hover:scale-105 transition-all duration-200 shadow-md hover:shadow-lg"
-        >
-          <svg
-            className="w-5 h-5 mr-2"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+      <div className="relative z-5 mb-6 mt-6">
+        {/* Desktop View */}
+        <div className="hidden sm:flex gap-4">
+          <button
+            type="button"
+            onClick={() => {
+              setNewTransaction({ amount: "", description: "", file: null });
+              setSelectedTransactionType("you will get");
+              setShowForm(true);
+            }}
+            className="flex items-center px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold rounded-xl 
+            hover:from-green-600 hover:to-emerald-700 transform hover:scale-105 transition-all duration-200 shadow-md hover:shadow-lg"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-            />
-          </svg>
-          You Will Get
-        </button>
-        <button
-          type="button"
-          onClick={() => {
-            setNewTransaction({ amount: "", description: "", file: null });
-            setSelectedTransactionType("you will give");
-            setShowForm(true);
-          }}
-          className="flex items-center px-6 py-3 bg-gradient-to-r from-red-500 to-rose-600 text-white font-semibold rounded-xl 
-          hover:from-red-600 hover:to-rose-700 transform hover:scale-105 transition-all duration-200 shadow-md hover:shadow-lg"
-        >
-          <svg
-            className="w-5 h-5 mr-2"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+            <svg
+              className="w-5 h-5 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+              />
+            </svg>
+            You Will Get
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setNewTransaction({ amount: "", description: "", file: null });
+              setSelectedTransactionType("you will give");
+              setShowForm(true);
+            }}
+            className="flex items-center px-6 py-3 bg-gradient-to-r from-red-500 to-rose-600 text-white font-semibold rounded-xl 
+            hover:from-red-600 hover:to-rose-700 transform hover:scale-105 transition-all duration-200 shadow-md hover:shadow-lg"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M20 12H4"
-            />
-          </svg>
-          You Will Give
-        </button>
-        {/* Export PDF Button */}
-        <button
-          type="button"
-          onClick={() => {
-            if (transaction && transactionTableRef.current) {
-              transactionTableRef.current.exportToPDF();
-            }
-          }}
-          className="flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold rounded-xl 
-          hover:from-blue-600 hover:to-indigo-700 transform hover:scale-105 transition-all duration-200 shadow-md hover:shadow-lg"
-        >
-          <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-            <path
-              fillRule="evenodd"
-              d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v3.586L7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V8z"
-              clipRule="evenodd"
-            />
-          </svg>
-          Export PDF
-        </button>
+            <svg
+              className="w-5 h-5 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M20 12H4"
+              />
+            </svg>
+            You Will Give
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              if (transaction && transactionTableRef.current) {
+                transactionTableRef.current.exportToPDF();
+              }
+            }}
+            className="flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold rounded-xl 
+            hover:from-blue-600 hover:to-indigo-700 transform hover:scale-105 transition-all duration-200 shadow-md hover:shadow-lg"
+          >
+            <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fillRule="evenodd"
+                d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v3.586L7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V8z"
+                clipRule="evenodd"
+              />
+            </svg>
+            Export PDF
+          </button>
+        </div>
+
+        {/* Mobile View */}
+        <div className="grid grid-cols-2 gap-3 sm:hidden">
+          <button
+            type="button"
+            onClick={() => {
+              setNewTransaction({ amount: "", description: "", file: null });
+              setSelectedTransactionType("you will get");
+              setShowForm(true);
+            }}
+            className="flex items-center justify-center px-4 py-2.5 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-medium rounded-xl 
+            active:from-green-600 active:to-emerald-700 shadow-md text-sm"
+          >
+            <svg
+              className="w-4 h-4 mr-1.5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+              />
+            </svg>
+            Get
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setNewTransaction({ amount: "", description: "", file: null });
+              setSelectedTransactionType("you will give");
+              setShowForm(true);
+            }}
+            className="flex items-center justify-center px-4 py-2.5 bg-gradient-to-r from-red-500 to-rose-600 text-white font-medium rounded-xl 
+            active:from-red-600 active:to-rose-700 shadow-md text-sm"
+          >
+            <svg
+              className="w-4 h-4 mr-1.5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M20 12H4"
+              />
+            </svg>
+            Give
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              if (transaction && transactionTableRef.current) {
+                transactionTableRef.current.exportToPDF();
+              }
+            }}
+            className="flex items-center justify-center px-4 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-medium rounded-xl 
+            active:from-blue-600 active:to-indigo-700 shadow-md text-sm col-span-2"
+          >
+            <svg className="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fillRule="evenodd"
+                d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v3.586L7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V8z"
+                clipRule="evenodd"
+              />
+            </svg>
+            Export PDF
+          </button>
+        </div>
       </div>
 
       <TransactionTable

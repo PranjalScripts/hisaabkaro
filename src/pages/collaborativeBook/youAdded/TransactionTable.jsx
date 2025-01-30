@@ -146,12 +146,25 @@ const TransactionTable = forwardRef(
       setShowAddedByFilterMenu(false);
     };
 
+    useEffect(() => {
+      // Check if any filter is applied
+      const isAnyFilterApplied = 
+        statusFilter !== "all" || 
+        addedByFilter !== "all" || 
+        sortConfig.key !== "transactionDate" || 
+        sortConfig.direction !== "desc";
+      
+      setIsFilterApplied(isAnyFilterApplied);
+    }, [statusFilter, addedByFilter, sortConfig]);
+
     const clearAllFilters = () => {
+      setSortConfig({ key: "transactionDate", direction: "desc" });
       setStatusFilter("all");
       setAddedByFilter("all");
       setShowStatusFilterMenu(false);
       setShowAddedByFilterMenu(false);
-      setCurrentPage(1); // Reset to first page
+      setShowSortMenu(false);
+      setCurrentPage(1);
     };
 
     const formatDate = (dateString) => {
@@ -670,482 +683,667 @@ const TransactionTable = forwardRef(
 
     const renderTableView = () => {
       return (
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200 table-fixed">
-            <colgroup>
-              <col className="w-[5%]" /> {/* # */}
-              <col className="w-[12%]" /> {/* Date */}
-              <col className="w-[12%]" /> {/* Initiated By */}
-              <col className="w-[10%]" /> {/* Type */}
-              <col className="w-[10%]" /> {/* Amount */}
-              <col className="w-[25%]" /> {/* Description */}
-              <col className="w-[10%]" /> {/* Status */}
-              <col className="w-[8%]" /> {/* Files */}
-              <col className="w-[8%]" /> {/* Action */}
-            </colgroup>
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider overflow-hidden">
-                  #
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider overflow-hidden">
-                  Date
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider overflow-hidden">
-                  Initiated By
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider overflow-hidden">
-                  Type
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider overflow-hidden">
-                  Amount
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider overflow-hidden">
-                  Description
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider overflow-hidden">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider overflow-hidden">
-                  Files
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider overflow-hidden">
-                  Action
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {paginatedTransactions.map((entry, index) => (
-                <tr
-                  key={entry._id}
-                  className={`transition-all duration-200 ${getHoverClass(
-                    entry?.transactionType
-                  )}`}
-                >
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 overflow-hidden">
-                    {(currentPage - 1) * itemsPerPage + index + 1}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 overflow-hidden">
-                    {formatDate(entry.transactionDate)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 overflow-hidden">
-                    <div className="truncate">
-                      {entry?.initiatedBy || "N/A"}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm overflow-hidden">
-                    <span
-                      className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${
-                        entry?.transactionType === "you will give"
-                          ? "bg-red-100 text-red-800"
-                          : "bg-green-100 text-green-800"
-                      }`}
-                    >
-                      {entry?.transactionType || "N/A"}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold overflow-hidden">
-                    <span
-                      className={`${
-                        entry?.transactionType === "you will give"
-                          ? "text-red-600"
-                          : "text-green-600"
-                      }`}
-                    >
-                      {formatAmountWithoutPrefix(entry?.amount)}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 relative overflow-hidden">
-                    <div className="w-full">
-                      <div className="relative">
-                        <p className="text-sm text-gray-500 whitespace-pre-wrap break-words overflow-hidden max-h-20">
-                          {entry?.description || "No description"}
-                        </p>
-                        {entry?.description && entry.description.length > 100 && (
-                          <div className="absolute bottom-0 inset-x-0 h-12 bg-gradient-to-t from-white to-transparent flex items-end justify-end">
-                            <button 
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setSelectedDescription(entry.description);
-                                setShowDescriptionModal(true);
-                              }}
-                              className="mb-1 mr-2 px-2 py-1 text-xs font-medium text-blue-600 hover:text-blue-800 bg-white rounded-full shadow-sm border border-blue-200 hover:border-blue-300 transition-all duration-200 flex items-center gap-1"
-                            >
-                              Read more
-                              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                              </svg>
-                            </button>
-                          </div>
-                        )}
+        <>
+          {/* Desktop View - Original Table */}
+          <div className="hidden sm:block overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200 table-fixed">
+              <colgroup>
+                <col className="w-[5%]" /> {/* # */}
+                <col className="w-[12%]" /> {/* Date */}
+                <col className="w-[12%]" /> {/* Initiated By */}
+                <col className="w-[10%]" /> {/* Type */}
+                <col className="w-[10%]" /> {/* Amount */}
+                <col className="w-[25%]" /> {/* Description */}
+                <col className="w-[10%]" /> {/* Status */}
+                <col className="w-[8%]" /> {/* Files */}
+                <col className="w-[8%]" /> {/* Action */}
+              </colgroup>
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider overflow-hidden">
+                    #
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider overflow-hidden">
+                    Date
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider overflow-hidden">
+                    Initiated By
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider overflow-hidden">
+                    Type
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider overflow-hidden">
+                    Amount
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider overflow-hidden">
+                    Description
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider overflow-hidden">
+                    Status
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider overflow-hidden">
+                    Files
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider overflow-hidden">
+                    Action
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {paginatedTransactions.map((entry, index) => (
+                  <tr
+                    key={entry._id}
+                    className={`transition-all duration-200 ${getHoverClass(
+                      entry?.transactionType
+                    )}`}
+                  >
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 overflow-hidden">
+                      {(currentPage - 1) * itemsPerPage + index + 1}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 overflow-hidden">
+                      {formatDate(entry.transactionDate)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 overflow-hidden">
+                      <div className="truncate">
+                        {entry.initiaterId === userId 
+                          ? transaction?.userId?.name || "You"
+                          : transaction?.clientUserId?.name || "Client"
+                        }
                       </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 overflow-hidden">
-                    {entry?.confirmationStatus === "confirmed" ? (
-                      <span className="flex items-center gap-2 text-green-600 font-medium">
-                        <AiOutlineCheckCircle className="text-lg" />
-                        <span className="text-sm">Confirmed</span>
-                      </span>
-                    ) : userId === entry?.initiaterId ? (
-                      <span className="flex items-center gap-2 text-yellow-600 font-medium">
-                        <AiOutlineClockCircle className="text-lg" />
-                        <span className="text-sm">Pending</span>
-                      </span>
-                    ) : (
-                      <button
-                        onClick={() => updateTransactionStatus(entry._id)}
-                        disabled={updating}
-                        className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm overflow-hidden">
+                      <span
+                        className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${
+                          entry?.transactionType === "you will give"
+                            ? "bg-red-100 text-red-800"
+                            : "bg-green-100 text-green-800"
+                        }`}
                       >
-                        {updating ? "Updating..." : "Confirm"}
+                        {entry?.transactionType || "N/A"}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold overflow-hidden">
+                      <span
+                        className={`${
+                          entry?.transactionType === "you will give"
+                            ? "text-red-600"
+                            : "text-green-600"
+                        }`}
+                      >
+                        {formatAmountWithoutPrefix(entry?.amount)}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 relative overflow-hidden">
+                      <div className="w-full">
+                        <div className="relative">
+                          <p className="text-sm text-gray-500 whitespace-pre-wrap break-words overflow-hidden max-h-20">
+                            {entry?.description || "No description"}
+                          </p>
+                          {entry?.description && entry.description.length > 100 && (
+                            <div className="absolute bottom-0 inset-x-0 h-12 bg-gradient-to-t from-white to-transparent flex items-end justify-end">
+                              <button 
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedDescription(entry.description);
+                                  setShowDescriptionModal(true);
+                                }}
+                                className="mb-1 mr-2 px-2 py-1 text-xs font-medium text-blue-600 hover:text-blue-800 bg-white rounded-full shadow-sm border border-blue-200 hover:border-blue-300 transition-all duration-200 flex items-center gap-1"
+                              >
+                                Read more
+                                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                </svg>
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 overflow-hidden">
+                      {entry?.confirmationStatus === "confirmed" ? (
+                        <span className="flex items-center gap-2 text-green-600 font-medium">
+                          <AiOutlineCheckCircle className="text-lg" />
+                          <span className="text-sm">Confirmed</span>
+                        </span>
+                      ) : userId === entry?.initiaterId ? (
+                        <span className="flex items-center gap-2 text-yellow-600 font-medium">
+                          <AiOutlineClockCircle className="text-lg" />
+                          <span className="text-sm">Pending</span>
+                        </span>
+                      ) : (
+                        <button
+                          onClick={() => updateTransactionStatus(entry._id)}
+                          disabled={updating}
+                          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+                        >
+                          {updating ? "Updating..." : "Confirm"}
+                        </button>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 overflow-hidden">
+                      {entry?.file ? (
+                        <div className="group relative cursor-pointer">
+                          {typeof entry.file === 'string' && entry.file.toLowerCase().endsWith(".pdf") ? (
+                            <BsFilePdf
+                              onClick={() => handleImageClick(entry.file)}
+                              className="text-2xl text-red-500 group-hover:text-red-700 transition"
+                            />
+                          ) : (
+                            <AiOutlineFileImage
+                              onClick={() => handleImageClick(entry.file)}
+                              className="text-2xl text-blue-500 group-hover:text-blue-700 transition"
+                            />
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-gray-500">No file</span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 overflow-hidden">
+                      {userId === entry?.initiaterId ? (
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleEditClick(entry)}
+                            className="text-yellow-500 hover:text-yellow-600"
+                            title="Edit"
+                          >
+                            <MdEdit className="text-xl" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteClick(entry)}
+                            className="text-red-500 hover:text-red-600"
+                            title="Delete"
+                          >
+                            <MdDelete className="text-xl" />
+                          </button>
+                          <button
+                            onClick={() => handleSplitClick(entry)}
+                            className="text-blue-500 hover:text-blue-600"
+                            title="Split Transaction"
+                          >
+                            <BiGitBranch className="text-xl" />
+                          </button>
+                        </div>
+                      ) : (
+                        <span className="text-gray-500 italic">
+                          Added by {transaction?.clientUserId?.name || "Client"}
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile List View */}
+          <div className="sm:hidden space-y-2">
+            {paginatedTransactions.map((entry, index) => (
+              <div 
+                key={entry._id}
+                className={`bg-white rounded-lg shadow-sm p-3 ${
+                  entry?.transactionType === "you will give" 
+                    ? "border-l-4 border-red-500" 
+                    : "border-l-4 border-green-500"
+                }`}
+              >
+                {/* Top Row - Amount and Status */}
+                <div className="flex items-center justify-between mb-1">
+                  <div className="flex items-center gap-2">
+                    <span className={`text-base font-semibold ${
+                      entry?.transactionType === "you will give" 
+                        ? "text-red-600" 
+                        : "text-green-600"
+                    }`}>
+                      ₹{formatAmountWithoutPrefix(entry?.amount)}
+                    </span>
+                    <span className={`px-2 py-0.5 text-xs rounded-full ${
+                      entry?.confirmationStatus === "confirmed"
+                        ? "bg-green-100 text-green-800"
+                        : "bg-yellow-100 text-yellow-800"
+                    }`}>
+                      {entry?.confirmationStatus}
+                    </span>
+                  </div>
+                  <span className="text-xs text-gray-500">
+                    {formatDate(entry.transactionDate)}
+                  </span>
+                </div>
+
+                {/* Description with Read More */}
+                <div className="text-sm text-gray-600 line-clamp-1 mb-1">
+                  {entry?.description || "No description"}
+                  {entry?.description && entry.description.length > 100 && (
+                    <button
+                      onClick={() => {
+                        setSelectedDescription(entry.description);
+                        setShowDescriptionModal(true);
+                      }}
+                      className="ml-1 text-blue-600 text-xs"
+                    >
+                      more
+                    </button>
+                  )}
+                </div>
+
+                {/* Bottom Row - Meta Info and Actions */}
+                <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-100">
+                  <span className="text-xs text-gray-500">
+                    By: {entry.initiaterId === userId 
+                      ? transaction?.userId?.name || "You"
+                      : transaction?.clientUserId?.name || "Client"
+                    }
+                  </span>
+                  <div className="flex items-center gap-3">
+                    {/* File icon */}
+                    {entry?.file && (
+                      <button
+                        onClick={() => handleImageClick(entry.file)}
+                        className="text-blue-500"
+                      >
+                        {entry.file.toLowerCase().endsWith(".pdf") ? (
+                          <BsFilePdf className="text-lg" />
+                        ) : (
+                          <AiOutlineFileImage className="text-lg" />
+                        )}
                       </button>
                     )}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 overflow-hidden">
-                    {entry?.file ? (
-                      <div className="group relative cursor-pointer">
-                        {typeof entry.file === 'string' && entry.file.toLowerCase().endsWith(".pdf") ? (
-                          <BsFilePdf
-                            onClick={() => handleImageClick(entry.file)}
-                            className="text-2xl text-red-500 group-hover:text-red-700 transition"
-                          />
-                        ) : (
-                          <AiOutlineFileImage
-                            onClick={() => handleImageClick(entry.file)}
-                            className="text-2xl text-blue-500 group-hover:text-blue-700 transition"
-                          />
-                        )}
-                      </div>
-                    ) : (
-                      <span className="text-gray-500">No file</span>
-                    )}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 overflow-hidden">
-                    {userId === entry?.initiaterId ? (
-                      <div className="flex gap-2">
+                    {/* Action buttons */}
+                    {userId === entry?.initiaterId && (
+                      <>
                         <button
                           onClick={() => handleEditClick(entry)}
-                          className="text-yellow-500 hover:text-yellow-600"
-                          title="Edit"
+                          className="text-yellow-500"
                         >
-                          <MdEdit className="text-xl" />
+                          <MdEdit className="text-lg" />
                         </button>
                         <button
                           onClick={() => handleDeleteClick(entry)}
-                          className="text-red-500 hover:text-red-600"
-                          title="Delete"
+                          className="text-red-500"
                         >
-                          <MdDelete className="text-xl" />
+                          <MdDelete className="text-lg" />
                         </button>
                         <button
                           onClick={() => handleSplitClick(entry)}
-                          className="text-blue-500 hover:text-blue-600"
-                          title="Split Transaction"
+                          className="text-blue-500"
                         >
-                          <BiGitBranch className="text-xl" />
+                          <BiGitBranch className="text-lg" />
                         </button>
-                      </div>
-                    ) : (
-                      <span className="text-gray-500 italic">
-                        Not yours
-                      </span>
+                      </>
                     )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
       );
     };
 
     return (
       <div className="mt-4">
-        <div className="flex justify-between items-center mb-4">
-          <div className="flex items-center gap-4">
-            {/* Sort Button */}
-            <div className="relative">
-              <button
-                onClick={() => setShowSortMenu((prev) => !prev)}
-                className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-              >
-                <BsFilter className="mr-2 h-4 w-4" />
-                Sort By
-              </button>
-              {showSortMenu && (
-                <div
-                  className="absolute left-1/2 transform -translate-x-1/2 mt-2 w-32 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10"
-                  role="menu"
-                  aria-orientation="vertical"
+        {/* Filter Controls Section */}
+        <div className="mb-4">
+          {/* Desktop View */}
+          <div className="hidden sm:flex justify-between items-center">
+            <div className="flex items-center gap-4">
+              {/* Sort Button */}
+              <div className="relative">
+                <button
+                  onClick={() => setShowSortMenu((prev) => !prev)}
+                  className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
                 >
-                  <div className="py-1">
-                    <button
-                      onClick={() => handleSortChange("newest")}
-                      className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
-                    >
-                      Newest First
-                    </button>
-                    <button
-                      onClick={() => handleSortChange("oldest")}
-                      className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
-                    >
-                      Oldest First
-                    </button>
-                    <button
-                      onClick={() => handleSortChange("amount_high")}
-                      className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
-                    >
-                      High to Low
-                    </button>
-                    <button
-                      onClick={() => handleSortChange("amount_low")}
-                      className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
-                    >
-                      Low to High
-                    </button>
+                  <BsFilter className="mr-2 h-4 w-4" />
+                  Sort
+                </button>
+                {showSortMenu && (
+                  <div className="absolute left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                    <div className="py-1">
+                      <button
+                        onClick={() => handleSortChange("newest")}
+                        className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                      >
+                        Newest First
+                      </button>
+                      <button
+                        onClick={() => handleSortChange("oldest")}
+                        className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                      >
+                        Oldest First
+                      </button>
+                      <button
+                        onClick={() => handleSortChange("amount_high")}
+                        className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                      >
+                        High to Low
+                      </button>
+                      <button
+                        onClick={() => handleSortChange("amount_low")}
+                        className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                      >
+                        Low to High
+                      </button>
+                    </div>
                   </div>
-                </div>
-              )}
-            </div>
+                )}
+              </div>
 
-            {/* Status Filter Button */}
-            <div className="relative status-filter-dropdown">
+              {/* Status Filter */}
+              <div className="relative status-filter-dropdown">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowStatusFilterMenu(!showStatusFilterMenu);
+                    setShowAddedByFilterMenu(false);
+                    setShowSortMenu(false);
+                  }}
+                  className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                >
+                  <AiOutlineFilter className="mr-2 h-4 w-4" />
+                  {statusFilter === "all" ? "Status: All" : `Status: ${statusFilter}`}
+                </button>
+                {showStatusFilterMenu && (
+                  <div className="absolute left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                    <div className="py-1">
+                      <button
+                        onClick={() => handleStatusFilter("all")}
+                        className={`w-full text-left px-4 py-2 text-sm ${
+                          statusFilter === "all" ? "bg-gray-100" : "hover:bg-gray-50"
+                        }`}
+                      >
+                        All
+                      </button>
+                      <button
+                        onClick={() => handleStatusFilter("confirmed")}
+                        className={`w-full text-left px-4 py-2 text-sm ${
+                          statusFilter === "confirmed"
+                            ? "bg-gray-100"
+                            : "hover:bg-gray-50"
+                        }`}
+                      >
+                        Confirmed
+                      </button>
+                      <button
+                        onClick={() => handleStatusFilter("pending")}
+                        className={`w-full text-left px-4 py-2 text-sm ${
+                          statusFilter === "pending"
+                            ? "bg-gray-100"
+                            : "hover:bg-gray-50"
+                        }`}
+                      >
+                        Pending
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Added By Filter */}
+              <div className="relative added-by-filter-dropdown">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowAddedByFilterMenu(!showAddedByFilterMenu);
+                    setShowStatusFilterMenu(false);
+                    setShowSortMenu(false);
+                  }}
+                  className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                >
+                  <AiOutlineFilter className="mr-2 h-4 w-4" />
+                  {addedByFilter === "all" ? "Added By: All" : `Added By: ${addedByFilter}`}
+                </button>
+                {showAddedByFilterMenu && (
+                  <div className="absolute left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                    <div className="py-1">
+                      <button
+                        onClick={() => handleAddedByFilter("all")}
+                        className={`w-full text-left px-4 py-2 text-sm ${
+                          addedByFilter === "all"
+                            ? "bg-gray-100"
+                            : "hover:bg-gray-50"
+                        }`}
+                      >
+                        Both
+                      </button>
+                      <button
+                        onClick={() => handleAddedByFilter("user")}
+                        className={`w-full text-left px-4 py-2 text-sm ${
+                          addedByFilter === "user"
+                            ? "bg-gray-100"
+                            : "hover:bg-gray-50"
+                        }`}
+                      >
+                        Added by {transaction?.userId?.name || "You"}
+                      </button>
+                      <button
+                        onClick={() => handleAddedByFilter("client")}
+                        className={`w-full text-left px-4 py-2 text-sm ${
+                          addedByFilter === "client"
+                            ? "bg-gray-100"
+                            : "hover:bg-gray-50"
+                        }`}
+                      >
+                        Added by {transaction?.clientUserId?.name || "Client"}
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Clear Filter */}
+              {isFilterApplied && (
+                <button
+                  onClick={clearAllFilters}
+                  className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                >
+                  Clear All Filters
+                </button>
+              )}
+
+              {/* View Toggle */}
               <button
-                type="button"
-                onClick={() => {
-                  setShowStatusFilterMenu(!showStatusFilterMenu);
-                  setShowAddedByFilterMenu(false);
-                }}
-                className="inline-flex items-center justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                onClick={() => setViewMode(viewMode === "list" ? "grid" : "list")}
+                className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
               >
-                <AiOutlineFilter
-                  className="-ml-0.5 h-5 w-5"
-                  aria-hidden="true"
-                />
-                Status:{" "}
-                {statusFilter === "all"
-                  ? "All"
-                  : statusFilter === "confirmed"
-                  ? "Confirmed"
-                  : "Pending"}
+                {viewMode === "list" ? <BsGrid className="h-4 w-4" /> : <BsListUl className="h-4 w-4" />}
               </button>
-              {showStatusFilterMenu && (
-                <div className="absolute left-0 z-10 mt-2 w-48 origin-top-left rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5">
-                  <div className="py-1">
-                    <button
-                      onClick={() => handleStatusFilter("all")}
-                      className={`w-full text-left px-4 py-2 text-sm ${
-                        statusFilter === "all"
-                          ? "bg-gray-100"
-                          : "hover:bg-gray-50"
-                      }`}
-                    >
-                      All
-                    </button>
-                    <button
-                      onClick={() => handleStatusFilter("confirmed")}
-                      className={`w-full text-left px-4 py-2 text-sm ${
-                        statusFilter === "confirmed"
-                          ? "bg-gray-100"
-                          : "hover:bg-gray-50"
-                      }`}
-                    >
-                      Confirmed
-                    </button>
-                    <button
-                      onClick={() => handleStatusFilter("pending")}
-                      className={`w-full text-left px-4 py-2 text-sm ${
-                        statusFilter === "pending"
-                          ? "bg-gray-100"
-                          : "hover:bg-gray-50"
-                      }`}
-                    >
-                      Pending
-                    </button>
-                  </div>
-                </div>
-              )}
             </div>
-
-            {/* Added By Filter Button */}
-            <div className="relative added-by-filter-dropdown">
-              <button
-                type="button"
-                onClick={() => {
-                  setShowAddedByFilterMenu(!showAddedByFilterMenu);
-                  setShowStatusFilterMenu(false);
-                }}
-                className="inline-flex items-center justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-              >
-                <AiOutlineFilter
-                  className="-ml-0.5 h-5 w-5"
-                  aria-hidden="true"
-                />
-                Added By:{" "}
-                {addedByFilter === "all"
-                  ? "Both"
-                  : addedByFilter === "user"
-                  ? transaction?.userId?.name || "You"
-                  : transaction?.clientUserId?.name || "Client"}
-              </button>
-              {showAddedByFilterMenu && (
-                <div className="absolute left-0 z-10 mt-2 w-48 origin-top-left rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5">
-                  <div className="py-1">
-                    <button
-                      onClick={() => handleAddedByFilter("all")}
-                      className={`w-full text-left px-4 py-2 text-sm ${
-                        addedByFilter === "all"
-                          ? "bg-gray-100"
-                          : "hover:bg-gray-50"
-                      }`}
-                    >
-                      Both
-                    </button>
-                    <button
-                      onClick={() => handleAddedByFilter("user")}
-                      className={`w-full text-left px-4 py-2 text-sm ${
-                        addedByFilter === "user"
-                          ? "bg-gray-100"
-                          : "hover:bg-gray-50"
-                      }`}
-                    >
-                      Added by {transaction?.userId?.name || "You"}
-                    </button>
-                    <button
-                      onClick={() => handleAddedByFilter("client")}
-                      className={`w-full text-left px-4 py-2 text-sm ${
-                        addedByFilter === "client"
-                          ? "bg-gray-100"
-                          : "hover:bg-gray-50"
-                      }`}
-                    >
-                      Added by {transaction?.clientUserId?.name || "Client"}
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Clear Filter Button */}
-            <button
-              onClick={clearAllFilters}
-              disabled={!isFilterApplied}
-              className="inline-flex items-center justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-            >
-              Clear Filter
-            </button>
-
-            {/* View Toggle Button */}
-            <button
-              onClick={() => setViewMode(viewMode === "list" ? "grid" : "list")}
-              className="flex items-center px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-            >
-              {viewMode === "list" ? (
-                <>
-                  <BsGrid className="w-5 h-5 mr-2 text-gray-500" />
-                  <span className="text-sm font-medium text-gray-700">
-                    Grid View
-                  </span>
-                </>
-              ) : (
-                <>
-                  <BsListUl className="w-5 h-5 mr-2 text-gray-500" />
-                  <span className="text-sm font-medium text-gray-700">
-                    List View
-                  </span>
-                </>
-              )}
-            </button>
           </div>
 
-          {/* Items per page and pagination controls */}
-          <div className="flex items-center gap-4">
-            <div className="relative items-per-page-dropdown">
-              <button
-                type="button"
-                className="inline-flex items-center justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowItemsPerPage(!showItemsPerPage);
-                }}
-              >
-                {itemsPerPage} per page
-                <svg
-                  className="-mr-1 h-5 w-5 text-gray-400"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
+          {/* Mobile View */}
+          <div className="sm:hidden space-y-3">
+            {/* Top Row - Sort and View Toggle */}
+            <div className="flex justify-between gap-2">
+              {/* Sort Button */}
+              <div className="relative flex-grow">
+                <button
+                  onClick={() => setShowSortMenu((prev) => !prev)}
+                  className="w-full inline-flex items-center justify-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
                 >
-                  <path
-                    fillRule="evenodd"
-                    d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </button>
-
-              {showItemsPerPage && (
-                <div className="absolute right-0 z-10 mt-2 w-40 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5">
-                  <div className="py-1">
-                    {[10, 25, 50, 100].map((number) => (
+                  <BsFilter className="mr-2 h-4 w-4" />
+                  Sort By
+                </button>
+                {showSortMenu && (
+                  <div className="absolute left-0 right-0 mt-2 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                    <div className="py-1">
                       <button
-                        key={number}
-                        onClick={() => {
-                          handleItemsPerPageChange(number);
-                          setShowItemsPerPage(false);
-                        }}
-                        className={`block w-full px-4 py-2 text-left text-sm ${
-                          itemsPerPage === number
-                            ? "bg-gray-100 text-gray-900"
-                            : "text-gray-700"
-                        } hover:bg-gray-50`}
+                        onClick={() => handleSortChange("newest")}
+                        className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
                       >
-                        {number} per page
+                        Newest First
                       </button>
-                    ))}
+                      <button
+                        onClick={() => handleSortChange("oldest")}
+                        className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                      >
+                        Oldest First
+                      </button>
+                      <button
+                        onClick={() => handleSortChange("amount_high")}
+                        className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                      >
+                        High to Low
+                      </button>
+                      <button
+                        onClick={() => handleSortChange("amount_low")}
+                        className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                      >
+                        Low to High
+                      </button>
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
+
+              {/* View Toggle */}
+              <button
+                onClick={() => setViewMode(viewMode === "list" ? "grid" : "list")}
+                className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+              >
+                {viewMode === "list" ? (
+                  <BsGrid className="h-4 w-4" />
+                ) : (
+                  <BsListUl className="h-4 w-4" />
+                )}
+              </button>
             </div>
 
-            <nav
-              className="isolate inline-flex -space-x-px rounded-md shadow-sm"
-              aria-label="Pagination"
-            >
-              <button
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-                className={`relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-                  currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
-                }`}
-              >
-                <HiChevronLeft className="h-5 w-5" />
-              </button>
-              {[...Array(totalPages)].map((_, index) => (
+            {/* Middle Row - Status and Added By Filters */}
+            <div className="flex gap-2">
+              {/* Status Filter */}
+              <div className="relative flex-1">
                 <button
-                  key={index + 1}
-                  onClick={() => handlePageChange(index + 1)}
-                  className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${
-                    currentPage === index + 1
-                      ? "z-10 bg-blue-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-                      : "text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-                  }`}
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowStatusFilterMenu(!showStatusFilterMenu);
+                    setShowAddedByFilterMenu(false);
+                    setShowSortMenu(false);
+                  }}
+                  className="w-full inline-flex items-center justify-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
                 >
-                  {index + 1}
+                  <AiOutlineFilter className="mr-2 h-4 w-4" />
+                  {statusFilter === "all" ? "Status: All" : `Status: ${statusFilter}`}
                 </button>
-              ))}
+                {showStatusFilterMenu && (
+                  <div 
+                    className="absolute left-0 right-0 mt-2 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-[100]"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="py-1">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleStatusFilter("all");
+                          setShowStatusFilterMenu(false);
+                        }}
+                        className={`w-full text-left px-4 py-2 text-sm ${
+                          statusFilter === "all" ? "bg-gray-100" : "hover:bg-gray-50"
+                        }`}
+                      >
+                        All
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleStatusFilter("confirmed");
+                          setShowStatusFilterMenu(false);
+                        }}
+                        className={`w-full text-left px-4 py-2 text-sm ${
+                          statusFilter === "confirmed" ? "bg-gray-100" : "hover:bg-gray-50"
+                        }`}
+                      >
+                        Confirmed
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleStatusFilter("pending");
+                          setShowStatusFilterMenu(false);
+                        }}
+                        className={`w-full text-left px-4 py-2 text-sm ${
+                          statusFilter === "pending" ? "bg-gray-100" : "hover:bg-gray-50"
+                        }`}
+                      >
+                        Pending
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Added By Filter */}
+              <div className="relative flex-1">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowAddedByFilterMenu(!showAddedByFilterMenu);
+                    setShowStatusFilterMenu(false);
+                    setShowSortMenu(false);
+                  }}
+                  className="w-full inline-flex items-center justify-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                >
+                  <AiOutlineFilter className="mr-2 h-4 w-4" />
+                  {addedByFilter === "all" ? "Added By: All" : `Added By: ${addedByFilter}`}
+                </button>
+                {showAddedByFilterMenu && (
+                  <div 
+                    className="absolute left-0 right-0 mt-2 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-[100]"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="py-1">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleAddedByFilter("all");
+                          setShowAddedByFilterMenu(false);
+                        }}
+                        className={`w-full text-left px-4 py-2 text-sm ${
+                          addedByFilter === "all" ? "bg-gray-100" : "hover:bg-gray-50"
+                        }`}
+                      >
+                        Both
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleAddedByFilter("user");
+                          setShowAddedByFilterMenu(false);
+                        }}
+                        className={`w-full text-left px-4 py-2 text-sm ${
+                          addedByFilter === "user" ? "bg-gray-100" : "hover:bg-gray-50"
+                        }`}
+                      >
+                        Added by {transaction?.userId?.name || "You"}
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleAddedByFilter("client");
+                          setShowAddedByFilterMenu(false);
+                        }}
+                        className={`w-full text-left px-4 py-2 text-sm ${
+                          addedByFilter === "client" ? "bg-gray-100" : "hover:bg-gray-50"
+                        }`}
+                      >
+                        Added by {transaction?.clientUserId?.name || "Client"}
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Bottom Row - Clear Filter */}
+            {isFilterApplied && (
               <button
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
-                className={`relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-                  currentPage === totalPages
-                    ? "opacity-50 cursor-not-allowed"
-                    : ""
-                }`}
+                onClick={clearAllFilters}
+                className="w-full inline-flex items-center justify-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
               >
-                <HiChevronRight className="h-5 w-5" />
+                Clear All Filters
               </button>
-            </nav>
+            )}
           </div>
         </div>
 
@@ -1208,7 +1406,7 @@ const TransactionTable = forwardRef(
 
         {showDescriptionModal && selectedDescription && (
           <div 
-            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+            className="fixed  bg-opacity-50 flex items-center justify-center p-4 z-50"
             onClick={() => setShowDescriptionModal(false)}
           >
             <div 
@@ -1231,6 +1429,18 @@ const TransactionTable = forwardRef(
               </p>
             </div>
           </div>
+        )}
+
+        {/* Backdrop - works for both desktop and mobile */}
+        {(showSortMenu || showStatusFilterMenu || showAddedByFilterMenu) && (
+          <div 
+            className="fixed  bg-opacity-25 z-40"
+            onClick={() => {
+              setShowSortMenu(false);
+              setShowStatusFilterMenu(false);
+              setShowAddedByFilterMenu(false);
+            }}
+          />
         )}
       </div>
     );
