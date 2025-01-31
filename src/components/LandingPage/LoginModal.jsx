@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { useProfile } from "../../context/ProfileContext";  // Add this import
 import axios from "axios";
 import { toast } from "react-toastify";
 import { motion, AnimatePresence } from "framer-motion";
@@ -21,6 +22,7 @@ const LoginModal = ({ showLoginModal, setShowLoginModal, setShowSignupModal }) =
   
   
   const { login } = useAuth();
+  const { fetchProfileData } = useProfile();  // Add this line
   const navigate = useNavigate();
   const modalRef = useRef(null);
   const countryListRef = useRef(null);
@@ -126,6 +128,9 @@ const LoginModal = ({ showLoginModal, setShowLoginModal, setShowSignupModal }) =
         
         // Store token in localStorage
         localStorage.setItem('token', response.data.token);
+        
+        // Fetch profile data immediately after login
+        await fetchProfileData();
         
         console.log("User logged in, closing modal");
         setShowLoginModal(false);
